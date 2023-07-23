@@ -1,0 +1,99 @@
+{% load static %}
+<!--K:\python\python\gnome_site\design\images-->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    {% block links %}
+    {% endblock links %}
+    <script src="{% static 'gnome_main/js/basic.js' %}"></script>
+    <title>{% block title %}Правда о гномах{% endblock title %}</title>
+</head>
+
+<body>
+<div class="header">
+    <div class="container">
+        <div class="header-line">
+            <div class="header-logo">
+                <a href="{% url 'gnome_main:main' %}" alt="main">
+                    <img src="{% static 'gnome_main/css/images/logo_main.png' %}" alt="logo">
+                </a>
+            </div>
+
+            <div class="nav">
+                <div class="buttons">
+                    <a class="nav-item" href="{% url 'gnome_main:main' %}">Главная</a>
+                    <a class="nav-item" href="{% url 'gnome_main:blog' %}">Блог</a>
+                    {% if not user.is_authenticated %}
+                    <a class="nav-item-last" href="{% url 'gnome_main:log-in' %}">Войти</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="profile">
+                {% if not user.is_authenticated %}
+                <a href="{% url 'gnome_main:log-in' %}"><img src="{% static 'gnome_main/css/images/profile_img.png' %}" alt="profile_img"></a>
+                {% else %}
+                <img src="{% static 'gnome_main/css/images/profile_img.png' %}" alt="profile_img" id="profile_img">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+<div class="dropdown-list">
+    <ul>
+        <li><a href="#">Мой профиль</a></li>
+        <hr>
+        <li><a href="#">Мои записи</a></li>
+        <hr>
+        <li><a href="{% url 'gnome_main:log-out' %}">Выйти</a></li>
+    </ul>
+</div>
+{% endif %}
+
+{% block content %}
+{% endblock content %}
+
+{% block footer %}
+<div class="footer">
+       <div class="container">
+           <div class="footer-content">
+               <div class="text-header-footer">
+                   <p>Контакты</p>
+               </div>
+
+               <div class="description-footer">
+                   <div class="description">
+                       <div class="img-f1">
+                           <a href="#">
+                               <img src="{% static 'gnome_main/css/images/yt_black.png' %}">
+                           </a>
+                       </div>
+
+                       <div class="footer-text">
+                           <a href="#">youtube/channel.com</a>
+                       </div>
+                   </div>
+
+               <div class="description">
+                   <div class="img-f2">
+                       <a href="#">
+                           <img src="{% static 'gnome_main/css/images/mail_black.png' %}">
+                       </a>
+                   </div>
+
+                   <div class="footer-text">
+                       <a href="#">gnomestrue@gmail.com</a>
+                   </div>
+               </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock footer %}
+
+</body>
+
+</html>

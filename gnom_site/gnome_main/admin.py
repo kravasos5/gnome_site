@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import AdvUser
 
-# Register your models here.
+class AdvUserAdmin(admin.ModelAdmin):
+    exclude = ('slug',)
+
+admin.site.register(AdvUser, AdvUserAdmin)

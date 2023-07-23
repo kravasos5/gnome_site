@@ -1,0 +1,33 @@
+{% extends "layout/basic_footer.html" %}
+{% load static %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed_withFooter.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_log_in.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<h1>Вы уже выполнили вход</h1>
+{% else %}
+<div class="widget">
+    <div class="widget-container">
+        <h1>Введите данные</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="info">
+                {{ form.as_p }}
+            </div>
+            <div>
+                <a href="#" class="form-a">Забыли пароль?</a>
+                <a class="form-btn-a" href="{% url 'gnome_main:register' %}">Регистрация</a>
+                <input type="submit" value="Войти" class="form-btn">
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

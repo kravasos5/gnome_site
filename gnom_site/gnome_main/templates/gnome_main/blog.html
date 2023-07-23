@@ -1,0 +1,263 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+<!--K:\python\python\gnome_site\design\images-->
+{% block links %}
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_blog.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="filter-container">
+        <div class="filter">
+            <div>
+                <h1>Фильтр</h1>
+            </div>
+
+            <div class="filter-params">
+                <div class="by-date">
+                    <p class="param-name">По дате</p>
+                    <div class="edit">
+                        <form id="from_">
+                            <label for="from">от</label>
+                            <input type="text" id="from" placeholder="10.06.2023">
+                        </form>
+
+                        <form id="to_">
+                            <label for="to">до</label>
+                            <input type="text" id="to" placeholder="15.06.2023">
+                        </form>
+                    </div>
+                </div>
+
+                <div class="by-author">
+                    <p class="param-name">По автору</p>
+                    <div class="edit">
+                        <form id="by-author_">
+                            <label for="by-author">имя</label>
+                            <input type="text" id="by-author" placeholder="authorname">
+                        </form>
+                    </div>
+                </div>
+
+                <div class="by-rubric">
+                    <p class="param-name">Рубрика</p>
+                    <div class="checkbox-container">
+                        <div class="checkbox">
+                            <form id="by-rubric">
+                                <div class="form-label">
+                                    <input type="checkbox">
+                                    <label>столкновения</label>
+                                </div>
+
+                                <div class="form-label">
+                                    <input type="checkbox">
+                                    <label>советы</label>
+                                </div>
+
+                                <div class="form-label">
+                                    <input type="checkbox">
+                                    <label>биология гномов</label>
+                                </div>
+
+                                <div class="form-label">
+                                    <input type="checkbox">
+                                    <label>новости</label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="another-params">
+                    <p class="param-name">Другие параметры</p>
+                    <div class="checkbox-container">
+                        <div class="checkbox">
+                            <form id="another">
+                                <div class="form-label">
+                                    <input type="checkbox">
+                                    <label>популярное</label>
+                                </div>
+
+                                <div class="form-label">
+                                    <input type="checkbox">
+                                    <label>больше просмотров</label>
+                                </div>
+
+                                <div class="form-label">
+                                    <input type="checkbox">
+                                    <label>старое</label>
+                                </div>
+
+                                <div class="form-label">
+                                    <input type="checkbox">
+                                    <label>новое</label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subscriptions">
+                    <p class="param-name">Подписки</p>
+                    <div class="checkbox">
+                        <div class="icons">
+                            <span class="icon">
+                                <a href="#">
+                                    <img src="{% static 'gnome_main/css/images/icon1.png' %}">
+                                </a>
+                                <a href="#">
+                                    <p>Имя</p>
+                                </a>
+                            </span>
+                            <span class="icon">
+                                <a href="#">
+                                    <img src="{% static 'gnome_main/css/images/icon2.png' %}">
+                                </a>
+                                <a href="#">
+                                    <p>Имя</p>
+                                </a>
+                            </span>
+                            <div class="more">
+                                <a href="#">ещё</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="urls">
+                    <p class="param-name">Полезные ссылки</p>
+                    <div class="url">
+                        <a href="#">
+                            <img src="{% static 'gnome_main/css/images/yt_white.png' %}">
+                            <p>youtube/channel.com</p>
+                        </a>
+                    </div>
+                    <div class="url">
+                        <a href="#">
+                            <img src="{% static 'gnome_main/css/images/mail_white.png' %}">
+                            <p>gnomestrue@gmail.com</p>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="button-container">
+                    <button class="filter-button">Применить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="posts">
+        <div class="posts-container">
+            <div class="find-container">
+                <div class="find-edit">
+                    <form id="find_">
+                        <input type="text" id="find_input" placeholder="Введите имя записи">
+                        <input type="image" src="{% static 'gnome_main/css/images/find.png' %}" alt="find-button" id="find-button">
+                    </form>
+                </div>
+            </div>
+
+            <div class="post-container">
+                <div class="post">
+                    <a href="#пост">
+                        <div class="post-in">
+                            <div class="preview-container">
+                                <img src="{% static 'gnome_main/css/images/preview.png' %}">
+                            </div>
+                            <div class="post-data">
+                                <h1>post-name</h1>
+                                <div class="text">На встрече со злым гномом вы погрузитесь в мрачный мир тайн и опасностей. Столкнувшись лицом к
+                                    лицу с этим маленьким, но коварным существом, вы ощутите его злобу и хитрость. Будьте готовы к
+                                    схватке с колдовством и отчаянным сопротивлением. Вам предстоит раскрыть его темные планы и
+                                    сделать все возможное, чтобы спасти мир от его губительного влияния. Предоставьте свою храбрость
+                                    и интеллект, чтобы преодолеть испытания, которые злой гном подготовил специально для вас.
+                                    Вам предстоит стать героем и пролить свет на ...</div>
+                                <div class="author-date">
+                                    <p>authorname</p>
+                                    <p>Неделю назад</p>
+                                </div>
+                                <div class="post-likes">
+                                    <div class="info">
+                                        <div class="post-l">
+                                            <p>100 тыс.</p>
+                                            <img src="{% static 'gnome_main/css/images/views.png' %}">
+                                        </div>
+                                        <div class="post-l">
+                                            <p>386</p>
+                                            <img src="{% static 'gnome_main/css/images/likes.png' %}">
+                                        </div>
+                                        <div class="post-l">
+                                            <p>21</p>
+                                            <img src="{% static 'gnome_main/css/images/dislikes.png' %}">
+                                        </div>
+                                        <div class="post-l">
+                                            <p>21</p>
+                                            <img src="{% static 'gnome_main/css/images/comments.png' %}">
+                                        </div>
+                                    </div>
+                                    <div class="post-r">
+                                        <img src="{% static 'gnome_main/css/images/favourite.png' %}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+
+                <div class="post">
+                    <a href="#пост">
+                        <div class="post-in">
+                            <div class="preview-container">
+                                <img src="{% static 'gnome_main/css/images/preview.png' %}">
+                            </div>
+                            <div class="post-data">
+                                <h1>post-name</h1>
+                                <div class="text">На встрече со злым гномом вы погрузитесь в мрачный мир тайн и опасностей. Столкнувшись лицом к
+                                    лицу с этим маленьким, но коварным существом, вы ощутите его злобу и хитрость. Будьте готовы к
+                                    схватке с колдовством и отчаянным сопротивлением. Вам предстоит раскрыть его темные планы и
+                                    сделать все возможное, чтобы спасти мир от его губительного влияния. Предоставьте свою храбрость
+                                    и интеллект, чтобы преодолеть испытания, которые злой гном подготовил специально для вас.
+                                    Вам предстоит стать героем и пролить свет на ...</div>
+                                <div class="author-date">
+                                    <p>authorname</p>
+                                    <p>Неделю назад</p>
+                                </div>
+                                <div class="post-likes">
+                                    <div class="info">
+                                        <div class="post-l">
+                                            <p>100 тыс.</p>
+                                            <img src="{% static 'gnome_main/css/images/views.png' %}">
+                                        </div>
+                                        <div class="post-l">
+                                            <p>386</p>
+                                            <img src="{% static 'gnome_main/css/images/likes.png' %}">
+                                        </div>
+                                        <div class="post-l">
+                                            <p>21</p>
+                                            <img src="{% static 'gnome_main/css/images/dislikes.png' %}">
+                                        </div>
+                                        <div class="post-l">
+                                            <p>21</p>
+                                            <img src="{% static 'gnome_main/css/images/comments.png' %}">
+                                        </div>
+                                    </div>
+                                    <div class="post-r">
+                                        <img src="{% static 'gnome_main/css/images/favourite.png' %}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
