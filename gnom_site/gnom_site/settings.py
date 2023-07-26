@@ -13,6 +13,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 
+from dotenv import load_dotenv
+
+# загружаю .env
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -136,3 +141,19 @@ AUTH_USER_MODEL = 'gnome_main.AdvUser'
 #media
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+# подгружаю параметры из .env
+email_host = os.getenv('EMAIL_HOST')
+email_host_user = os.getenv('EMAIL_HOST_USER')
+email_host_pass = os.getenv('EMAIL_HOST_PASSWORD')
+
+#Email
+# тестирование
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = email_host
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_PORT = 587
+EMAIL_HOST_USER = email_host_user
+EMAIL_HOST_PASSWORD = email_host_pass

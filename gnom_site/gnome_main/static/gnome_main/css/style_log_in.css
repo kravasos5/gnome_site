@@ -114,4 +114,15 @@ div.info p input {
     justify-content: space-between;
 }
 
+div.info ul {
+    margin-top: 0px;
+}
 
+div.info ul li:first-child {
+    margin-top: 0px;
+}
+
+ul.errorlist li {
+    color: red;
+    list-style-type: none;
+}

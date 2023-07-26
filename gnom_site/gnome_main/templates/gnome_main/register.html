@@ -15,14 +15,17 @@
         <h1>Введите данные</h1>
         <form method="post">
             {% csrf_token %}
-            <label for="email">почта</label>
-            <input type="text" id="email" name="email">
-            <label for="login">логин</label>
-            <input type="text" id="login" name="login">
-            <label for="password1">пароль</label>
-            <input type="password" id="password1" name="password1">
-            <label for="password2">введите пароль ещё раз</label>
-            <input type="password" id="password2" name="password2">
+            <div class="info">
+            {{ form.as_p }}
+            </div>
+<!--            <label for="email">почта</label>-->
+<!--            <input type="text" id="email" name="email">-->
+<!--            <label for="login">логин</label>-->
+<!--            <input type="text" id="login" name="login">-->
+<!--            <label for="password1">пароль</label>-->
+<!--            <input type="password" id="password1" name="password1">-->
+<!--            <label for="password2">введите пароль ещё раз</label>-->
+<!--            <input type="password" id="password2" name="password2">-->
             <div>
                 <a href="{% url 'gnome_main:main' %}" class="form-a">На главную</a>
                 <a class="form-btn-a" href="{% url 'gnome_main:log-in' %}">Войти</a>
