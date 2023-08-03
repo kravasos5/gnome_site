@@ -16,7 +16,7 @@
 <div class="widget">
     <div class="widget-container">
         <h1>Введите данные</h1>
-        <form method="post">
+        <form method="post" class="login">
             {% csrf_token %}
             <div class="info">
                 {{ form.as_p }}

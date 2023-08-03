@@ -1,3 +1,8 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    color: #fff;
+}
+
 .widget {
     margin: 3% 20% 3% 20%;
     height: 100%;
@@ -11,7 +16,7 @@
 }
 
 .widget-container{
-    padding: 20px;
+    padding: 20px 0px 20px 0px;
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
@@ -36,7 +41,7 @@ h1 {
     margin-bottom: 20px;
 }
 
-.widget-container form * {
+.widget-container form.login * {
     margin-top: 25px;
 }
 
@@ -54,6 +59,12 @@ h1 {
 .widget-container form input.form-btn {
     width: 30%;
     font-size: 14px;
+
+    transition: all 0.3s ease;
+}
+
+.form-btn:hover {
+    background-color: #B5B5B5;
 }
 
 .form-btn-a {
@@ -100,7 +111,7 @@ div.info p {
 
 div.info p * {
     margin: 0;
-    margin-top: 15px;
+    margin: 7px 0px;
 }
 
 div.info p input {
@@ -125,4 +136,60 @@ div.info ul li:first-child {
 ul.errorlist li {
     color: red;
     list-style-type: none;
+}
+
+input#id_profile_image, input#id_avatar {
+    color: #fff;
+}
+
+a {
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    text-decoration: none;
+
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: red;
+}
+
+.profile-image {
+    margin: 10px 0px 1em 0px;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    display: flex;
+}
+
+.profile-img {
+    margin: 0px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.avatar-image {
+    margin: 10px 0px 1em 0px;
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    display: flex;
+}
+
+.avatar-img {
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#id_description {
+    width: 80%;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
 }

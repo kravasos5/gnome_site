@@ -1,0 +1,6 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+.env
+*.env
+gnom_site/gnom_site/.env

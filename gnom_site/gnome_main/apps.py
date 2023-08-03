@@ -10,7 +10,6 @@ class GnomeMainConfig(AppConfig):
 user_registered = Signal()
 
 def user_registered_dispatcher(sender, **kwargs):
-    print('Сигнал дошёл до user_registered_dispatcher')
     send_activation_notification(kwargs['instance'])
 
 user_registered.connect(user_registered_dispatcher)

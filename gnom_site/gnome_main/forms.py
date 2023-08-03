@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from .apps import user_registered
 from .models import AdvUser
 
-
+# форма для регистрации пользователя
 class RegisterUserForm(forms.ModelForm):
     email = forms.EmailField(required=True,
                              label='Адрес электронный почты')
@@ -44,3 +44,27 @@ class RegisterUserForm(forms.ModelForm):
         model = AdvUser
         fields = ('username', 'email', 'password1', 'password2',
                   'first_name', 'last_name', 'send_messages')
+
+class CustomClearableFileInputCU(forms.ClearableFileInput):
+    initial_text = ''
+    template_name = 'widget/customImageFieldTemplate.html'
+
+# форма для обновления пользовательских данных
+class ChangeUserInfoForm(forms.ModelForm):
+    email = forms.EmailField(required=True,
+                             label='Адресс электронной почты')
+    status = forms.CharField(required=False,
+                             label='Статус профиля (максимум 50 символов)')
+    description = forms.CharField(required=False,
+                             label='Описание профиля (максимум 500 символов)',
+                             widget=forms.Textarea)
+    avatar = forms.ImageField(label='Аватар (рекомендуемый размер 200x200 px)',
+                              widget=CustomClearableFileInputCU(attrs={'id': 'id_avatar'}))
+    profile_image = forms.ImageField(label='Шапка профиля (рекомендуемый размер 1920x300 px)',
+                        widget=CustomClearableFileInputCU(attrs={'id': 'id_profile_image'}))
+
+    class Meta:
+        model = AdvUser
+        fields = ('avatar', 'profile_image', 'username', 'email',
+                  'status', 'description','first_name', 'last_name',
+                  'send_messages')

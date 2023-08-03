@@ -3,7 +3,6 @@ from django.core.signing import Signer
 from django.template.loader import render_to_string
 
 from gnom_site.settings import ALLOWED_HOSTS
-print(ALLOWED_HOSTS)
 
 # создаю подпись для дополнительной защиты данных
 signer = Signer()
@@ -14,7 +13,6 @@ def send_activation_notification(user):
         host = 'http://' + ALLOWED_HOSTS[0]
     else:
         host = 'http//localhost:8000'
-    print('Сигнал дошёл до send_activation_notification')
     context = {'user': user, 'host': host,
                'sign': signer.sign(user.username)}
     subject = render_to_string('email/activation_letter_subject.html',

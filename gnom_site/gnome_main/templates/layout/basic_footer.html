@@ -1,5 +1,5 @@
 {% load static %}
-<!--K:\python\python\gnome_site\design\images-->
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -44,7 +44,7 @@
 {% if user.is_authenticated %}
 <div class="dropdown-list">
     <ul>
-        <li><a href="#">Мой профиль</a></li>
+        <li><a href="{{ user.get_absolute_url }}">Мой профиль</a></li>
         <hr>
         <li><a href="#">Мои записи</a></li>
         <hr>

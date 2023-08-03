@@ -1,0 +1,40 @@
+{% if widget.is_initial %}
+    {% if widget.name == 'avatar' %}
+    <p>Текущий аватар</p>
+    </div>
+
+    <div class="avatar-image">
+        <img src="{{ widget.value.url }}" style="width: 200px; height: 200px; object-fit: cover;" class="avatar-img">
+    </div>
+
+    <div class="info">
+        <p>Новый аватар</p>
+    </div>
+
+    <div class="avatar-image-new" style="margin: 10px 0px 1em 0px; width: 200px; height: 200px; overflow: hidden; display: none;">
+        <img src="#" style="width: 200px; height: 200px; object-fit: cover; display: none;" class="avatar-img-new">
+    </div>
+
+    <div class="info">
+
+    {% else %}
+    <p>Текущая шапка профиля</p>
+    </div>
+
+    <div class="profile-image">
+        <img src="{{ widget.value.url }}" style="width: 1920px; height: 300px; object-fit: cover;" class="profile-img">
+    </div>
+
+    <div class="info">
+        <p>Новая шапка профиля</p>
+    </div>
+
+    <div class="profile-image-new" style="margin: 10px 0px 1em 0px; width: 100%; height: 300px; overflow: hidden; display: none;">
+        <img src="#" style="width: 1920px; height: 300px; object-fit: cover; display: none;" class="profile-img-new">
+    </div>
+
+    <div class="info">
+    {% endif %}
+{% endif %}
+
+<p><input type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value %} value="{{ widget.value.url }}"{% endif %} id="{{ widget.attrs.id }}"></p>

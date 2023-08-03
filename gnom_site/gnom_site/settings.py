@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'gnome_main.middlewares.CurrentUserMiddleware',
 ]
 
 ROOT_URLCONF = 'gnom_site.urls'
