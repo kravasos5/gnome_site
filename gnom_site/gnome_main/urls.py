@@ -1,0 +1,23 @@
+from django.urls import path
+from .views import *
+
+app_name = 'gnome_main'
+
+urlpatterns = [
+    path('', main, name='main'),
+    path('blog/', blog, name='blog'),
+    path('login/', Login_view.as_view(), name='log-in'),
+    path('logout/', Logout_view.as_view(), name='log-out'),
+    path('user/<str:slug>/delete/starting/', deleteUserStarting, name='user-delete-starting'),
+    path('user/<str:slug>/delete/<str:sign>/', DeleteUserView.as_view(), name='user-delete-confirm'),
+    path('user/<str:slug>/change/', ChangeUserInfoView.as_view(), name='profile-change'),
+    path('user/<str:slug>/', UserProfile.as_view(), name='user-profile'),
+    path('user/password/reset/confrim/<str:uidb64>/<str:token>/', PasswordResetConfrim.as_view(), name='password-reset-confrim'),
+    path('user/password/reset/complete/', PasswordResetComplete.as_view(), name='password-reset-complete'),
+    path('user/password/reset-done/', PasswordResetDone.as_view(), name='password-reset-done'),
+    path('user/password/reset/', PasswordReset.as_view(), name='password-reset'),
+    path('register/activate/<str:sign>/', user_activate, name='register-done'),
+    path('register/confrim/', RegisterConfrimView.as_view(), name='register-confrim'),
+    path('register/', RegisterUserView.as_view(), name='register'),
+
+]

@@ -1,0 +1,101 @@
+{% extends "layout/basic_footer.html" %}
+{% load static %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_withFooter.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_main.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="main-text">
+        <p>The truth<br>About<br>GNOMES</p>
+    </div>
+
+    <div class="description">
+        <div class="img-d1">
+            <img src="{% static 'gnome_main/css/images/gnome1_main.png' %}">
+        </div>
+
+        <div class="text-d1">
+            <p><span class="first-letter">Г</span>номы, проклятые слуги
+                тёмных богов, являются источником ужаса и опасности для
+                человечества. <span class="capital-letter">В</span>ладея
+                древними колдовскими знаниями, они способны вызывать
+                магические стихии, создавать тёмные заклинания и обращать
+                силы природы против людей.</p>
+        </div>
+    </div>
+
+    <div class="description">
+        <div class="text-d2">
+            <p><span class="first-letter2">П</span>оклонение тёмным богам
+                дарует им необъяснимую силу и безжалостную жажду уничтожения.
+                <span class="capital-letter">П</span>остоянно скрываясь в
+                глубинах запретных лесов или тёмных подземелий, эти гномы
+                представляют серьёзную угрозу для любого, кто осмелится
+                перейти им дорогу. <span class="capital-letter">Б</span>удьте
+                бдительны, ибо эти злобные создания готовы совершить великое
+                зло, исполняя волю своих богов.</p>
+        </div>
+        <div class="img-d2">
+            <img src="{% static 'gnome_main/css/images/gnome2_main.png' %}">
+        </div>
+    </div>
+
+    <div class="description-about">
+        <div class="text-header">
+            <p>О нас</p>
+        </div>
+
+        <div class="img-d3">
+            <img src="{% static 'gnome_main/css/images/gnome3_main.png' %}">
+        </div>
+
+        <div class="text-d3">
+            <p><span class="first-letter3">Д</span>обро пожаловать на сайт
+                “Истина о Гномах” - виртуальное сообщество людей,
+                объединенных единой целью: - раскрыть правду о существовании
+                гномов и бороться с ними. <span class="capital-letter">М</span>ы
+                стремимся просветить массы о темной стороне гномьего мира и
+                создать осведомленное общество, готовое противостоять этому
+                злу. <span class="capital-letter">Н</span>аши эксперты и
+                исследователи делятся уникальными знаниями, доказательствами
+                и свидетельствами, чтобы каждый мог понять истинную угрозу,
+                которую представляют гномы.
+                <span class="capital-letter">П</span>рисоединяйтесь к
+                нашему движению, обсуждайте новости, делитесь своим опытом
+                и помогайте другим бороться с этим невидимым врагом.
+                <span class="capital-letter">В</span>месте мы сможем пролить
+                свет на скрытую сторону гномьей реальности и защитить наше
+                общество от их темных замыслов.</p>
+        </div>
+    </div>
+
+    <div class="func">
+        <div class="text-header">
+            <p>Функционал сайта</p>
+        </div>
+
+        <div class="description">
+            <div class="img-d4">
+                <img src="{% static 'gnome_main/css/images/gnome4_main.png' %}">
+            </div>
+
+            <div class="text-d4">
+                <ul>
+                    <li>публикация своих случаев столкновения с гномами</li>
+                    <li>исследование записей других пользователей</li>
+                    <li>советы по борьбе с гномами</li>
+                    <li>распространение правды</li>
+                    <li>защита человечества</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

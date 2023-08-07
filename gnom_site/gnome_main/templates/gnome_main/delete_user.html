@@ -1,0 +1,35 @@
+{% extends "layout/basic_footer.html" %}
+{% load static %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed_withFooter.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_log_in.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="widget">
+    <div class="widget-container">
+        <h1>Введите данные</h1>
+        {% if messages %}
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}{{ message }}{% endif %}
+        {% endfor %}
+        {% endif %}
+        <form method="post" class="login">
+            {% csrf_token %}
+            <div class="info">
+                {% for field in form %}
+                    <p>
+                        {{ field.label }}
+                        {{ field }}
+                    </p>
+                {% endfor %}
+            </div>
+            <input type="submit" value="Удалить" class="form-btn">
+        </form>
+    </div>
+</div>
+{% endblock %}

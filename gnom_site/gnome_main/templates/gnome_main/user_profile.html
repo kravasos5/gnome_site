@@ -1,0 +1,222 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+{% load profile_extras %}
+{% load my_truncatewords %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_user_profile.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<script src="{% static 'gnome_main/js/more_text.js' %}"></script>
+<script src="{% static 'gnome_main/js/user_profile.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+{% if user == cur_user %}
+    <div class="profile-image">
+        {% if user.profile_image %}
+        <img src="{{ MEDIA_URL }}{{ user.profile_image.url }}" alt="profile-image" class="profile-img">
+        {% else %}
+        <img src="{% static 'gnome_main/css/images/default_profile_image.jpg' %}" alt="profile-img" class="profile-img">
+        {% endif %}
+    </div>
+    <div class="profile-info-short">
+        <div class="flex-line-container">
+            <div class="avatar-image">
+            {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" alt="avatar-image" class="avatar-img">
+            {% else %}
+                <img src="{% static 'gnome_main/css/images/default_profile_avatar.jpg' %}" alt="avatar-image">
+            {% endif %}
+            </div>
+            <div class="short-description">
+                <h1>{{ user.username }}</h1>
+                <div class="flex-line-container">
+                    <p>{{ sub_count|sub_pluralize }}</p>
+                    <p>{{ posts_count|post_pluralize }}</p>
+                </div>
+                <p>{{ user.status }}</p>
+            </div>
+        </div>
+        <a href="{% url 'gnome_main:profile-change' user.slug %}" class="edit">Изменить</a>
+    </div>
+    <div class="profile-info">
+        <h1>Описание</h1>
+        <p id="short-description">{{ user.description|my_truncatewords:10|safe }}</p>
+        <p id="full-description">{{ user.description|btn_add|safe }}</p>
+    </div>
+    <div class="posts">
+        <h1>Записи</h1>
+        <div class="filters">
+            <button class="filter-btn fbtn1">популярное</button>
+            <button class="filter-btn fbtn2">больше просмотров</button>
+            <button class="filter-btn fbtn3">новое</button>
+            <button class="filter-btn fbtn4">старое</button>
+            <button class="filter-btn fbtn5">с медиа файлами</button>
+        </div>
+
+        <div class="post-container">
+            <div class="post">
+                <a href="#пост">
+                    <div class="post-in">
+                        <div class="preview-container">
+                            <img src="{% static 'gnome_main/css/images/preview.png' %}">
+                        </div>
+                        <div class="post-data">
+                            <h1>post-name</h1>
+                            <div class="text">На встрече со злым гномом вы погрузитесь в мрачный мир тайн и опасностей. Столкнувшись лицом к
+                                лицу с этим маленьким, но коварным существом, вы ощутите его злобу и хитрость. Будьте готовы к
+                                схватке с колдовством и отчаянным сопротивлением. Вам предстоит раскрыть его темные планы и
+                                сделать все возможное, чтобы спасти мир от его губительного влияния. Предоставьте свою храбрость
+                                и интеллект, чтобы преодолеть испытания, которые злой гном подготовил специально для вас.
+                                Вам предстоит стать героем и пролить свет на ...</div>
+                            <div class="author-date">
+                                <p>authorname</p>
+                                <p>Неделю назад</p>
+                            </div>
+                            <div class="post-likes">
+                                <div class="info">
+                                    <div class="post-l">
+                                        <p>100 тыс.</p>
+                                        <img src="{% static 'gnome_main/css/images/views.png' %}">
+                                    </div>
+                                    <div class="post-l">
+                                        <p>386</p>
+                                        <img src="{% static 'gnome_main/css/images/likes.png' %}">
+                                    </div>
+                                    <div class="post-l">
+                                        <p>21</p>
+                                        <img src="{% static 'gnome_main/css/images/dislikes.png' %}">
+                                    </div>
+                                    <div class="post-l">
+                                        <p>21</p>
+                                        <img src="{% static 'gnome_main/css/images/comments.png' %}">
+                                    </div>
+                                </div>
+                                <div class="post-r">
+                                    <img src="{% static 'gnome_main/css/images/favourite.png' %}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="more-posts-div">
+            <a href="#user-posts" class="more-posts">Ещё</a>
+        </div>
+    </div>
+
+{% else %}
+
+    <div class="profile-image">
+        {% if cur_user.profile_image %}
+        <img src="{{ MEDIA_URL }}{{ cur_user.profile_image.url }}" alt="profile-image" class="profile-img">
+        {% else %}
+        <img src="{% static 'gnome_main/css/images/default_profile_image.jpg' %}" alt="profile-img" class="profile-img">
+        {% endif %}
+    </div>
+    <div class="profile-info-short">
+        <div class="flex-line-container">
+            <div class="avatar-image">
+            {% if cur_user.avatar %}
+                <img src="{{ cur_user.avatar.url }}" alt="avatar-image" class="avatar-img">
+            {% else %}
+                <img src="{% static 'gnome_main/css/images/default_profile_avatar.jpg' %}" alt="avatar-image">
+            {% endif %}
+            </div>
+            <div class="short-description">
+                <h1>{{ cur_user.username }}</h1>
+                <div class="flex-line-container">
+                    <p>{{ sub_count|sub_pluralize }}</p>
+                    <p>{{ posts_count|post_pluralize }}</p>
+                </div>
+                <p>{{ cur_user.status }}</p>
+            </div>
+        </div>
+        <div>
+            {% csrf_token %}
+            {% if is_subscribe %}
+            <button class="sub-true">Отписаться</button>
+            <button class="sub-false" style="display: none;">Подписаться</button>
+            {% else %}
+            <button class="sub-false">Подписаться</button>
+            <button class="sub-true" style="display: none;">Отписаться</button>
+            {% endif %}
+        </div>
+    </div>
+    <div class="profile-info">
+        <h1>Описание</h1>
+        <p id="short-description">{{ cur_user.description|my_truncatewords:10|safe }}</p>
+        <p id="full-description">{{ cur_user.description|btn_add|safe }}</p>
+    </div>
+    <div class="posts">
+        <h1>Записи</h1>
+        <div class="filters">
+            <button class="filter-btn fbtn1">популярное</button>
+            <button class="filter-btn fbtn2">больше просмотров</button>
+            <button class="filter-btn fbtn3">новое</button>
+            <button class="filter-btn fbtn4">старое</button>
+            <button class="filter-btn fbtn5">с медиа файлами</button>
+        </div>
+
+        <div class="post-container">
+            <div class="post">
+                <a href="#пост">
+                    <div class="post-in">
+                        <div class="preview-container">
+                            <img src="{% static 'gnome_main/css/images/preview.png' %}">
+                        </div>
+                        <div class="post-data">
+                            <h1>post-name</h1>
+                            <div class="text">На встрече со злым гномом вы погрузитесь в мрачный мир тайн и опасностей. Столкнувшись лицом к
+                                лицу с этим маленьким, но коварным существом, вы ощутите его злобу и хитрость. Будьте готовы к
+                                схватке с колдовством и отчаянным сопротивлением. Вам предстоит раскрыть его темные планы и
+                                сделать все возможное, чтобы спасти мир от его губительного влияния. Предоставьте свою храбрость
+                                и интеллект, чтобы преодолеть испытания, которые злой гном подготовил специально для вас.
+                                Вам предстоит стать героем и пролить свет на ...</div>
+                            <div class="author-date">
+                                <p>authorname</p>
+                                <p>Неделю назад</p>
+                            </div>
+                            <div class="post-likes">
+                                <div class="info">
+                                    <div class="post-l">
+                                        <p>100 тыс.</p>
+                                        <img src="{% static 'gnome_main/css/images/views.png' %}">
+                                    </div>
+                                    <div class="post-l">
+                                        <p>386</p>
+                                        <img src="{% static 'gnome_main/css/images/likes.png' %}">
+                                    </div>
+                                    <div class="post-l">
+                                        <p>21</p>
+                                        <img src="{% static 'gnome_main/css/images/dislikes.png' %}">
+                                    </div>
+                                    <div class="post-l">
+                                        <p>21</p>
+                                        <img src="{% static 'gnome_main/css/images/comments.png' %}">
+                                    </div>
+                                </div>
+                                <div class="post-r">
+                                    <img src="{% static 'gnome_main/css/images/favourite.png' %}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="more-posts-div">
+            <a href="#user-posts" class="more-posts">Ещё</a>
+        </div>
+    </div>
+{% endif %}
+</div>
+{% endblock %}
