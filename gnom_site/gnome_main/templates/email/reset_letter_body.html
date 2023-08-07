@@ -1,0 +1,4 @@
+<h1>Письмо подтверждения смены пароля</h1>
+<p>Здравствуйте, {{ user.username }}!</p>
+<p>Для смены пароля перейдите по ссылке:</p>
+<p>{{ protocol}}://{{ domain }}{% url 'gnome_main:password-reset-confrim' uidb64=uid token=token %}</p>

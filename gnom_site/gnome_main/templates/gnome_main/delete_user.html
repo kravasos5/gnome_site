@@ -10,24 +10,26 @@
 {% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
-<h1>Вы уже выполнили вход</h1>
-{% else %}
 <div class="widget">
     <div class="widget-container">
         <h1>Введите данные</h1>
+        {% if messages %}
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}{{ message }}{% endif %}
+        {% endfor %}
+        {% endif %}
         <form method="post" class="login">
             {% csrf_token %}
             <div class="info">
-                {{ form.as_p }}
+                {% for field in form %}
+                    <p>
+                        {{ field.label }}
+                        {{ field }}
+                    </p>
+                {% endfor %}
             </div>
-            <div>
-                <a href="{% url 'gnome_main:password-reset' %}" class="form-a">Забыли пароль?</a>
-                <a class="form-btn-a" href="{% url 'gnome_main:register' %}">Регистрация</a>
-                <input type="submit" value="Войти" class="form-btn">
-            </div>
+            <input type="submit" value="Удалить" class="form-btn">
         </form>
     </div>
 </div>
-{% endif %}
 {% endblock %}

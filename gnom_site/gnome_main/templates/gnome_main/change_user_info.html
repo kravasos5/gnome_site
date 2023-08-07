@@ -28,6 +28,7 @@
             {% endfor %}
         </div>
         <input type="submit" value="Изменить" class="form-btn">
+        <a class="form-delete" style="margin-top: 15px;" href="{% url 'gnome_main:user-delete-starting' slug=user.slug %}">Удалить аккаунт</a>
     </form>
 </div>
 {% endblock %}

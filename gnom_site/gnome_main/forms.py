@@ -6,8 +6,8 @@ from django.core.exceptions import ValidationError
 from .apps import user_registered
 from .models import AdvUser
 
-# форма для регистрации пользователя
 class RegisterUserForm(forms.ModelForm):
+    '''форма для регистрации пользователя'''
     email = forms.EmailField(required=True,
                              label='Адрес электронный почты')
     password1 = forms.CharField(label='Пароль',
@@ -49,8 +49,8 @@ class CustomClearableFileInputCU(forms.ClearableFileInput):
     initial_text = ''
     template_name = 'widget/customImageFieldTemplate.html'
 
-# форма для обновления пользовательских данных
 class ChangeUserInfoForm(forms.ModelForm):
+    '''форма для обновления пользовательских данных'''
     email = forms.EmailField(required=True,
                              label='Адресс электронной почты')
     status = forms.CharField(required=False,
@@ -68,3 +68,12 @@ class ChangeUserInfoForm(forms.ModelForm):
         fields = ('avatar', 'profile_image', 'username', 'email',
                   'status', 'description','first_name', 'last_name',
                   'send_messages')
+
+class DeleteUserForm(forms.Form):
+    '''форма для удаления пользователя'''
+    username = forms.CharField(required=True, label='Логин')
+    password = forms.CharField(required=True, label='Пароль',
+                                widget=forms.PasswordInput,
+                                help_text=password_validation.password_validators_help_text_html())
+    class Meta:
+        fields = ('username', 'password')
