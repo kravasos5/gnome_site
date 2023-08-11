@@ -7,12 +7,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<script src="{% static 'gnome_main/js/blog.js' %}"></script>
 {% endblock %}
 
 {% block content %}
 <div class="content">
     <div class="filter-container">
-        <div class="filter">
+        <form class="filter" method="post">
+            {% csrf_token %}
             <div>
                 <h1>Фильтр</h1>
             </div>
@@ -21,25 +24,20 @@
                 <div class="by-date">
                     <p class="param-name">По дате</p>
                     <div class="edit">
-                        <form id="from_">
-                            <label for="from">от</label>
-                            <input type="text" id="from" placeholder="10.06.2023">
-                        </form>
-
-                        <form id="to_">
-                            <label for="to">до</label>
-                            <input type="text" id="to" placeholder="15.06.2023">
-                        </form>
+                        <label for="from">от</label>
+                        <input type="date" name="date-from" id="from">
+                    </div>
+                    <div class="edit">
+                        <label for="to">до</label>
+                        <input type="date" name="date-to" id="to">
                     </div>
                 </div>
 
                 <div class="by-author">
                     <p class="param-name">По автору</p>
                     <div class="edit">
-                        <form id="by-author_">
-                            <label for="by-author">имя</label>
-                            <input type="text" id="by-author" placeholder="authorname">
-                        </form>
+                        <label for="by-author">имя</label>
+                        <input type="text" name="author" id="by-author" placeholder="authorname">
                     </div>
                 </div>
 
@@ -47,27 +45,15 @@
                     <p class="param-name">Рубрика</p>
                     <div class="checkbox-container">
                         <div class="checkbox">
-                            <form id="by-rubric">
+                                {% for rubric in rubrics %}
+                                {% ifchanged rubric.super_rubric.pk %}
+                                <p class="rubric-name">{{ rubric.super_rubric.name }}</p>
+                                {% endifchanged %}
                                 <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>столкновения</label>
+                                    <input type="checkbox" name="{{ rubric.name }}" value="{{ rubric.name }}">
+                                    <label>{{ rubric.name }}</label>
                                 </div>
-
-                                <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>советы</label>
-                                </div>
-
-                                <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>биология гномов</label>
-                                </div>
-
-                                <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>новости</label>
-                                </div>
-                            </form>
+                                {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -76,27 +62,25 @@
                     <p class="param-name">Другие параметры</p>
                     <div class="checkbox-container">
                         <div class="checkbox">
-                            <form id="another">
-                                <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>популярное</label>
-                                </div>
+                            <div class="form-label">
+                                <input type="checkbox" name="popular">
+                                <label>популярное</label>
+                            </div>
 
-                                <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>больше просмотров</label>
-                                </div>
+                            <div class="form-label">
+                                <input type="checkbox" name="more-views">
+                                <label>больше просмотров</label>
+                            </div>
 
-                                <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>старое</label>
-                                </div>
+                            <div class="form-label">
+                                <input type="checkbox" name="old">
+                                <label>старое</label>
+                            </div>
 
-                                <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>новое</label>
-                                </div>
-                            </form>
+                            <div class="form-label">
+                                <input type="checkbox" name="new">
+                                <label>новое</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -105,24 +89,29 @@
                     <p class="param-name">Подписки</p>
                     <div class="checkbox">
                         <div class="icons">
-                            <span class="icon">
-                                <a href="#">
-                                    <img src="{% static 'gnome_main/css/images/icon1.png' %}">
+                            {% for sub in subscriptions %}
+                            {% if forloop.counter0 >= 4 %}
+                            <span class="icon hide" style="display: none;">
+                                <a href="{{ sub.get_absolute_url }}">
+                                    <img src="{{ sub.avatar.url }}">
                                 </a>
-                                <a href="#">
-                                    <p>Имя</p>
-                                </a>
-                            </span>
-                            <span class="icon">
-                                <a href="#">
-                                    <img src="{% static 'gnome_main/css/images/icon2.png' %}">
-                                </a>
-                                <a href="#">
-                                    <p>Имя</p>
+                                <a href="{{ sub.get_absolute_url }}">
+                                    <p>{{ sub.username }}</p>
                                 </a>
                             </span>
+                            {% else %}
+                            <span class="icon">
+                                <a href="{{ sub.get_absolute_url }}">
+                                    <img src="{{ sub.avatar.url }}">
+                                </a>
+                                <a href="{{ sub.get_absolute_url }}">
+                                    <p>{{ sub.username }}</p>
+                                </a>
+                            </span>
+                            {% endif %}
+                            {% endfor %}
                             <div class="more">
-                                <a href="#">ещё</a>
+                                <button id="more">ещё</button>
                             </div>
                         </div>
                     </div>
@@ -145,18 +134,19 @@
                 </div>
 
                 <div class="button-container">
-                    <button class="filter-button">Применить</button>
+                    <input type="submit" class="filter-button" value="Применить">
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
     <div class="posts">
         <div class="posts-container">
             <div class="find-container">
                 <div class="find-edit">
-                    <form id="find_">
-                        <input type="text" id="find_input" placeholder="Введите имя записи">
+                    <form id="find_" method="post">
+                        {% csrf_token %}
+                        <input type="text" name="text-find" id="find_input" placeholder="Введите имя записи">
                         <input type="image" src="{% static 'gnome_main/css/images/find.png' %}" alt="find-button" id="find-button">
                     </form>
                 </div>

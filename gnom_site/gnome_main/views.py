@@ -10,9 +10,10 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, 
     PasswordResetCompleteView, PasswordResetDoneView
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView
+from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, DetailView
 
 from .forms import RegisterUserForm, ChangeUserInfoForm, DeleteUserForm
+from .mixins import PostViewCountMixin
 from .models import *
 from .apps import user_delete_signal
 from .utilities import signer
@@ -24,8 +25,29 @@ def main(request):
     return render(request, 'gnome_main/main.html') #, context=context
 
 # Блог
-def blog(request):
-    return render(request, 'gnome_main/blog.html')
+class BlogView(View):
+    '''Представление блога'''
+    template_name = 'gnome_main/blog.html'
+
+    def get(self, request):
+        subscriptions = AdvUser.objects.filter(subscriptions=request.user)
+        rubrics = SubRubric.objects.all()
+        context = {'rubrics': rubrics, 'subscriptions': subscriptions}
+        return render(request, 'gnome_main/blog.html', context)
+
+    def post(self, request):
+        for (key, value) in dict(request.POST).items():
+            if key == 'csrfmiddlewaretoken':
+                pass
+            elif value[0] == '' or value[0] == 'false' or key == 'x' or key == 'y':
+                pass
+            else:
+                print(f'{key} --- {value}')
+
+        subscriptions = AdvUser.objects.filter(subscriptions=request.user)
+        rubrics = SubRubric.objects.all()
+        context = {'rubrics': rubrics, 'subscriptions': subscriptions}
+        return render(request, 'gnome_main/blog.html', context)
 
 class UserProfile(View):
     '''Представление профиля пользователя'''
@@ -172,3 +194,8 @@ class DeleteUserView(LoginRequiredMixin, DeleteView):
         if not queryset:
             queryset = self.get_queryset()
         return get_object_or_404(queryset, pk=self.user_id)
+
+
+class PostDetailView(PostViewCountMixin, DetailView):
+    model = Post
+    template_name = ''

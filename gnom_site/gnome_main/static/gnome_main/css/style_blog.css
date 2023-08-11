@@ -26,9 +26,16 @@
 .filter .filter-params .param-name{
     color: #fff;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 18px;
     margin: 0;
     padding: 14px 0px;
+}
+
+p.rubric-name {
+    color: #fff;
+    font-weight: 400;
+    font-size: 16px;
+    margin: 10px 0px;
 }
 
 .filter .filter-params .edit, .filter .filter-params .checkbox {
@@ -37,7 +44,7 @@
     font-size: 14px;
 }
 
-.filter .filter-params .edit form {
+.filter .filter-params .edit {
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -45,16 +52,16 @@
     margin-bottom: 7px;
 }
 
-.filter .filter-params .edit form label {
+.filter .filter-params .edit label {
     margin-right: 10px;
     margin-left: 5%;
 }
 
-.filter .filter-params .by-date .edit form label {
+.filter .filter-params .by-date .edit label {
     width: 15px;
 }
 
-.filter .filter-params .edit form input {
+.filter .filter-params .edit input {
     width: 80%;
     height: 18px;
     border-radius: 10px 10px 10px 10px;
@@ -74,7 +81,7 @@
     margin: 0px 5% 5px 5%;
 }
 
-span.icon:first-child {
+span.icon:first-child img {
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -99,11 +106,14 @@ div.icons .icon p {
     margin: 0px 0px 0px 8px;
 }
 
-div.more a {
+div.more button {
     color: #fff;
     font-weight: 400;
     font-size: 14px;
     text-decoration: none;
+    border: none;
+    background: none;
+    cursor: pointer;
 }
 
 .url a {
@@ -136,7 +146,7 @@ div.more a {
 
     line-height: 40px;
     width: 90%;
-    margin: 20px 5% 0px 5%;
+    margin: 20px 5% 20px 5%;
     border-radius: 25px;
     border: none;
 

@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'gnome_main.apps.GnomeMainConfig'
+    'gnome_main.apps.GnomeMainConfig',
+    'easy_thumbnails',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
@@ -158,3 +160,21 @@ EMAIL_USE_SSL = False
 EMAIL_PORT = 587
 EMAIL_HOST_USER = email_host_user
 EMAIL_HOST_PASSWORD = email_host_pass
+
+# easy-thumbnails(миниатюры) настройка
+THUMBNAIL_ALIASES = {
+    'gnome_main.AdvUser.avatar': {
+        'default': {
+            'size': (200, 200),
+            'crop': 'smart',
+        },
+    },
+    'gnome_main.AdvUser.profile_image': {
+        'default': {
+            'size': (1920, 300),
+            'crop': 'scale',
+        },
+    },
+}
+
+THUMBNAIL_BASEDIR = 'thumbnails'

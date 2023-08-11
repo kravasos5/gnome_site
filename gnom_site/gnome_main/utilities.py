@@ -1,3 +1,6 @@
+from datetime import datetime
+from os.path import splitext
+
 from django.core.mail import EmailMessage
 from django.core.signing import Signer
 from django.template.loader import render_to_string
@@ -39,3 +42,16 @@ def user_delete(user, protocol, domain):
     em = EmailMessage(subject=subject, body=body_text,
                       to=[f'{user.email}', ])
     em.send()
+
+# генератор имени для фото в посте
+def get_image_path_post(instance, filename):
+    return f'{datetime.now().timestamp}-{splitext(filename)[1]}'
+
+# получение ip адреса пользователя
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip

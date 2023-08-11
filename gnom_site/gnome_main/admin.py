@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import AdvUser
+
+from .forms import SubRubricForm
+from .models import *
 from .utilities import send_activation_notification
 import datetime
 
@@ -50,9 +52,23 @@ class AdvUserAdmin(admin.ModelAdmin):
               'groups', 'user_permissions',
               ('last_login', 'date_joined'))
     exclude = ('slug',)
-    readonly_fields = ('lst_login', 'date_joined')
+    readonly_fields = ('last_login', 'date_joined')
     actions = (send_activation_notifications,)
 
-admin.site.register(AdvUser, AdvUserAdmin)
+class SubRubricInline(admin.TabularInline):
+    '''Встроенный редактор подрубрики'''
+    model = SubRubric
 
+class SuperRubricAdmin(admin.ModelAdmin):
+    '''Редактор надрубрики'''
+    exclude = ('super_rubric',)
+    inlines = (SubRubricInline,)
+
+class SubRubricAdmin(admin.ModelAdmin):
+    '''Редактор подрубрики'''
+    form = SubRubricForm
+
+admin.site.register(AdvUser, AdvUserAdmin)
+admin.site.register(SuperRubric, SuperRubricAdmin)
+admin.site.register(SubRubric, SubRubricAdmin)
 
