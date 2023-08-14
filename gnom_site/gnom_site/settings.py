@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'gnome_main.apps.GnomeMainConfig',
     'easy_thumbnails',
     'django_cleanup.apps.CleanupConfig',
+    'ckeditor',
 ]
 
 MIDDLEWARE = [
@@ -175,6 +176,12 @@ THUMBNAIL_ALIASES = {
             'crop': 'scale',
         },
     },
+    'gnome_main.Post.preview': {
+        'default': {
+            'size': (260, 260),
+            'crop': 'scale',
+        }
+    }
 }
 
 THUMBNAIL_BASEDIR = 'thumbnails'

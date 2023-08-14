@@ -1,0 +1,57 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+{% load profile_extras %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_show_post.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<script src="{% static 'gnome_main/js/show_post.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="flex-line-container">
+    <div class="post">
+        <h1>{{ post.title }}</h1>
+        <div class="flex-line-container">
+            <p>{{ post.author.username }}</p>
+            <p>{{ post.created_at }}</p>
+        </div>
+        <div class="flex-line-container wrap">
+            {% for image in post.postadditionalimage_set.all %}
+                <img src="image.url">
+            {% endfor %}
+        </div>
+        <div>
+            <p>
+                {{ post.content }}
+            </p>
+        </div>
+        <div class="flex-line-container">
+            <div>{{ post.get_view_count }}</div>
+            <div class="flex-line-container">
+                <p>{{ post.get_like_count }}</p>
+                <p>{{ post.get_dislike_count }}</p>
+                <p>доб. в избр.</p>
+            </div>
+        </div>
+        <div class="flex-line-container">
+            <p>{{ post.get_comment_count }}</p>
+            <p>Упорядочить</p>
+        </div>
+        <div class="flex-line-container">
+            <p>avatar</p>
+            <p>comment line</p>
+        </div>
+        <div>
+            <p>all comments</p>
+        </div>
+    </div>
+    <div class="recomendation">
+
+    </div>
+</div>
+{% endblock %}

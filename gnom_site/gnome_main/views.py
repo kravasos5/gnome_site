@@ -10,7 +10,7 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, 
     PasswordResetCompleteView, PasswordResetDoneView
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, DetailView
+from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, DetailView, ListView
 
 from .forms import RegisterUserForm, ChangeUserInfoForm, DeleteUserForm
 from .mixins import PostViewCountMixin
@@ -25,17 +25,22 @@ def main(request):
     return render(request, 'gnome_main/main.html') #, context=context
 
 # Блог
-class BlogView(View):
+class BlogView(ListView):
     '''Представление блога'''
+    model = Post
     template_name = 'gnome_main/blog.html'
+    context_object_name = 'posts'
+    paginate_by = 20
 
-    def get(self, request):
-        subscriptions = AdvUser.objects.filter(subscriptions=request.user)
+    def get_context_data(self, *args, object_list=None, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        subscriptions = AdvUser.objects.filter(subscriptions=self.request.user)
         rubrics = SubRubric.objects.all()
-        context = {'rubrics': rubrics, 'subscriptions': subscriptions}
-        return render(request, 'gnome_main/blog.html', context)
+        context['rubrics'] = rubrics
+        context['subscriptions'] = subscriptions
+        return context
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         for (key, value) in dict(request.POST).items():
             if key == 'csrfmiddlewaretoken':
                 pass
@@ -44,10 +49,17 @@ class BlogView(View):
             else:
                 print(f'{key} --- {value}')
 
+        posts = Post.objects.all()
         subscriptions = AdvUser.objects.filter(subscriptions=request.user)
         rubrics = SubRubric.objects.all()
-        context = {'rubrics': rubrics, 'subscriptions': subscriptions}
+        context = {'rubrics': rubrics, 'subscriptions': subscriptions, 'posts': posts}
         return render(request, 'gnome_main/blog.html', context)
+
+class PostView(PostViewCountMixin, DetailView):
+    '''Представление детального просмотра поста'''
+    model = Post
+    template_name = 'gnome_main/show_post.html'
+    context_object_name = 'post'
 
 class UserProfile(View):
     '''Представление профиля пользователя'''
@@ -197,5 +209,6 @@ class DeleteUserView(LoginRequiredMixin, DeleteView):
 
 
 class PostDetailView(PostViewCountMixin, DetailView):
+    '''Детальный просмотр записи'''
     model = Post
     template_name = ''

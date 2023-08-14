@@ -28,7 +28,7 @@ $(document).ready(function() {
         let csrf = $('input[name=csrfmiddlewaretoken]').val();
         form_data['csrfmiddlewaretoken'] = csrf;
 
-        let find_text = $('input[type*="text-find"]').val()
+        let find_text = $('input[name*="text-find"]').val()
         form_data['find_text'] = find_text;
 
         $.ajax({
@@ -53,6 +53,16 @@ $(document).ready(function() {
             })
             $('button#more').html('ещё')
         };
+    });
+
+    $('span.close').click(function() {
+        $('div.filter-container').css('display', 'none')
+        $('div.open-filter').css('display', 'flex')
+    });
+
+    $('div.open-filter').click(function() {
+        $('div.filter-container').css('display', 'flex')
+        $('div.open-filter').css('display', 'none')
     });
 
 });

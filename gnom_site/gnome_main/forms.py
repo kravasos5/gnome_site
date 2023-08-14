@@ -86,3 +86,12 @@ class SubRubricForm(forms.ModelForm):
     class Meta:
         model = SubRubric
         fields = '__all__'
+
+class SubPostCommentForm(forms.ModelForm):
+    super_comment = forms.ModelChoiceField(
+        queryset=SuperPostComment.objects.all(), empty_label=None,
+        label='Надрубрика', required=True)
+
+    class Meta:
+        model = SubPostComment
+        fields = '__all__'

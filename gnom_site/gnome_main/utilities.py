@@ -1,5 +1,6 @@
 from datetime import datetime
 from os.path import splitext
+from random import choice
 
 from django.core.mail import EmailMessage
 from django.core.signing import Signer
@@ -45,7 +46,7 @@ def user_delete(user, protocol, domain):
 
 # генератор имени для фото в посте
 def get_image_path_post(instance, filename):
-    return f'{datetime.now().timestamp}-{splitext(filename)[1]}'
+    return f'{str(datetime.now())[:10]}-{splitext(filename)[0]}{splitext(filename)[1]}'
 
 # получение ip адреса пользователя
 def get_client_ip(request):
@@ -54,4 +55,8 @@ def get_client_ip(request):
         ip = x_forwarded_for.split(',')[0]
     else:
         ip = request.META.get('REMOTE_ADDR')
+    print(ip)
     return ip
+
+def random_key(len):
+    return ''.join([choice('qwqertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM') for _ in range(20)])

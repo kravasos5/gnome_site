@@ -14,3 +14,4 @@ class PostViewCountMixin:
         else:
             PostViewCount.objects.get_or_create(post=obj,
                                         ip_address=ip_address)
+        return obj

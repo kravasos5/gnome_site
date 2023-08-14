@@ -1,6 +1,6 @@
 {% extends 'layout/basic.html' %}
 {% load static %}
-<!--K:\python\python\gnome_site\design\images-->
+{% load profile_extras %}
 {% block links %}
 <link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
 <link rel="stylesheet" href="{% static 'gnome_main/css/style_blog.css' %}">
@@ -13,11 +13,15 @@
 
 {% block content %}
 <div class="content">
+    <div class="open-filter">
+        <img src="{% static 'gnome_main/css/images/icon_filter.png' %}">
+    </div>
     <div class="filter-container">
         <form class="filter" method="post">
             {% csrf_token %}
-            <div>
+            <div class="flex-line">
                 <h1>Фильтр</h1>
+                <span class="close"><img src="{% static 'gnome_main/css/images/icon_xletter.png' %}"></span>
             </div>
 
             <div class="filter-params">
@@ -153,40 +157,40 @@
             </div>
 
             <div class="post-container">
+                {% for post in posts %}
+                {% if forloop.last %}
+                <div class="post last">
+                {% else %}
                 <div class="post">
-                    <a href="#пост">
+                {% endif %}
+                    <a href="{% url 'gnome_main:show-post' slug=post.slug %}">
                         <div class="post-in">
                             <div class="preview-container">
-                                <img src="{% static 'gnome_main/css/images/preview.png' %}">
+                                <img src="{{ post.preview.url }}">
                             </div>
                             <div class="post-data">
-                                <h1>post-name</h1>
-                                <div class="text">На встрече со злым гномом вы погрузитесь в мрачный мир тайн и опасностей. Столкнувшись лицом к
-                                    лицу с этим маленьким, но коварным существом, вы ощутите его злобу и хитрость. Будьте готовы к
-                                    схватке с колдовством и отчаянным сопротивлением. Вам предстоит раскрыть его темные планы и
-                                    сделать все возможное, чтобы спасти мир от его губительного влияния. Предоставьте свою храбрость
-                                    и интеллект, чтобы преодолеть испытания, которые злой гном подготовил специально для вас.
-                                    Вам предстоит стать героем и пролить свет на ...</div>
+                                <h1>{{ post.title }}</h1>
+                                <div class="text">{{ post.content|truncatewords:100 }}</div>
                                 <div class="author-date">
-                                    <p>authorname</p>
-                                    <p>Неделю назад</p>
+                                    <p>{{ post.author.username }}</p>
+                                    <p>{{ post.created_at|date_ago }}</p>
                                 </div>
                                 <div class="post-likes">
                                     <div class="info">
                                         <div class="post-l">
-                                            <p>100 тыс.</p>
+                                            <p>{{ post.get_view_count|post_views }}</p>
                                             <img src="{% static 'gnome_main/css/images/views.png' %}">
                                         </div>
                                         <div class="post-l">
-                                            <p>386</p>
+                                            <p>{{ post.get_like_count }}</p>
                                             <img src="{% static 'gnome_main/css/images/likes.png' %}">
                                         </div>
                                         <div class="post-l">
-                                            <p>21</p>
+                                            <p>{{ post.get_dislike_count }}</p>
                                             <img src="{% static 'gnome_main/css/images/dislikes.png' %}">
                                         </div>
                                         <div class="post-l">
-                                            <p>21</p>
+                                            <p>{{ post.get_comment_count }}</p>
                                             <img src="{% static 'gnome_main/css/images/comments.png' %}">
                                         </div>
                                     </div>
@@ -198,55 +202,60 @@
                         </div>
                     </a>
                 </div>
-
-
-                <div class="post">
-                    <a href="#пост">
-                        <div class="post-in">
-                            <div class="preview-container">
-                                <img src="{% static 'gnome_main/css/images/preview.png' %}">
-                            </div>
-                            <div class="post-data">
-                                <h1>post-name</h1>
-                                <div class="text">На встрече со злым гномом вы погрузитесь в мрачный мир тайн и опасностей. Столкнувшись лицом к
-                                    лицу с этим маленьким, но коварным существом, вы ощутите его злобу и хитрость. Будьте готовы к
-                                    схватке с колдовством и отчаянным сопротивлением. Вам предстоит раскрыть его темные планы и
-                                    сделать все возможное, чтобы спасти мир от его губительного влияния. Предоставьте свою храбрость
-                                    и интеллект, чтобы преодолеть испытания, которые злой гном подготовил специально для вас.
-                                    Вам предстоит стать героем и пролить свет на ...</div>
-                                <div class="author-date">
-                                    <p>authorname</p>
-                                    <p>Неделю назад</p>
-                                </div>
-                                <div class="post-likes">
-                                    <div class="info">
-                                        <div class="post-l">
-                                            <p>100 тыс.</p>
-                                            <img src="{% static 'gnome_main/css/images/views.png' %}">
-                                        </div>
-                                        <div class="post-l">
-                                            <p>386</p>
-                                            <img src="{% static 'gnome_main/css/images/likes.png' %}">
-                                        </div>
-                                        <div class="post-l">
-                                            <p>21</p>
-                                            <img src="{% static 'gnome_main/css/images/dislikes.png' %}">
-                                        </div>
-                                        <div class="post-l">
-                                            <p>21</p>
-                                            <img src="{% static 'gnome_main/css/images/comments.png' %}">
-                                        </div>
-                                    </div>
-                                    <div class="post-r">
-                                        <img src="{% static 'gnome_main/css/images/favourite.png' %}">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
+                {% endfor %}
             </div>
+            {% if paginator.num_pages > 1 %}
+            <div class="post-container">
+                <ul class="paginator">
+                    {% for page in paginator.page_range %}
+                    {% if forloop.first and page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number}}" class="non-chose">
+                            <li>
+                                <p><</p>
+                            </li>
+                        </a>
+                        {% if page_obj.number > 2 %}
+                        <a href="?1" class="non-chose">
+                            <li>
+                                <p>1</p>
+                            </li>
+                        </a>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if page_obj.number == page %}
+                    <a>
+                        <li>
+                            <p>{{ page }}</p>
+                        </li>
+                    </a>
+                    {% elif page >= page_obj.number|add:-1 and page <= page_obj.number|add:1 %}
+                    <a href="?page={{ page }}" class="non-chose">
+                        <li>
+                            <p>{{ page }}</p>
+                        </li>
+                    </a>
+                    {% endif %}
+
+                    {% if forloop.last and page_obj.has_next %}
+                        {% if page_obj.number|add:2 <= paginator.num_pages %}
+                            <a href="?{{ paginator.num_pages }}" class="non-chose">
+                                <li>
+                                    <p>{{ paginator.num_pages }}</p>
+                                </li>
+                            </a>
+                        {% endif %}
+                        <a href="?page={{ page_obj.next_page_number}}" class="non-chose last">
+                            <li>
+                                <p>></p>
+                            </li>
+                        </a>
+                    {% endif %}
+                    {% endfor %}
+
+                </ul>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

@@ -1,11 +1,15 @@
 /* Контент-фон */
 
+html {
+    overflow: hidden;
+}
+
 .filter-container {
     margin-top: 0px;
     background: linear-gradient(rgba(87, 87, 87, 0.25), rgba(178, 178, 178, 0.25));
     /*width: 17%;*/
     width: 280px;
-    height: 100vh;
+    height: 90vh;
     overflow: auto;
 }
 
@@ -15,12 +19,59 @@
     text-align: center;
 }
 
-.filter div h1 {
+div.flex-line:first-child {
+    margin-right: 10px;
+}
+
+.filter div h1, span.close {
     margin-top: 0px;
     margin-bottom: 5px;
     font-weight: 400;
     font-size: 20px;
     color: #fff;
+}
+
+span.close {
+    font-size: 30px;
+    margin-right: 4%;
+    margin-left: 20%;
+    cursor: pointer;
+    background-color: #575757;
+    border-radius: 100%;
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+span.close img {
+    object-fir: cover;
+    width: 50%;
+}
+
+.open-filter {
+    width: 50px;
+    height: 50px;
+    background-color: #383838;
+    border-radius: 100%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    margin: 20px 0px 0px 20px;
+}
+
+.open-filter img {
+    object-fit: cover;
+}
+
+.flex-line {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
 
 .filter .filter-params .param-name{
@@ -166,7 +217,7 @@ div.more button {
 .posts {
     margin: 0px;
     padding: 0px;
-    height: 100vh;
+    height: 90vh;
 /*    width: 100%;*/
     overflow: auto;
     flex-grow: 1;
@@ -181,6 +232,16 @@ div.more button {
 
     .filter-container {
         width: 100%;
+    }
+
+    span.close {
+        font-size: 30px;
+        margin-right: 4%;
+        margin-left: 32%;
+    }
+
+    html {
+        overflow: auto;
     }
 }
 
@@ -256,18 +317,23 @@ div.more button {
     color: black;
 }
 
-.post:hover {
+/*нагружает страницу, пока что неактивно*/
+/*.post:hover {
     transform: scale(1.03);
 }
 
 .post:active {
     transform: scale(1);
-}
+}*/
 
 .post-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+}
+
+.last {
+    margin-bottom: 20px;
 }
 
 /* Настройки превью */
@@ -363,4 +429,52 @@ div.more button {
     .post {
         width: 80%;
     }
+}
+
+ul.paginator {
+    color: #fff;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    width: 90%;
+    justify-content: center;
+}
+
+ul.paginator a {
+    text-decoration: none;
+    background: #D9D9D9;
+    border-radius: 100%;
+    width: 50px;
+    height: 50px;
+    margin-right: 3%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: auto;
+
+    color; #000;
+}
+
+ul.paginator a.non-chose {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+ul.paginator a.non-chose:hover {
+    background: #A1A1A1;
+}
+
+ul.paginator a li {
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+ul.paginator a li p {
+    color: #000;
+    font-size: 30px;
+    margin: 0;
+    padding: 0;
 }

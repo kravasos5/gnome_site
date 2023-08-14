@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
 from django.utils.text import slugify
-from .utilities import get_image_path_post
+from .utilities import get_image_path_post, random_key
+
 
 class AdvUser(AbstractUser):
     def get_profile_image_path(self, filename):
@@ -101,17 +102,30 @@ class PostManager(models.Manager):
     # для rubric и author. А ткаже prefetch_related для view,
     # likes, dislikes, comments, если я всё правильно понял
     # + зарегистрировать все новые модели в админке
+    def get_queryset(self):
+        return super().get_queryset()\
+            .select_related('rubric', 'author')\
+            .prefetch_related('postadditionalimage_set',
+                              'postviewcount_set',
+                              'postlike_set',
+                              'postdislike_set',
+                              'postcomment_set')\
+            .filter(is_active=True)
 
 class Post(models.Model):
     '''Модель постов'''
     # select_related и prefetch_related
     # https://proghunter.ru/articles/django-base-2023-unique-views-count-for-posts#%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C-%D0%B4%D0%BB%D1%8F-%D1%81%D1%87%D0%B5%D1%82%D1%87%D0%B8%D0%BA%D0%B0-%D1%83%D0%BD%D0%B8%D0%BA%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D1%85-%D0%BF%D1%80%D0%BE%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%BE%D0%B2-%D0%B2-django
+    objects = PostManager()
+
     rubric = models.ForeignKey(SubRubric, on_delete=models.PROTECT,
                                verbose_name='Рубрика')
     title = models.CharField(max_length=80, db_index=True,
                              verbose_name='Название')
+    slug = models.CharField(max_length=50, null=True, blank=True,
+                            verbose_name='Слаг')
     content = models.TextField(verbose_name='Содержание')
-    preview = models.ImageField(null=True, blank=True, required=False,
+    preview = models.ImageField(null=True, blank=True,
                                 upload_to=get_image_path_post,
                                 verbose_name='Превью')
     author = models.ForeignKey(AdvUser, on_delete=models.CASCADE,
@@ -133,8 +147,14 @@ class Post(models.Model):
             ai.delete()
         super().delete(*args, **kwargs)
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            key = random_key(20)
+            self.slug = f'{self.author.username}-{key}'[:50]
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f'{self.title} - {self.author.name} - {self.created_at}'
+        return f'{self.title} - {self.author.username} - {self.created_at}'
 
     def get_view_count(self):
         '''Возвращает количество просмотров записи'''
@@ -171,9 +191,9 @@ class PostViewCount(models.Model):
     '''Модель просмотра'''
     post = models.ForeignKey(Post, on_delete=models.CASCADE,
                              verbose_name='Пост')
-    ip_addres = models.GenericIPAddressField(verbose_name='Ip адрес')
+    ip_address = models.GenericIPAddressField(verbose_name='Ip адрес')
     user = models.ForeignKey(AdvUser, on_delete=models.CASCADE,
-                             required=False, null=True, blank=True,
+                             null=True, blank=True,
                              verbose_name='Просмотревший пользователь')
     viewed_on = models.DateTimeField(auto_now_add=True,
                                      db_index=True,
@@ -247,7 +267,7 @@ class PostComment(models.Model):
 class SuperPostCommentManager(models.Manager):
     '''Менеджер надкомментария'''
     def get_queryset(self):
-        return super().get_queryset.filter(super_comment__isnull=True)
+        return super().get_queryset().filter(super_comment__isnull=True)
 
 class SuperPostComment(PostComment):
     '''Надкомментарий, у которого будут ответы'''
@@ -264,7 +284,7 @@ class SuperPostComment(PostComment):
 class SubPostCommentManager(models.Manager):
     '''Менеджер подкомментария'''
     def get_queryset(self):
-        return super().get_queryset.filter(super_comment__isnull=False)
+        return super().get_queryset().filter(super_comment__isnull=False)
 
 class SubPostComment(PostComment):
     '''Модель подкомментария'''
@@ -272,7 +292,7 @@ class SubPostComment(PostComment):
 
     class Meta:
         proxy = True
-        ordering = ('super_comment__name',)
+        ordering = ('super_comment__post', 'super_comment__user')
         verbose_name = 'Подкомментарий'
         verbose_name_plural = 'Подкомментарии'
 
@@ -287,8 +307,8 @@ class CommentLike(models.Model):
                              verbose_name='Пользователь')
 
     class Meta:
-        verbose_name = 'Лайк'
-        verbose_name_plural = 'Лайки'
+        verbose_name = 'Лайк комментария'
+        verbose_name_plural = 'Лайки комментариев'
 
     def __str__(self):
         return f'Пост: {self.post.id}; User_id: {self.user.id}; super_comment:' \
@@ -302,8 +322,8 @@ class CommentDisLike(models.Model):
                              verbose_name='Пользователь')
 
     class Meta:
-        verbose_name = 'Дизлайк'
-        verbose_name_plural = 'Дизлайки'
+        verbose_name = 'Дизлайк комментария'
+        verbose_name_plural = 'Дизлайки комментариев'
 
     def __str__(self):
         return f'Пост: {self.post.id}; User_id: {self.user.id}; comment:' \
