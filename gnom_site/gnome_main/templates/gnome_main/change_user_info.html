@@ -1,5 +1,6 @@
 {% extends 'layout/basic.html' %}
 {% load static %}
+{% load cropping %}
 
 {% block links %}
 <link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
@@ -9,6 +10,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
 <script src="{% static 'gnome_main/js/changeUserImageLoader.js' %}"></script>
 {% endblock %}
+{% block head %}
+{{ form.media }}
+{% endblock head %}
 
 {% block content %}
 <div class="widget-container">

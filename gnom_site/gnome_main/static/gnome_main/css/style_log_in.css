@@ -117,7 +117,7 @@ div.info p {
     margin-top: 0px;
 }
 
-div.info p * {
+div.info p input, div.info p a, div.info p textarea {
     margin: 0;
     margin: 7px 0px;
 }
@@ -126,7 +126,7 @@ div.info p input {
     width: 80%;
 }
 
-.widget-container form div:last-child {
+.widget-container form div:last-child:not(.jcrop-tracker, .jcrop-handle) {
     width: 62%;
     display: flex;
     align-items: center;
@@ -225,4 +225,8 @@ input#id_profile_image, input#id_avatar {
 
 .form-delete:hover {
     background-color: #B5B5B5;
+}
+
+div.info p div.jcrop-holder {
+    margin: 0px;
 }

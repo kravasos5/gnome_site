@@ -1,0 +1,480 @@
+/* Контент-фон */
+
+html {
+    overflow: hidden;
+}
+
+.filter-container {
+    margin-top: 0px;
+    background: linear-gradient(rgba(87, 87, 87, 0.25), rgba(178, 178, 178, 0.25));
+    /*width: 17%;*/
+    width: 280px;
+    height: 90vh;
+    overflow: auto;
+}
+
+.content .filter {
+    width: 100%;
+    padding-top: 26px;
+    text-align: center;
+}
+
+div.flex-line:first-child {
+    margin-right: 10px;
+}
+
+.filter div h1, span.close {
+    margin-top: 0px;
+    margin-bottom: 5px;
+    font-weight: 400;
+    font-size: 20px;
+    color: #fff;
+}
+
+span.close {
+    font-size: 30px;
+    margin-right: 4%;
+    margin-left: 20%;
+    cursor: pointer;
+    background-color: #575757;
+    border-radius: 100%;
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+span.close img {
+    object-fir: cover;
+    width: 50%;
+}
+
+.open-filter {
+    width: 50px;
+    height: 50px;
+    background-color: #383838;
+    border-radius: 100%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    margin: 20px 0px 0px 20px;
+}
+
+.open-filter img {
+    object-fit: cover;
+}
+
+.flex-line {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.filter .filter-params .param-name{
+    color: #fff;
+    font-weight: 400;
+    font-size: 18px;
+    margin: 0;
+    padding: 14px 0px;
+}
+
+p.rubric-name {
+    color: #fff;
+    font-weight: 400;
+    font-size: 16px;
+    margin: 10px 0px;
+}
+
+.filter .filter-params .edit, .filter .filter-params .checkbox {
+    color: #fff;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+.filter .filter-params .edit {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: center;
+    margin-bottom: 7px;
+}
+
+.filter .filter-params .edit label {
+    margin-right: 10px;
+    margin-left: 5%;
+}
+
+.filter .filter-params .by-date .edit label {
+    width: 15px;
+}
+
+.filter .filter-params .edit input {
+    width: 80%;
+    height: 18px;
+    border-radius: 10px 10px 10px 10px;
+    border: none;
+    margin-right: 5%;
+}
+
+.filter .filter-params .checkbox .form-label label {
+    margin-left: 5px;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 90%;
+    margin: 0px 5% 5px 5%;
+}
+
+span.icon:first-child img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+
+span.icon a {
+    color: #fff;
+    font-weight: 400;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+div.icons .icon {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 90%;
+    margin: 0px 5% 6px 5%;
+}
+
+div.icons .icon p {
+    margin: 0px 0px 0px 8px;
+}
+
+div.more button {
+    color: #fff;
+    font-weight: 400;
+    font-size: 14px;
+    text-decoration: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.url a {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 90%;
+    margin: 0px 5% 6px 5%;
+    color: #fff;
+    text-decoration: none;
+    text-size: 12px;
+}
+
+.url a img {
+    width: 30px;
+}
+
+.url a p {
+    margin: 0px;
+    margin-left: 8px;
+}
+
+.filter-button {
+    display: inline-block;
+
+    color: #000;
+    text-decoration: none;
+    background-color: #fff;
+    font-size: 20px;
+
+    line-height: 40px;
+    width: 90%;
+    margin: 20px 5% 20px 5%;
+    border-radius: 25px;
+    border: none;
+
+    transition: all 0.3s;
+}
+
+.filter-button:hover {
+    background-color: #E0E0E0;
+}
+
+.filter-button:active {
+    background-color: #9E9E9E;
+}
+
+/* Записи */
+
+.posts {
+    margin: 0px;
+    padding: 0px;
+    height: 90vh;
+/*    width: 100%;*/
+    overflow: auto;
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
+@media (max-width: 530px) {
+    .posts {
+        width: 100%;
+        flex-basis: auto;
+    }
+
+    .filter-container {
+        width: 100%;
+    }
+
+    span.close {
+        font-size: 30px;
+        margin-right: 4%;
+        margin-left: 32%;
+    }
+
+    html {
+        overflow: auto;
+    }
+}
+
+/* Контейнер постов */
+.posts-container {
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+/* поиск */
+.find-edit form input#find_input {
+    width: 100%;
+    height: 40px;
+    border-radius: 15px;
+    background-color: #fff;
+    color: #000;
+    border: none;
+}
+
+.find-edit form#find_ input#find-button {
+    margin-left: 15px;
+    transition: all 0.3s;
+}
+
+#find-button:hover {
+    transform: scale(1.1);
+}
+
+#find-button:active {
+    transform: scale(0.9);
+}
+
+.find-edit {
+    width: 80%;
+    display: flex;
+    align-items: center;
+}
+
+.find-edit form#find_ {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.find-container {
+    width: 100%;
+    padding-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+/* посты */
+
+.post-container {
+    margin-top: 20px;
+}
+
+.post {
+    height: 260px;
+    width: 90%;
+    background-color: #D9D9D9;
+    margin-top: 30px;
+    border-radius: 10px;
+    padding: 20px;
+
+    transition: all 0.4s ease;
+}
+
+.post a {
+    text-decoration: none;
+    color: black;
+}
+
+/*нагружает страницу, пока что неактивно*/
+/*.post:hover {
+    transform: scale(1.03);
+}
+
+.post:active {
+    transform: scale(1);
+}*/
+
+.post-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.last {
+    margin-bottom: 20px;
+}
+
+/* Настройки превью */
+.preview-container {
+    width: 260px;
+    height: 260px;
+    border-radius: 10px;
+}
+
+.preview-container img {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+/* Название, описание, лайки, комменты, избранное и тд */
+.post-in {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.post-data * {
+    margin: 0px;
+}
+
+.post-data p {
+    margin-right: 7%;
+}
+
+.post-data h1 {
+    margin-bottom: 8px;
+}
+
+.post-data {
+    margin-left: 20px;
+    flex-grow: 1;
+    flex-basis: 0;
+    width: 80%;
+}
+
+.post-data .text {
+    margin: 0px;
+    padding: 0px;
+    margin-bottom: 7px;
+    width: 100%;
+    height: 55%;
+    overflow: hidden;
+
+    font-size: 16px;
+}
+
+.author-date {
+    display: flex;
+    justify-content: flex-start;
+
+    font-size: 20px;
+    color: #8B8B8B;
+}
+
+.post-likes {
+    width: 100%;
+    margin-top: 8px;
+    display: flex;
+}
+
+.post-likes .info {
+    display: flex;
+    width: 80%;
+}
+
+.post-l, .post-r {
+    display: flex;
+    align-items: center;
+}
+
+.post-l {
+    width: 100%;
+}
+
+.post-r {
+    width: 20%;
+    justify-content: flex-end;
+    margin-right: 2%;
+}
+
+@media (max-width: 922px) {
+    .post-data .text {
+        height: 45%;
+    }
+
+    .post {
+        width: 80%;
+    }
+}
+
+ul.paginator {
+    color: #fff;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    width: 90%;
+    justify-content: center;
+}
+
+ul.paginator a {
+    text-decoration: none;
+    background: #D9D9D9;
+    border-radius: 100%;
+    width: 50px;
+    height: 50px;
+    margin-right: 3%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: auto;
+
+    color; #000;
+}
+
+ul.paginator a.non-chose {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+ul.paginator a.non-chose:hover {
+    background: #A1A1A1;
+}
+
+ul.paginator a li {
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+ul.paginator a li p {
+    color: #000;
+    font-size: 30px;
+    margin: 0;
+    padding: 0;
+}
