@@ -5,7 +5,7 @@ from django.contrib import admin
 from .forms import SubRubricForm, SubPostCommentForm
 from .models import *
 from .utilities import send_activation_notification
-from image_cropping import ImageCroppingMixin
+# from image_cropping import ImageCroppingMixin
 import datetime
 
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
@@ -51,14 +51,14 @@ class NonactivatedFilter(admin.SimpleListFilter):
                                    date_joined__date__lt=d)
 
 
-class AdvUserAdmin(ImageCroppingMixin, admin.ModelAdmin):
+class AdvUserAdmin(admin.ModelAdmin):
     '''Редактор ползователя'''
     list_display = ('__str__', 'is_activated', 'date_joined')
     search_fields = ('username', 'email', 'first_name', 'last_name')
     list_filter = [NonactivatedFilter]
     fields = (('username', 'email'), ('first_name', 'last_name'),
               ('status', 'description'), 'subscriptions',
-              ('avatar', 'avatar_cropping', 'profile_image', 'profile_image_cropping'),
+              ('avatar', 'profile_image'),
               ('send_messages', 'is_active', 'is_activated'),
               ('is_staff', 'is_superuser'),
               'groups', 'user_permissions',

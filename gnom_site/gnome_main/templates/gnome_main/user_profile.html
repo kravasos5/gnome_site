@@ -3,7 +3,6 @@
 {% load profile_extras %}
 {% load my_truncatewords %}
 {% load thumbnail %}
-{% load cropping %}
 
 {% block links %}
 <link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
@@ -21,8 +20,8 @@
 {% if user == cur_user %}
     <div class="profile-image">
         {% if user.profile_image %}
-<!--        {{ MEDIA_URL }}{{ user.profile_image.url }}-->
-        <img src="{% cropped_thumbnail user 'profile_image_cropping' %}" alt="profile-image" class="profile-img">
+<!--        <img src="{5 cropped_thumbnail user 'profile_image_cropping' 5}" alt="profile-image" class="profile-img">-->
+        <img src="{{ MEDIA_URL }}{{ user.profile_image.url }}" alt="profile-image" class="profile-img">
         {% else %}
         <img src="{% static 'gnome_main/css/images/default_profile_image.jpg' %}" alt="profile-img" class="profile-img">
         {% endif %}
@@ -31,8 +30,8 @@
         <div class="flex-line-container">
             <div class="avatar-image">
             {% if user.avatar %}
-                <!--{{ user.avatar.url }}-->
-                <img src="{% cropped_thumbnail user 'avatar_cropping' %}" alt="avatar-image" class="avatar-img">
+<!--                <img src="{5 cropped_thumbnail user 'avatar_cropping' 5}" alt="avatar-image" class="avatar-img">-->
+                <img src="{{ user.avatar.url }}" alt="avatar-image" class="avatar-img">
             {% else %}
                 <img src="{% static 'gnome_main/css/images/default_profile_avatar.jpg' %}" alt="avatar-image">
             {% endif %}

@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
 from django.utils.text import slugify
 from .utilities import get_image_path_post, random_key
-from image_cropping import ImageRatioField, ImageCropField
+# from image_cropping import ImageRatioField, ImageCropField
 
 class AdvUser(AbstractUser):
     def get_profile_image_path(instance, filename):
@@ -19,14 +19,14 @@ class AdvUser(AbstractUser):
                                        verbose_name='Прошёл активацию?')
     send_messages = models.BooleanField(default=True,
                         verbose_name='Слать оповещения о комментариях?')
-    avatar = ImageCropField(verbose_name='Аватар',
+    avatar = models.ImageField(verbose_name='Аватар',
                               upload_to=get_profile_image_path,
                               null=True, db_index=True)
-    avatar_cropping = ImageRatioField('avatar', '200x200')
-    profile_image = ImageCropField(verbose_name='Шапка профиля',
+    # avatar_cropping = ImageRatioField('avatar', '200x200')
+    profile_image = models.ImageField(verbose_name='Шапка профиля',
                               upload_to=get_profile_image_path,
                               null=True, db_index=True)
-    profile_image_cropping = ImageRatioField('profile_image', '1920x300')
+    # profile_image_cropping = ImageRatioField('profile_image', '1920x300')
     status = models.CharField(max_length=50, null=True, blank=True,
                               db_index=True, verbose_name='Статус профиля')
     description = models.CharField(max_length=500, null=True, blank=True,

@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'gnome_main.apps.GnomeMainConfig',
     'easy_thumbnails',
-    'image_cropping',
+    # 'image_cropping',
     'django_cleanup.apps.CleanupConfig',
     'ckeditor_uploader',
     'ckeditor',
@@ -190,10 +190,10 @@ THUMBNAIL_ALIASES = {
 THUMBNAIL_BASEDIR = 'thumbnails'
 
 # django-image-cropping
-from easy_thumbnails.conf import Settings as thumbnail_settings
-THUMBNAIL_PROCESSORS = (
-    'image_cropping.thumbnail_processors.crop_corners',
-) + thumbnail_settings.THUMBNAIL_PROCESSORS
+# from easy_thumbnails.conf import Settings as thumbnail_settings
+# THUMBNAIL_PROCESSORS = (
+#     'image_cropping.thumbnail_processors.crop_corners',
+# ) + thumbnail_settings.THUMBNAIL_PROCESSORS
 
 # IMAGE_CROPPING_SIZE_WARNING = True
 

@@ -46,7 +46,7 @@ class RegisterUserForm(forms.ModelForm):
         fields = ('username', 'email', 'password1', 'password2',
                   'first_name', 'last_name', 'send_messages')
 
-class CustomClearableFileInputCU(ImageCropWidget, forms.ClearableFileInput):
+class CustomClearableFileInputCU(forms.ClearableFileInput):
     initial_text = ''
     template_name = 'widget/customImageFieldTemplate.html'
 
@@ -59,20 +59,20 @@ class ChangeUserInfoForm(forms.ModelForm):
     description = forms.CharField(required=False,
                              label='Описание профиля (максимум 500 символов)',
                              widget=forms.Textarea)
-    # avatar = forms.ImageField(label='Аватар (рекомендуемый размер 200x200 px)',
-    #                           widget=CustomClearableFileInputCU(attrs={'id': 'id_avatar'}))
-    # profile_image = forms.ImageField(label='Шапка профиля (рекомендуемый размер 1920x300 px)',
-    #                     widget=CustomClearableFileInputCU(attrs={'id': 'id_profile_image'}))
+    avatar = forms.ImageField(label='Аватар (рекомендуемый размер 200x200 px)',
+                              widget=CustomClearableFileInputCU(attrs={'id': 'id_avatar'}))
+    profile_image = forms.ImageField(label='Шапка профиля (рекомендуемый размер 1920x300 px)',
+                        widget=CustomClearableFileInputCU(attrs={'id': 'id_profile_image'}))
 
     class Meta:
         model = AdvUser
-        fields = ('avatar', 'avatar_cropping', 'profile_image', 'profile_image_cropping',
+        fields = ('avatar', 'profile_image',
                   'username', 'email', 'status', 'description','first_name', 'last_name',
                   'send_messages')
-        widgets = {
-            'avatar': ImageCropWidget,
-            'profile_image': ImageCropWidget,
-        }
+        # widgets = {
+        #     'avatar': ImageCropWidget,
+        #     'profile_image': ImageCropWidget,
+        # }
 
 class DeleteUserForm(forms.Form):
     '''форма для удаления пользователя'''
