@@ -1,9 +1,20 @@
+from django import forms
 from django.contrib import admin
+
 
 from .forms import SubRubricForm, SubPostCommentForm
 from .models import *
 from .utilities import send_activation_notification
+from image_cropping import ImageCroppingMixin
 import datetime
+
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
+
+class PostAdminForm(forms.ModelForm):
+    content = forms.CharField(label='Содержание', widget=CKEditorUploadingWidget())
+    class Meta:
+        model = Post
+        fields = '__all__'
 
 # Рассылка писем с требованием пройти активацию
 def send_activation_notifications(modeladmin, request, queryset):
@@ -40,14 +51,14 @@ class NonactivatedFilter(admin.SimpleListFilter):
                                    date_joined__date__lt=d)
 
 
-class AdvUserAdmin(admin.ModelAdmin):
+class AdvUserAdmin(ImageCroppingMixin, admin.ModelAdmin):
     '''Редактор ползователя'''
     list_display = ('__str__', 'is_activated', 'date_joined')
     search_fields = ('username', 'email', 'first_name', 'last_name')
     list_filter = [NonactivatedFilter]
     fields = (('username', 'email'), ('first_name', 'last_name'),
               ('status', 'description'), 'subscriptions',
-              ('avatar', 'profile_image'),
+              ('avatar', 'avatar_cropping', 'profile_image', 'profile_image_cropping'),
               ('send_messages', 'is_active', 'is_activated'),
               ('is_staff', 'is_superuser'),
               'groups', 'user_permissions',
@@ -82,6 +93,7 @@ class PostAdmin(admin.ModelAdmin):
               'created_at', 'author')
     inlines = (PostAdditionalImageInline,)
     readonly_fields = ('created_at',)
+    form = PostAdminForm
 
 class PostViewCountAdmin(admin.ModelAdmin):
     '''Редактор для просмотров'''

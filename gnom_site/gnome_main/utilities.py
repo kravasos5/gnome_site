@@ -44,9 +44,10 @@ def user_delete(user, protocol, domain):
                       to=[f'{user.email}', ])
     em.send()
 
+
 # генератор имени для фото в посте
 def get_image_path_post(instance, filename):
-    return f'{str(datetime.now())[:10]}-{splitext(filename)[0]}{splitext(filename)[1]}'
+    return f'posts/{instance.author.username}/{instance.id}-{instance.title[:10]}/{str(datetime.now())[:10]}-{splitext(filename)[0]}{splitext(filename)[1]}'[:50]
 
 # получение ip адреса пользователя
 def get_client_ip(request):

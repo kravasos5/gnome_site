@@ -20,5 +20,4 @@ urlpatterns = [
     path('register/activate/<str:sign>/', user_activate, name='register-done'),
     path('register/confrim/', RegisterConfrimView.as_view(), name='register-confrim'),
     path('register/', RegisterUserView.as_view(), name='register'),
-
 ]
