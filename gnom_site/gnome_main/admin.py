@@ -5,7 +5,6 @@ from django.contrib import admin
 from .forms import SubRubricForm, SubPostCommentForm
 from .models import *
 from .utilities import send_activation_notification
-# from image_cropping import ImageCroppingMixin
 import datetime
 
 from ckeditor_uploader.widgets import CKEditorUploadingWidget

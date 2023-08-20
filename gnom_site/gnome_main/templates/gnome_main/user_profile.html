@@ -21,6 +21,7 @@
     <div class="profile-image">
         {% if user.profile_image %}
 <!--        <img src="{5 cropped_thumbnail user 'profile_image_cropping' 5}" alt="profile-image" class="profile-img">-->
+<!--        <img src="{{ MEDIA_URL }}{{ user.profile_image|thumbnail_url:'default' }}" alt="profile-image" class="profile-img">-->
         <img src="{{ MEDIA_URL }}{{ user.profile_image.url }}" alt="profile-image" class="profile-img">
         {% else %}
         <img src="{% static 'gnome_main/css/images/default_profile_image.jpg' %}" alt="profile-img" class="profile-img">

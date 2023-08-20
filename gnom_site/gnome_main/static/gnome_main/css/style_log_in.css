@@ -183,12 +183,13 @@ input#id_profile_image, input#id_avatar {
     height: 200px;
     overflow: hidden;
     display: flex;
+    justify-content: center;
 }
 
 .avatar-img {
     margin: 0px;
-    width: 100%;
-    height: 100%;
+    width: 200px;
+    height: 200px;
     object-fit: cover;
 }
 
@@ -227,7 +228,22 @@ input#id_profile_image, input#id_avatar {
     background-color: #B5B5B5;
 }
 
-/*
-div.info p div.jcrop-holder {
-    margin: 0px;
-}*/
+div.cropper-line {
+    background-color: #f33;
+}
+
+div.cropper-view-box {
+    display: block;
+    height: 100%;
+    outline: 1px solid #f33;
+    outline-color: rgb(255 51 51 / 75%);
+    overflow: hidden;
+    width: 100%;
+}
+
+div.cropper-point {
+    background-color: #f33;
+    height: 5px;
+    opacity: .75;
+    width: 5px;
+}

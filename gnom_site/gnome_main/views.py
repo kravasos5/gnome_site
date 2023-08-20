@@ -143,6 +143,14 @@ class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy('gnome_main:user-profile', kwargs={'slug': self.slug})
 
+    def form_valid(self, form):
+        super().form_valid(form)
+        response_data = {
+            'success': True,
+            'success_url': self.get_success_url()
+        }
+        return JsonResponse(response_data)
+
 # Сброс пароля
 class PasswordReset(PasswordResetView):
     '''Представление сброса пароля'''

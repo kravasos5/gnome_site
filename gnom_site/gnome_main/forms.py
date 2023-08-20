@@ -5,7 +5,6 @@ from django.core.exceptions import ValidationError
 # from .apps import user_registered
 from .apps import user_registered
 from .models import *
-from image_cropping import ImageCropWidget
 
 class RegisterUserForm(forms.ModelForm):
     '''форма для регистрации пользователя'''
@@ -69,10 +68,6 @@ class ChangeUserInfoForm(forms.ModelForm):
         fields = ('avatar', 'profile_image',
                   'username', 'email', 'status', 'description','first_name', 'last_name',
                   'send_messages')
-        # widgets = {
-        #     'avatar': ImageCropWidget,
-        #     'profile_image': ImageCropWidget,
-        # }
 
 class DeleteUserForm(forms.Form):
     '''форма для удаления пользователя'''
