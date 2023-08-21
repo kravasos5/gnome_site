@@ -1,12 +1,15 @@
 {% extends 'layout/basic.html' %}
 {% load static %}
 {% load profile_extras %}
+{% load thumbnail %}
 
 {% block links %}
 <link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
 <link rel="stylesheet" href="{% static 'gnome_main/css/style_show_post.css' %}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
 <script src="{% static 'gnome_main/js/show_post.js' %}"></script>
@@ -22,12 +25,18 @@
         </div>
         <div class="flex-line-container wrap">
             {% for image in post.postadditionalimage_set.all %}
-                <img src="image.url">
+                <a href="{{ image.media.url }}" data-fancybox="gallery" data-caption="Медиа-файл №{{ forloop.counter }}" class="small-margin-r">
+                    {% if image.media|is_video_preview %}
+                    <img src="{{ image.media|is_video_preview }}"/>
+                    {% else %}
+                    <img src="{{ image.media|thumbnail_url:'default' }}"/>
+                    {% endif %}
+                </a>
             {% endfor %}
         </div>
         <div>
             <p>
-                {{ post.content }}
+                {{ post.content|safe }}
             </p>
         </div>
         <div class="flex-line-container">

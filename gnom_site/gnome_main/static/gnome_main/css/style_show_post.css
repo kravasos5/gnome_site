@@ -7,3 +7,11 @@ body {
     align-items: center;
     justify-content: center;
 }
+
+.wrap {
+    flex-wrap: wrap;
+}
+
+.small-margin-r {
+    margin-right: 1%;
+}

@@ -47,7 +47,11 @@ def user_delete(user, protocol, domain):
 
 # генератор имени для фото в посте
 def get_image_path_post(instance, filename):
-    return f'posts/{instance.author.username}/{instance.id}-{instance.title[:10]}/{str(datetime.now())[:10]}-{splitext(filename)[0]}{splitext(filename)[1]}'[:50]
+    return f'posts/{instance.author.username}/{instance.id}-{instance.title[:10]}/{str(datetime.now())[:10]}-{splitext(filename)[0]}{splitext(filename)[1]}'[:50] + f'{splitext(filename)[1]}'
+
+# генератор имени для дополнительных медиа в посте
+def get_image_path_post_ai(instance, filename):
+    return f'posts/{instance.post.author.username}/{instance.post.id}-{instance.post.title[:10]}/{str(datetime.now())[:10]}-{splitext(filename)[0]}'[:50] + f'{splitext(filename)[1]}'
 
 # получение ip адреса пользователя
 def get_client_ip(request):

@@ -9,12 +9,6 @@ import datetime
 
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
-class PostAdminForm(forms.ModelForm):
-    content = forms.CharField(label='Содержание', widget=CKEditorUploadingWidget())
-    class Meta:
-        model = Post
-        fields = '__all__'
-
 # Рассылка писем с требованием пройти активацию
 def send_activation_notifications(modeladmin, request, queryset):
     for rec in queryset:
@@ -82,6 +76,12 @@ class SubRubricAdmin(admin.ModelAdmin):
 class PostAdditionalImageInline(admin.TabularInline):
     '''Встроенный редактор дополнительных медиа-файлов'''
     model = PostAdditionalImage
+
+class PostAdminForm(forms.ModelForm):
+    content = forms.CharField(label='Содержание', widget=CKEditorUploadingWidget())
+    class Meta:
+        model = Post
+        fields = '__all__'
 
 class PostAdmin(admin.ModelAdmin):
     '''Редактор постов'''

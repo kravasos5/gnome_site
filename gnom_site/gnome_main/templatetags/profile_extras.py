@@ -3,7 +3,7 @@ from django.utils import timezone
 
 register = template.Library()
 
-@register.filter(name="sub_pluralize")
+@register.filter(name='sub_pluralize')
 def sub_pluralize(value):
     new_value = str(value)
     if value == 0 or value >= 5:
@@ -14,7 +14,7 @@ def sub_pluralize(value):
         new_value += ' подписчика'
     return new_value
 
-@register.filter(name="post_pluralize")
+@register.filter(name='post_pluralize')
 def post_pluralize(value):
     new_value = str(value)
     if value == 0 or value >= 5:
@@ -25,7 +25,7 @@ def post_pluralize(value):
         new_value += ' записи'
     return new_value
 
-@register.filter(name="post_views")
+@register.filter(name='post_views')
 def post_views(value):
     new_value = str(value)
     len_v = len(str(value))
@@ -39,7 +39,7 @@ def post_views(value):
         new_value += 'трлн.'
     return new_value
 
-@register.filter(name="date_ago")
+@register.filter(name='date_ago')
 def date_ago(value):
     new_value = ''
     now = timezone.now()
@@ -100,3 +100,15 @@ def date_ago(value):
         elif 5 <= diff // 360:
             new_value += f'{diff // 360} лет назад'
     return new_value
+
+@register.filter(name='is_video_preview')
+def is_video_preview(value):
+    print(str(value).split('.')[1].lower())
+    if str(value).split('.')[1].lower() in ['mp4', 'mov',
+                                        'wmv', 'avi',
+                                        'avchd', 'flv'
+                                        'f4v', 'sfw',
+                                        'mkv', 'webm',
+                                        'html5', 'mpeg-2']:
+        return '/static/gnome_main/css/images/video-preview.jpg'
+    else: return False

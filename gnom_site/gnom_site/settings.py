@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'easy_thumbnails',
     'ckeditor_uploader',
     'ckeditor',
+    # django-cleanup должен быть в конце списка
     'django_cleanup.apps.CleanupConfig',
 ]
 
@@ -166,26 +167,19 @@ EMAIL_HOST_PASSWORD = email_host_pass
 
 # easy-thumbnails(миниатюры) настройка
 THUMBNAIL_ALIASES = {
-    'gnome_main.AdvUser.avatar': {
-        'default': {
-            'size': (200, 200),
-            'crop': 'smart',
-        },
-    },
-    'gnome_main.AdvUser.profile_image': {
-        'default': {
-            'size': (1920, 300),
-            'crop': 'scale',
-        },
-    },
     'gnome_main.Post.preview': {
         'default': {
             'size': (260, 260),
             'crop': 'scale',
         }
-    }
+    },
+    'gnome_main.PostAdditionalImage.media': {
+        'default': {
+            'size': (150, 150),
+            'crop': 'scale',
+        }
+    },
 }
-
 THUMBNAIL_BASEDIR = 'thumbnails'
 
 # ckeditor

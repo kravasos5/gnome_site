@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
 from django.utils.text import slugify
-from .utilities import get_image_path_post, random_key
+from .utilities import get_image_path_post, get_image_path_post_ai, random_key
 
 class AdvUser(AbstractUser):
     def get_profile_image_path(instance, filename):
@@ -97,10 +97,6 @@ class SubRubric(Rubric):
 
 class PostManager(models.Manager):
     '''Менеджер записей'''
-    # Тут прописать методы, чтобы использовался select_related
-    # для rubric и author. А ткаже prefetch_related для view,
-    # likes, dislikes, comments, если я всё правильно понял
-    # + зарегистрировать все новые модели в админке
     def get_queryset(self):
         return super().get_queryset()\
             .select_related('rubric', 'author')\
@@ -113,8 +109,6 @@ class PostManager(models.Manager):
 
 class Post(models.Model):
     '''Модель постов'''
-    # select_related и prefetch_related
-    # https://proghunter.ru/articles/django-base-2023-unique-views-count-for-posts#%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C-%D0%B4%D0%BB%D1%8F-%D1%81%D1%87%D0%B5%D1%82%D1%87%D0%B8%D0%BA%D0%B0-%D1%83%D0%BD%D0%B8%D0%BA%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D1%85-%D0%BF%D1%80%D0%BE%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%BE%D0%B2-%D0%B2-django
     objects = PostManager()
 
     rubric = models.ForeignKey(SubRubric, on_delete=models.PROTECT,
@@ -176,7 +170,7 @@ class PostAdditionalImage(models.Model):
     '''Модель дополнительных изображений'''
     post = models.ForeignKey(Post, on_delete=models.CASCADE,
                              verbose_name='Пост')
-    media = models.FileField(upload_to=get_image_path_post,
+    media = models.FileField(upload_to=get_image_path_post_ai,
                              verbose_name='Медиа')
 
     class Meta:
