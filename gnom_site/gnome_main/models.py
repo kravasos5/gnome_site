@@ -1,3 +1,4 @@
+from django.core.validators import MinLengthValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
@@ -248,8 +249,10 @@ class PostComment(models.Model):
                              verbose_name='Пост')
     user = models.ForeignKey(AdvUser, on_delete=models.CASCADE,
                              verbose_name='Пользователь')
-    comment = models.CharField(max_length=400,
-                               verbose_name='Текст комментария')
+    comment = models.CharField(max_length=500,
+                               validators=[MinLengthValidator(1, 'Минимальная длина комментария 1 символ')],
+                               verbose_name='Текст комментария',
+                               blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True,
                                       db_index = True,
                                       verbose_name='Дата создания')
@@ -260,7 +263,9 @@ class PostComment(models.Model):
 class SuperPostCommentManager(models.Manager):
     '''Менеджер надкомментария'''
     def get_queryset(self):
-        return super().get_queryset().filter(super_comment__isnull=True)
+        return super().get_queryset()\
+            .filter(super_comment__isnull=True)
+            # .select_related('CommentLike', 'CommentDisLike')\
 
 class SuperPostComment(PostComment):
     '''Надкомментарий, у которого будут ответы'''
@@ -274,10 +279,15 @@ class SuperPostComment(PostComment):
     def __str__(self):
         return f'Надкомментарий: {self.id}'
 
+    def get_subcomments_count(self):
+        return f'{self.subpostcomment_set.count()}'
+
 class SubPostCommentManager(models.Manager):
     '''Менеджер подкомментария'''
     def get_queryset(self):
-        return super().get_queryset().filter(super_comment__isnull=False)
+        return super().get_queryset()\
+            .filter(super_comment__isnull=False)
+            # .select_related('CommentLike', 'CommentDisLike')\
 
 class SubPostComment(PostComment):
     '''Модель подкомментария'''

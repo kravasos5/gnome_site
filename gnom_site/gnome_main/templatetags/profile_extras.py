@@ -25,6 +25,17 @@ def post_pluralize(value):
         new_value += ' записи'
     return new_value
 
+@register.filter(name='comment_pluralize')
+def post_pluralize(value):
+    new_value = str(value)
+    if int(str(value)[-1]) == 0 or int(str(value)[-1]) >= 5:
+        new_value += ' комментариев'
+    elif int(str(value)[-1]) == 1 and value != 11:
+        new_value += ' комментарий'
+    elif 2 <= int(str(value)[-1]) <= 4:
+        new_value += ' комментария'
+    return new_value
+
 @register.filter(name='post_views')
 def post_views(value):
     new_value = str(value)
@@ -51,13 +62,17 @@ def date_ago(value):
             new_value += f'{int(diff_t)} секунды назад'
         elif str(int(diff_t // 60))[-1] == '1':
             new_value += f'{int(diff_t)} секунду назад'
-        else:
+        elif 5 <= int(diff_t) <= 20 or 5 <= int(str(int(diff_t))[-1]) <= 9:
             new_value += f'{int(diff_t)} секунд назад'
+        elif int(diff_t) == 0:
+            new_value += f'только что'
     # минуты
     elif diff_t // 60 < 60:
-        if str(int(diff_t // 60))[-1] in ('2', '3', '4'):
+        if str(int(diff_t // 60))[-1] in ('2', '3', '4') and int(diff_t // 60) > 20:
             new_value += f'{int(diff_t // 60)} минуты назад'
-        elif str(int(diff_t // 60))[-1] == '1':
+        elif str(int(diff_t // 60)) in ('2', '3', '4'):
+            new_value += f'{int(diff_t // 60)} минуты назад'
+        elif str(int(diff_t // 60))[-1] == '1' and int(diff_t // 60) != 11:
             new_value += f'{int(diff_t // 60)} минуту назад'
         elif 10 <= int(diff_t // 60) <= 20:
             new_value += f'{int(diff_t // 60)} минут назад'
@@ -103,7 +118,6 @@ def date_ago(value):
 
 @register.filter(name='is_video_preview')
 def is_video_preview(value):
-    print(str(value).split('.')[1].lower())
     if str(value).split('.')[1].lower() in ['mp4', 'mov',
                                         'wmv', 'avi',
                                         'avchd', 'flv'
@@ -112,3 +126,28 @@ def is_video_preview(value):
                                         'html5', 'mpeg-2']:
         return '/static/gnome_main/css/images/video-preview.jpg'
     else: return False
+
+@register.filter(name='key')
+def key(value, key):
+    answer_count = ''
+    i = value[key]
+    if 10 <= int(str(i)[-2:]) <= 20 or 5 <= int(str(i)[-1]) <= 9 or i == 0:
+        answer_count = 'Ответов'
+    elif int(str(i)[-1]) == 1 and i != 11:
+        answer_count = 'Ответ'
+    elif 2 <= int(str(i)[-1]) <= 4:
+        answer_count = 'Ответа'
+
+    return f'{value[key]} {answer_count}'
+
+@register.filter(name='comment_zero')
+def comment_zero(value, key):
+    i = value[key]
+    if i == 0:
+        return True
+    else:
+        return False
+
+@register.filter(name='subcomment')
+def subcomment(value, key):
+    return value[key]

@@ -11,17 +11,20 @@
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
-<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script src="{% static 'gnome_main/js/show_post.js' %}"></script>
+<script>
+    var comment_csrf = '{{ csrf_token }}';
+</script>
 {% endblock %}
 
 {% block content %}
 <div class="flex-line-container">
     <div class="post">
         <h1>{{ post.title }}</h1>
-        <div class="flex-line-container">
-            <p>{{ post.author.username }}</p>
-            <p>{{ post.created_at }}</p>
+        <div class="flex-line-container author-date">
+            <a href="{{ post.author.get_absolute_url }}"><p>{{ post.author.username }}</p></a>
+            <p>{{ post.created_at|date_ago }}</p>
         </div>
         <div class="flex-line-container wrap">
             {% for image in post.postadditionalimage_set.all %}
@@ -34,29 +37,145 @@
                 </a>
             {% endfor %}
         </div>
-        <div>
+        <div class="content">
             <p>
                 {{ post.content|safe }}
             </p>
         </div>
-        <div class="flex-line-container">
-            <div>{{ post.get_view_count }}</div>
-            <div class="flex-line-container">
-                <p>{{ post.get_like_count }}</p>
-                <p>{{ post.get_dislike_count }}</p>
-                <p>доб. в избр.</p>
+
+        <div class="flex-line-container space-between">
+            <div class="flex-line-container info">
+                <img src="{% static 'gnome_main/css/images/views_white.png' %}" class="icon">
+                <p>{{ post.get_view_count|post_views }} просмотров</p>
+            </div>
+            <div class="flex-line-container likes">
+                <div class="flex-line-container info">
+                    <p>{{ post.get_like_count }}</p>
+                    <img src="{% static 'gnome_main/css/images/likes_white.png' %}" class="icon-l pointer">
+                </div>
+                <div class="flex-line-container info">
+                    <p>{{ post.get_dislike_count }}</p>
+                    <img src="{% static 'gnome_main/css/images/dislikes_white.png' %}" class="icon-l pointer">
+                </div>
+                <div class="flex-line-container info">
+                    <img src="{% static 'gnome_main/css/images/favourite_white.png' %}" class="icon-l pointer">
+                </div>
             </div>
         </div>
-        <div class="flex-line-container">
-            <p>{{ post.get_comment_count }}</p>
-            <p>Упорядочить</p>
+
+        <div class="flex-line-container comments">
+            <p id="comments-count-post">{{ post.get_comment_count|comment_pluralize }}</p>
+            <div class="flex-line-container info pointer">
+                <img src="{% static 'gnome_main/css/images/comment_filter.png' %}" class="icon">
+                <p>Упорядочить</p>
+            </div>
         </div>
-        <div class="flex-line-container">
-            <p>avatar</p>
-            <p>comment line</p>
+
+        <div class="flex-line-container error-div" style="display: none;">
+            <p class="error-p"></p>
         </div>
-        <div>
-            <p>all comments</p>
+
+        <div class="flex-line-container comment-line">
+            <span class="comment-icon">
+                <a href="{{ user.get_absolute_url }}">
+                    <img src="{{ user.avatar.url }}">
+                </a>
+            </span>
+            <form id="main-comment" method="post">
+                {% csrf_token %}
+                <textarea type="text" rows="3" name="main-comment-line" class="c-line" placeholder="Ввести комментарий..." autocomplete="off"></textarea>
+                <div class="flex-line-container comment-btns">
+                    <button type="button" id="cancel-btn" class="pointer">Отмена</button>
+                    <button type="submit" class="last pointer">Отправить</button>
+                </div>
+            </form>
+        </div>
+
+
+        <div class="comment-all">
+            {% for comment in comments %}
+            <div class="flex-line-container comment-container {{ comment.id }}">
+                <span class="comment-icon">
+                    <a href="{{ comment.user.get_absolute_url }}">
+                        <img src="{{ comment.user.avatar.url }}">
+                    </a>
+                </span>
+                <div>
+                    <div class="flex-line-container c-author-date">
+                        <a href="{{ comment.user.get_absolute_url }}">{{ comment.user.username }}</a>
+                        <p>{{ comment.created_at|date_ago }}</p>
+                    </div>
+                    <div><p>{{ comment.comment|safe|linebreaks }}</p></div>
+                    <div class="flex-line-container c-likes">
+                        <div class="flex-line-container c-info">
+                            <p>{{ comment.commentlike_set.count }}</p>
+                            <img src="{% static 'gnome_main/css/images/likes_mini_white.png' %}" class="icon-l comment-like pointer">
+                        </div>
+                        <div class="flex-line-container c-info">
+                            <p>{{ comment.commentdislike_set.count }}</p>
+                            <img src="{% static 'gnome_main/css/images/dislikes_mini_white.png' %}" class="icon-l comment-dislike pointer">
+                        </div>
+                        {% if comment.super_comment %}
+                        {% else %}
+                        {% if comments_count|comment_zero:comment.id %}
+                        {% else %}
+                        <div class="flex-line-container c-info more-comments pointer">
+                            <p>{{ comments_count|key:comment.id }}</p>
+                            <img src="{% static 'gnome_main/css/images/up_arrow.png' %}" class="icon-l up" style="display: none;">
+                            <img src="{% static 'gnome_main/css/images/down_arrow.png' %}" class="icon-l down" style="display: block;">
+                        </div>
+                        {% endif %}
+                        <div class="flex-line-container c-info answer pointer">
+                            <p>Ответить</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="subcomments-all{{comment.id}}">
+                {% for sub_comment in comments|subcomment:comment %}
+                <div class="flex-line-container comment-container subcomment {{ sub_comment.super_comment.id }}" style="display: none;">
+                    <span class="comment-icon">
+                        <a href="{{ sub_comment.user.get_absolute_url }}">
+                            <img src="{{ sub_comment.user.avatar.url }}">
+                        </a>
+                    </span>
+                    <div>
+                        <div class="flex-line-container c-author-date">
+                            <a href="{{ sub_comment.user.get_absolute_url }}">{{ sub_comment.user.username }}</a>
+                            <p>{{ sub_comment.created_at|date_ago }}</p>
+                        </div>
+                        <div><p>{{ sub_comment.comment|safe }}</p></div>
+                        <div class="flex-line-container c-likes">
+                            <div class="flex-line-container c-info">
+                                <p>{{ sub_comment.commentlike_set.count }}</p>
+                                <img src="{% static 'gnome_main/css/images/likes_mini_white.png' %}" class="icon-l comment-like pointer">
+                            </div>
+                            <div class="flex-line-container c-info">
+                                <p>{{ sub_comment.commentdislike_set.count }}</p>
+                                <img src="{% static 'gnome_main/css/images/dislikes_mini_white.png' %}" class="icon-l comment-dislike pointer">
+                            </div>
+                            <div class="flex-line-container c-info answer pointer">
+                                <p>Ответить</p>
+                            </div>
+                        </div>
+                        {% if forloop.last %}
+                        <div class="flex-line-container c-likes add-btn {{sub_comment.id}}">
+                            <div class="flex-line-container c-info close pointer">
+                                <p>Свернуть</p>
+                                <img src="{% static 'gnome_main/css/images/up_arrow.png' %}" class="icon-l">
+                            </div>
+                            <div class="flex-line-container c-info look-more{{comment.id}} pointer ">
+                                <p>Смотреть ещё</p>
+                                <img src="{% static 'gnome_main/css/images/down_arrow.png' %}" class="icon-l down" style="display: block;">
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
         </div>
     </div>
     <div class="recomendation">

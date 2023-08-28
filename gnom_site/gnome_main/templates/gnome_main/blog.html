@@ -170,7 +170,7 @@
                             </div>
                             <div class="post-data">
                                 <h1>{{ post.title }}</h1>
-                                <div class="text">{{ post.content|truncatewords:100 }}</div>
+                                <div class="text">{{ post.content|safe|truncatewords:100 }}</div>
                                 <div class="author-date">
                                     <p>{{ post.author.username }}</p>
                                     <p>{{ post.created_at|date_ago }}</p>

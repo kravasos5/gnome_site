@@ -219,4 +219,4 @@ class DeleteUserView(LoginRequiredMixin, DeleteView):
 class PostDetailView(PostViewCountMixin, DetailView):
     '''Детальный просмотр записи'''
     model = Post
-    template_name = ''
+    template_name = 'gnome_main/show_post.html'
