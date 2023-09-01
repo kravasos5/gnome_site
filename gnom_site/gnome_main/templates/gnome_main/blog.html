@@ -1,45 +1,47 @@
 {% extends 'layout/basic.html' %}
 {% load static %}
-<!--K:\python\python\gnome_site\design\images-->
+{% load profile_extras %}
 {% block links %}
 <link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
 <link rel="stylesheet" href="{% static 'gnome_main/css/style_blog.css' %}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<script src="{% static 'gnome_main/js/blog.js' %}"></script>
 {% endblock %}
 
 {% block content %}
 <div class="content">
+    <div class="open-filter">
+        <img src="{% static 'gnome_main/css/images/icon_filter.png' %}">
+    </div>
     <div class="filter-container">
-        <div class="filter">
-            <div>
+        <form class="filter" method="post">
+            {% csrf_token %}
+            <div class="flex-line">
                 <h1>Фильтр</h1>
+                <span class="close"><img src="{% static 'gnome_main/css/images/icon_xletter.png' %}"></span>
             </div>
 
             <div class="filter-params">
                 <div class="by-date">
                     <p class="param-name">По дате</p>
                     <div class="edit">
-                        <form id="from_">
-                            <label for="from">от</label>
-                            <input type="text" id="from" placeholder="10.06.2023">
-                        </form>
-
-                        <form id="to_">
-                            <label for="to">до</label>
-                            <input type="text" id="to" placeholder="15.06.2023">
-                        </form>
+                        <label for="from">от</label>
+                        <input type="date" name="date-from" id="from">
+                    </div>
+                    <div class="edit">
+                        <label for="to">до</label>
+                        <input type="date" name="date-to" id="to">
                     </div>
                 </div>
 
                 <div class="by-author">
                     <p class="param-name">По автору</p>
                     <div class="edit">
-                        <form id="by-author_">
-                            <label for="by-author">имя</label>
-                            <input type="text" id="by-author" placeholder="authorname">
-                        </form>
+                        <label for="by-author">имя</label>
+                        <input type="text" name="author" id="by-author" placeholder="authorname">
                     </div>
                 </div>
 
@@ -47,27 +49,15 @@
                     <p class="param-name">Рубрика</p>
                     <div class="checkbox-container">
                         <div class="checkbox">
-                            <form id="by-rubric">
+                                {% for rubric in rubrics %}
+                                {% ifchanged rubric.super_rubric.pk %}
+                                <p class="rubric-name">{{ rubric.super_rubric.name }}</p>
+                                {% endifchanged %}
                                 <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>столкновения</label>
+                                    <input type="checkbox" name="{{ rubric.name }}" value="{{ rubric.name }}">
+                                    <label>{{ rubric.name }}</label>
                                 </div>
-
-                                <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>советы</label>
-                                </div>
-
-                                <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>биология гномов</label>
-                                </div>
-
-                                <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>новости</label>
-                                </div>
-                            </form>
+                                {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -76,27 +66,25 @@
                     <p class="param-name">Другие параметры</p>
                     <div class="checkbox-container">
                         <div class="checkbox">
-                            <form id="another">
-                                <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>популярное</label>
-                                </div>
+                            <div class="form-label">
+                                <input type="checkbox" name="popular">
+                                <label>популярное</label>
+                            </div>
 
-                                <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>больше просмотров</label>
-                                </div>
+                            <div class="form-label">
+                                <input type="checkbox" name="more-views">
+                                <label>больше просмотров</label>
+                            </div>
 
-                                <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>старое</label>
-                                </div>
+                            <div class="form-label">
+                                <input type="checkbox" name="old">
+                                <label>старое</label>
+                            </div>
 
-                                <div class="form-label">
-                                    <input type="checkbox">
-                                    <label>новое</label>
-                                </div>
-                            </form>
+                            <div class="form-label">
+                                <input type="checkbox" name="new">
+                                <label>новое</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -105,24 +93,29 @@
                     <p class="param-name">Подписки</p>
                     <div class="checkbox">
                         <div class="icons">
-                            <span class="icon">
-                                <a href="#">
-                                    <img src="{% static 'gnome_main/css/images/icon1.png' %}">
+                            {% for sub in subscriptions %}
+                            {% if forloop.counter0 >= 4 %}
+                            <span class="icon hide" style="display: none;">
+                                <a href="{{ sub.get_absolute_url }}">
+                                    <img src="{{ sub.avatar.url }}">
                                 </a>
-                                <a href="#">
-                                    <p>Имя</p>
-                                </a>
-                            </span>
-                            <span class="icon">
-                                <a href="#">
-                                    <img src="{% static 'gnome_main/css/images/icon2.png' %}">
-                                </a>
-                                <a href="#">
-                                    <p>Имя</p>
+                                <a href="{{ sub.get_absolute_url }}">
+                                    <p>{{ sub.username }}</p>
                                 </a>
                             </span>
+                            {% else %}
+                            <span class="icon">
+                                <a href="{{ sub.get_absolute_url }}">
+                                    <img src="{{ sub.avatar.url }}">
+                                </a>
+                                <a href="{{ sub.get_absolute_url }}">
+                                    <p>{{ sub.username }}</p>
+                                </a>
+                            </span>
+                            {% endif %}
+                            {% endfor %}
                             <div class="more">
-                                <a href="#">ещё</a>
+                                <button id="more">ещё</button>
                             </div>
                         </div>
                     </div>
@@ -145,58 +138,59 @@
                 </div>
 
                 <div class="button-container">
-                    <button class="filter-button">Применить</button>
+                    <input type="submit" class="filter-button" value="Применить">
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
     <div class="posts">
         <div class="posts-container">
             <div class="find-container">
                 <div class="find-edit">
-                    <form id="find_">
-                        <input type="text" id="find_input" placeholder="Введите имя записи">
+                    <form id="find_" method="post">
+                        {% csrf_token %}
+                        <input type="text" name="text-find" id="find_input" placeholder="Введите имя записи">
                         <input type="image" src="{% static 'gnome_main/css/images/find.png' %}" alt="find-button" id="find-button">
                     </form>
                 </div>
             </div>
 
             <div class="post-container">
+                {% for post in posts %}
+                {% if forloop.last %}
+                <div class="post last">
+                {% else %}
                 <div class="post">
-                    <a href="#пост">
+                {% endif %}
+                    <a href="{% url 'gnome_main:show-post' slug=post.slug %}">
                         <div class="post-in">
                             <div class="preview-container">
-                                <img src="{% static 'gnome_main/css/images/preview.png' %}">
+                                <img src="{{ post.preview.url }}">
                             </div>
                             <div class="post-data">
-                                <h1>post-name</h1>
-                                <div class="text">На встрече со злым гномом вы погрузитесь в мрачный мир тайн и опасностей. Столкнувшись лицом к
-                                    лицу с этим маленьким, но коварным существом, вы ощутите его злобу и хитрость. Будьте готовы к
-                                    схватке с колдовством и отчаянным сопротивлением. Вам предстоит раскрыть его темные планы и
-                                    сделать все возможное, чтобы спасти мир от его губительного влияния. Предоставьте свою храбрость
-                                    и интеллект, чтобы преодолеть испытания, которые злой гном подготовил специально для вас.
-                                    Вам предстоит стать героем и пролить свет на ...</div>
+                                <h1>{{ post.title }}</h1>
+                                <div class="text">{{ post.content|safe|truncatewords:100 }}</div>
                                 <div class="author-date">
-                                    <p>authorname</p>
-                                    <p>Неделю назад</p>
+                                    <p>{{ post.author.username }}</p>
+                                    <p>{{ post.created_at|date_ago }}</p>
                                 </div>
                                 <div class="post-likes">
                                     <div class="info">
                                         <div class="post-l">
-                                            <p>100 тыс.</p>
+                                            <p>{{ post.get_view_count|post_views }}</p>
                                             <img src="{% static 'gnome_main/css/images/views.png' %}">
                                         </div>
                                         <div class="post-l">
-                                            <p>386</p>
+                                            <p>{{ post.get_like_count }}</p>
                                             <img src="{% static 'gnome_main/css/images/likes.png' %}">
                                         </div>
                                         <div class="post-l">
-                                            <p>21</p>
+                                            <p>{{ post.get_dislike_count }}</p>
                                             <img src="{% static 'gnome_main/css/images/dislikes.png' %}">
                                         </div>
                                         <div class="post-l">
-                                            <p>21</p>
+                                            <p>{{ post.get_comment_count }}</p>
                                             <img src="{% static 'gnome_main/css/images/comments.png' %}">
                                         </div>
                                     </div>
@@ -208,55 +202,60 @@
                         </div>
                     </a>
                 </div>
-
-
-                <div class="post">
-                    <a href="#пост">
-                        <div class="post-in">
-                            <div class="preview-container">
-                                <img src="{% static 'gnome_main/css/images/preview.png' %}">
-                            </div>
-                            <div class="post-data">
-                                <h1>post-name</h1>
-                                <div class="text">На встрече со злым гномом вы погрузитесь в мрачный мир тайн и опасностей. Столкнувшись лицом к
-                                    лицу с этим маленьким, но коварным существом, вы ощутите его злобу и хитрость. Будьте готовы к
-                                    схватке с колдовством и отчаянным сопротивлением. Вам предстоит раскрыть его темные планы и
-                                    сделать все возможное, чтобы спасти мир от его губительного влияния. Предоставьте свою храбрость
-                                    и интеллект, чтобы преодолеть испытания, которые злой гном подготовил специально для вас.
-                                    Вам предстоит стать героем и пролить свет на ...</div>
-                                <div class="author-date">
-                                    <p>authorname</p>
-                                    <p>Неделю назад</p>
-                                </div>
-                                <div class="post-likes">
-                                    <div class="info">
-                                        <div class="post-l">
-                                            <p>100 тыс.</p>
-                                            <img src="{% static 'gnome_main/css/images/views.png' %}">
-                                        </div>
-                                        <div class="post-l">
-                                            <p>386</p>
-                                            <img src="{% static 'gnome_main/css/images/likes.png' %}">
-                                        </div>
-                                        <div class="post-l">
-                                            <p>21</p>
-                                            <img src="{% static 'gnome_main/css/images/dislikes.png' %}">
-                                        </div>
-                                        <div class="post-l">
-                                            <p>21</p>
-                                            <img src="{% static 'gnome_main/css/images/comments.png' %}">
-                                        </div>
-                                    </div>
-                                    <div class="post-r">
-                                        <img src="{% static 'gnome_main/css/images/favourite.png' %}">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
+                {% endfor %}
             </div>
+            {% if paginator.num_pages > 1 %}
+            <div class="post-container">
+                <ul class="paginator">
+                    {% for page in paginator.page_range %}
+                    {% if forloop.first and page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number}}" class="non-chose">
+                            <li>
+                                <p><</p>
+                            </li>
+                        </a>
+                        {% if page_obj.number > 2 %}
+                        <a href="?1" class="non-chose">
+                            <li>
+                                <p>1</p>
+                            </li>
+                        </a>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if page_obj.number == page %}
+                    <a>
+                        <li>
+                            <p>{{ page }}</p>
+                        </li>
+                    </a>
+                    {% elif page >= page_obj.number|add:-1 and page <= page_obj.number|add:1 %}
+                    <a href="?page={{ page }}" class="non-chose">
+                        <li>
+                            <p>{{ page }}</p>
+                        </li>
+                    </a>
+                    {% endif %}
+
+                    {% if forloop.last and page_obj.has_next %}
+                        {% if page_obj.number|add:2 <= paginator.num_pages %}
+                            <a href="?{{ paginator.num_pages }}" class="non-chose">
+                                <li>
+                                    <p>{{ paginator.num_pages }}</p>
+                                </li>
+                            </a>
+                        {% endif %}
+                        <a href="?page={{ page_obj.next_page_number}}" class="non-chose last">
+                            <li>
+                                <p>></p>
+                            </li>
+                        </a>
+                    {% endif %}
+                    {% endfor %}
+
+                </ul>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

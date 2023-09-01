@@ -1,7 +1,13 @@
+from django import forms
 from django.contrib import admin
-from .models import AdvUser
+
+
+from .forms import SubRubricForm, SubPostCommentForm
+from .models import *
 from .utilities import send_activation_notification
 import datetime
+
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 # Рассылка писем с требованием пройти активацию
 def send_activation_notifications(modeladmin, request, queryset):
@@ -39,6 +45,7 @@ class NonactivatedFilter(admin.SimpleListFilter):
 
 
 class AdvUserAdmin(admin.ModelAdmin):
+    '''Редактор ползователя'''
     list_display = ('__str__', 'is_activated', 'date_joined')
     search_fields = ('username', 'email', 'first_name', 'last_name')
     list_filter = [NonactivatedFilter]
@@ -50,9 +57,83 @@ class AdvUserAdmin(admin.ModelAdmin):
               'groups', 'user_permissions',
               ('last_login', 'date_joined'))
     exclude = ('slug',)
-    readonly_fields = ('lst_login', 'date_joined')
+    readonly_fields = ('last_login', 'date_joined')
     actions = (send_activation_notifications,)
 
+class SubRubricInline(admin.TabularInline):
+    '''Встроенный редактор подрубрики'''
+    model = SubRubric
+
+class SuperRubricAdmin(admin.ModelAdmin):
+    '''Редактор надрубрики'''
+    exclude = ('super_rubric',)
+    inlines = (SubRubricInline,)
+
+class SubRubricAdmin(admin.ModelAdmin):
+    '''Редактор подрубрики'''
+    form = SubRubricForm
+
+class PostAdditionalImageInline(admin.TabularInline):
+    '''Встроенный редактор дополнительных медиа-файлов'''
+    model = PostAdditionalImage
+
+class PostAdminForm(forms.ModelForm):
+    content = forms.CharField(label='Содержание', widget=CKEditorUploadingWidget())
+    class Meta:
+        model = Post
+        fields = '__all__'
+
+class PostAdmin(admin.ModelAdmin):
+    '''Редактор постов'''
+    list_display = ('__str__', 'rubric', 'title', 'content', 'preview', 'author',
+                    'is_active', 'created_at')
+    search_fields = ('title', 'content', 'author')
+    fields = ('preview', 'title', 'content', 'rubric', 'is_active',
+              'created_at', 'author')
+    inlines = (PostAdditionalImageInline,)
+    readonly_fields = ('created_at',)
+    form = PostAdminForm
+
+class PostViewCountAdmin(admin.ModelAdmin):
+    '''Редактор для просмотров'''
+    list_display = ('post', 'user', 'viewed_on')
+    exclude = ('ip_address',)
+    search_fields = ('user', 'viewed_on')
+    readonly_fields = ('viewed_on',)
+
+class PostActivityAdmin(admin.ModelAdmin):
+    '''Редактор для лайков, дизлайков, избранного'''
+    list_display = ('user', 'post')
+    search_fields = ('user', 'post')
+
+class SubPostCommentInline(admin.TabularInline):
+    '''Встроенный редактор для подкомментариев'''
+    model = SubPostComment
+
+class SuperPostCommentAdmin(admin.ModelAdmin):
+    '''Редактор надкомментариев'''
+    exclude = ('super_comment',)
+    inlines = (SubPostCommentInline,)
+
+class SubPostCommentAdmin(admin.ModelAdmin):
+    '''Редактор подкомментариев'''
+    form = SubPostCommentForm
+
+class PostCommentActivityAdmin(admin.ModelAdmin):
+    '''Редактор для лайков, дизлайков, избранного'''
+    list_display = ('user', 'comment')
+    search_fields = ('user', 'comment')
+
 admin.site.register(AdvUser, AdvUserAdmin)
+admin.site.register(SuperRubric, SuperRubricAdmin)
+admin.site.register(SubRubric, SubRubricAdmin)
 
-
+admin.site.register(Post, PostAdmin)
+admin.site.register(PostViewCount, PostViewCountAdmin)
+admin.site.register(PostLike, PostActivityAdmin)
+admin.site.register(PostDisLike, PostActivityAdmin)
+admin.site.register(PostFavourite, PostActivityAdmin)
+admin.site.register(SuperPostComment, SuperPostCommentAdmin)
+admin.site.register(SubPostComment, SubPostCommentAdmin)
+admin.site.register(CommentLike, PostCommentActivityAdmin)
+admin.site.register(CommentDisLike, PostCommentActivityAdmin)

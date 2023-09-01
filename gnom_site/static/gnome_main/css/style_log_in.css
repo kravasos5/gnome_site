@@ -1,0 +1,228 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    color: #fff;
+}
+
+.widget {
+    margin: 3% 20% 3% 20%;
+    height: 100%;
+    width: 60%;
+    border-radius: 50px;
+    background-color: rgba(217, 217, 217, 0.25);
+
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+    color: #fff;
+}
+
+.widget-container{
+    padding: 20px 0px 20px 0px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    font-family: 'Roboto', sans-serif;
+    color: #fff;
+    font-size: 36px;
+    font-weight: 400;
+    margin-bottom: 35px;
+}
+
+.widget-container form {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+
+    margin-bottom: 20px;
+}
+
+.widget-container form.login div {
+    margin-top: 25px;
+}
+
+.widget-container form input {
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    width: 60%;
+    height: 10%;
+    cursor: pointer;
+
+    font-size: 14px;
+}
+
+.widget-container form input.form-btn {
+    width: 30%;
+    font-size: 14px;
+
+    transition: all 0.3s ease;
+}
+
+.form-btn:hover {
+    background-color: #B5B5B5;
+}
+
+/*hover строка 161*/
+.form-btn-a {
+    background-color: #fff;
+    width: 30%;
+    height: 10%;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+
+    color: #000;
+    text-decoration: none;
+    font-size: 14px;
+
+    transition: all 0.3s ease;
+}
+
+.form-a {
+    height: 10%;
+    text-align: center;
+
+    color: #fff;
+    text-decoration-style: dotted;
+    font-size: 14px;
+
+    transition: all 0.3s ease;
+}
+
+.form-a:hover {
+    color: red;
+}
+
+div.info {
+    width: 80%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+div.info p {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0px;
+}
+
+div.info p * {
+    margin: 0;
+    margin: 7px 0px;
+}
+
+div.info p input {
+    width: 80%;
+}
+
+.widget-container form div:last-child {
+    width: 62%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.widget-container form div .form-btn-alone {
+    width: 62%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.info ul {
+    margin-top: 0px;
+}
+
+div.info ul li:first-child {
+    margin-top: 0px;
+}
+
+ul.errorlist li {
+    color: red;
+    list-style-type: none;
+}
+
+input#id_profile_image, input#id_avatar {
+    color: #fff;
+}
+
+.form-btn-a:hover {
+    background-color: #B5B5B5;
+    color: #000;
+}
+
+.profile-image {
+    margin: 10px 0px 1em 0px;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    display: flex;
+}
+
+.profile-img {
+    margin: 0px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.avatar-image {
+    margin: 10px 0px 1em 0px;
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    display: flex;
+}
+
+.avatar-img {
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#id_description {
+    width: 80%;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.form-delete {
+    padding: 10px 0px;
+    text-align: center;
+    color: #000;
+    background-color: #fff;
+    text-decoration: none;
+    border: none;
+    border-radius: 10px;
+    height: 10%;
+    cursor: pointer;
+
+    font-size: 14px;
+}
+
+.form-delete{
+    width: 30%;
+    font-size: 14px;
+
+    transition: all 0.3s ease;
+}
+
+.form-delete:hover {
+    background-color: #B5B5B5;
+}

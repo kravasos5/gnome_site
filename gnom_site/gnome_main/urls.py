@@ -5,7 +5,8 @@ app_name = 'gnome_main'
 
 urlpatterns = [
     path('', main, name='main'),
-    path('blog/', blog, name='blog'),
+    path('blog/<slug:slug>/', PostView.as_view(), name='show-post'),
+    path('blog/', BlogView.as_view(), name='blog'),
     path('login/', Login_view.as_view(), name='log-in'),
     path('logout/', Logout_view.as_view(), name='log-out'),
     path('user/<str:slug>/delete/starting/', deleteUserStarting, name='user-delete-starting'),
@@ -19,5 +20,4 @@ urlpatterns = [
     path('register/activate/<str:sign>/', user_activate, name='register-done'),
     path('register/confrim/', RegisterConfrimView.as_view(), name='register-confrim'),
     path('register/', RegisterUserView.as_view(), name='register'),
-
 ]

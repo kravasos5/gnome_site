@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 
 # from .apps import user_registered
 from .apps import user_registered
-from .models import AdvUser
+from .models import *
 
 class RegisterUserForm(forms.ModelForm):
     '''форма для регистрации пользователя'''
@@ -65,8 +65,8 @@ class ChangeUserInfoForm(forms.ModelForm):
 
     class Meta:
         model = AdvUser
-        fields = ('avatar', 'profile_image', 'username', 'email',
-                  'status', 'description','first_name', 'last_name',
+        fields = ('avatar', 'profile_image',
+                  'username', 'email', 'status', 'description','first_name', 'last_name',
                   'send_messages')
 
 class DeleteUserForm(forms.Form):
@@ -77,3 +77,21 @@ class DeleteUserForm(forms.Form):
                                 help_text=password_validation.password_validators_help_text_html())
     class Meta:
         fields = ('username', 'password')
+
+class SubRubricForm(forms.ModelForm):
+    super_rubric = forms.ModelChoiceField(
+        queryset=SuperRubric.objects.all(), empty_label=None,
+        label='Надрубрика', required=True)
+
+    class Meta:
+        model = SubRubric
+        fields = '__all__'
+
+class SubPostCommentForm(forms.ModelForm):
+    super_comment = forms.ModelChoiceField(
+        queryset=SuperPostComment.objects.all(), empty_label=None,
+        label='Надрубрика', required=True)
+
+    class Meta:
+        model = SubPostComment
+        fields = '__all__'

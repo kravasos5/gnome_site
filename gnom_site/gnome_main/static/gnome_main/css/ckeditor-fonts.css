@@ -1,0 +1,20 @@
+@font-face {
+    font-family: 'DkFears';
+    src: url('dkfears.woff2') format('woff2'),
+         url('dkfears.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+    font-family: 'Resident Evil';
+    src: url('resident_evil.woff2') format('woff2'),
+         url('resident_evil.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+        font-family: 'Viking';
+    src: url('viking.woff2') format('woff2'),
+         url('viking.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}

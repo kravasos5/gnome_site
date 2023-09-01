@@ -43,7 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'gnome_main.apps.GnomeMainConfig'
+    'gnome_main.apps.GnomeMainConfig',
+    'easy_thumbnails',
+    'ckeditor_uploader',
+    'ckeditor',
+    # django-cleanup должен быть в конце списка
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'gnome_main.middlewares.CurrentUserMiddleware',
+    # 'gnome_main.middlewares.CommentsMiddleware',
 ]
 
 ROOT_URLCONF = 'gnom_site.urls'
@@ -130,6 +135,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -158,3 +164,84 @@ EMAIL_USE_SSL = False
 EMAIL_PORT = 587
 EMAIL_HOST_USER = email_host_user
 EMAIL_HOST_PASSWORD = email_host_pass
+
+# easy-thumbnails(миниатюры) настройка
+THUMBNAIL_ALIASES = {
+    'gnome_main.Post.preview': {
+        'default': {
+            'size': (260, 260),
+            'crop': 'scale',
+        }
+    },
+    'gnome_main.PostAdditionalImage.media': {
+        'default': {
+            'size': (150, 150),
+            'crop': 'scale',
+        }
+    },
+}
+THUMBNAIL_BASEDIR = 'thumbnails'
+
+# ckeditor
+# путь для загрузки изображений ckeditor
+CKEDITOR_UPLOAD_PATH = "uploads/"
+# настройки
+CKEDITOR_CONFIGS = {
+    'default': {
+        # 'contentsCss': ['../gnome_main/static/gnome_main/css/ckeditor-fonts.css'],
+        # 'font_names': ['Resident Evil', 'Viking', 'DkFears'],
+        'skin': 'Moono-lisa',
+        # 'skin': 'office2013',
+        'toolbar_Basic': [
+            ['Source', '-', 'Bold', 'Italic']
+        ],
+        'toolbar_YourCustomToolbarConfig': [
+            {'name': 'document', 'items': ['Save', 'NewPage', 'Preview', 'Print', '-', 'Templates']},
+            {'name': 'clipboard', 'items': ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']},
+            {'name': 'editing', 'items': ['Find', 'Replace', '-', 'SelectAll']},
+            '/',
+            {'name': 'basicstyles',
+             'items': ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
+            {'name': 'paragraph',
+             'items': ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', '-',
+                       'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl',
+                       'Language']},
+            {'name': 'links', 'items': ['Link', 'Unlink', 'Anchor']},
+            {'name': 'insert',
+             'items': ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe']},
+            '/',
+            {'name': 'styles', 'items': ['Styles', 'Format', 'Font', 'FontSize']},
+            {'name': 'colors', 'items': ['TextColor', 'BGColor']},
+            {'name': 'tools', 'items': ['Preview', 'Maximize', 'Youtube', 'ShowBlocks']},
+            {'name': 'about', 'items': ['About']},
+        ],
+        'toolbar': 'YourCustomToolbarConfig',  # put selected toolbar config here
+        # 'toolbarGroups': [{ 'name': 'document', 'groups': [ 'mode', 'document', 'doctools' ] }],
+        # 'height': 291,
+        # 'width': '100%',
+        # 'filebrowserWindowHeight': 725,
+        # 'filebrowserWindowWidth': 940,
+        # 'toolbarCanCollapse': True,
+        # 'mathJaxLib': '//cdn.mathjax.org/mathjax/2.2-latest/MathJax.js?config=TeX-AMS_HTML',
+        'tabSpaces': 4,
+        'extraPlugins': ','.join([
+            'uploadimage', # the upload image feature
+            # your extra plugins here
+            # 'div',
+            'autolink',
+            'autoembed',
+            'embedsemantic',
+            'autogrow',
+            # 'devtools',
+            'widget',
+            'lineutils',
+            'clipboard',
+            'dialog',
+            'dialogui',
+            'elementspath',
+            # 'mediaembed',
+            # 'embed',
+            'youtube',
+        ]),
+    }
+}

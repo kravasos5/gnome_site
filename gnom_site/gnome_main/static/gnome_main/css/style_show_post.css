@@ -1,0 +1,245 @@
+body {
+    color: #fff;
+}
+
+p {
+    margin: 0px 0px 30px 0px;
+    font-size: 1em;
+}
+
+a {
+    color: #fff;
+    text-decoration: none;
+}
+
+/*Контейнеры*/
+.flex-line-container {
+    display: flex;
+    align-items: center;
+    /*justify-content: center;*/
+}
+
+.wrap {
+    flex-wrap: wrap;
+}
+
+.space-between {
+    justify-content: space-between;
+}
+
+.likes {
+    display: flex;
+    width: 70%;
+    justify-content: flex-end;
+}
+
+.c-likes {
+    display: flex;
+    width: 70%;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.comments {
+    margin-top: 50px;
+    width: 100%;
+}
+
+.author-date {
+    align-items: center;
+    justify-content: space-between;
+}
+
+.comment-container {
+    display: flex;
+    justify-content: flex-start;
+    width: 90%;
+    align-items: flex-start;
+}
+
+.subcomment {
+    margin-left: 5%;
+}
+
+.comment-all {
+    margin-bottom: 2%;
+}
+
+/*Остальное*/
+.info p {
+    margin: 0;
+}
+
+.likes p {
+    margin: 0;
+}
+
+.likes div {
+    margin-left: 20%;
+}
+
+.small-margin-r {
+    margin-right: 1%;
+}
+
+.post {
+    margin: 0px 3%;
+
+}
+
+.post h1 {
+    margin: 50px 0px;
+}
+
+.content {
+    margin: 30px 0px;
+}
+
+.content p {
+    margin: 0;
+}
+
+img.icon {
+    margin-right: 10px;
+}
+
+img.icon-l {
+    margin-left: 10px;
+}
+
+.comments p {
+    margin: 0;
+}
+
+div.comments p:first-child {
+    margin-right: 7%;
+}
+
+/*комментарии*/
+/*comment-line*/
+.comment-line {
+    margin: 30px 0px 50px 0px;
+    width: 100%;
+}
+
+.comment-line p {
+    margin: 0;
+}
+
+/*Иконка*/
+span.comment-icon:first-child img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+/*input для коммента*/
+.comment-line form {
+    width: 100%;
+    margin-left: 10px;
+    height: 40px;
+}
+
+.c-line {
+    background-color: #2B2B2B;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    /*height: 34px;*/
+    color: #ABABAB;
+    font-size: 14px;
+    border: none;
+    resize: none;
+    padding: 5px 3px 5px 7px;
+}
+
+.comment-btns {
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.error-p {
+    margin: 0;
+    color: red;
+    margin-bottom: -20px;
+    margin-top: 30px;
+}
+
+.comment-btns button {
+    color: #fff;
+    /*background-color: #fff;*/
+    background-color: transparent;
+    font-size: 14px;
+    height: 25px;
+    border: 3px solid #2B2B2B;
+    border-radius: 5px;
+
+    transition: all 0.3s ease;
+}
+
+.comment-btns button:hover {
+    background-color: #2B2B2B;
+}
+
+.comment-btns button:last-child {
+    margin-left: 1%;
+}
+
+.c-info p {
+    margin: 0;
+}
+
+.c-likes div:not(div:first-child) {
+    margin-left: 2%;
+}
+
+.comment-all p, div.cur-user-comment p {
+    margin: 0;
+    margin: 0;
+}
+
+.c-author-date:first-child a {
+    margin-right: 2%;
+}
+
+div.comment-container div:last-child {
+    width: 100%;
+    margin-bottom: 0px;
+}
+
+div.comment-container span:first-child {
+    margin-right: 10px;
+}
+
+div.comment-container div {
+    margin-bottom: 6px;
+}
+
+.comment-all div, .cur-user-comment div {
+    margin-bottom: 20px;
+}
+
+.comment-all div:last-child {
+    margin-bottom: 0px;
+}
+
+div.comment-container div.c-likes div.c-info {
+    margin-bottom: 0px;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.more-comments {
+    width: auto;
+    white-space: nowrap;
+}
+
+div.c-likes div.answer {
+    width: fit-content;
+}
+
+a.nametag {
+    color: red;
+}

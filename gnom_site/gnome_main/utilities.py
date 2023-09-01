@@ -1,3 +1,7 @@
+from datetime import datetime
+from os.path import splitext
+from random import choice
+
 from django.core.mail import EmailMessage
 from django.core.signing import Signer
 from django.template.loader import render_to_string
@@ -39,3 +43,25 @@ def user_delete(user, protocol, domain):
     em = EmailMessage(subject=subject, body=body_text,
                       to=[f'{user.email}', ])
     em.send()
+
+
+# генератор имени для фото в посте
+def get_image_path_post(instance, filename):
+    return f'posts/{instance.author.username}/{instance.id}-{instance.title[:10]}/{str(datetime.now())[:10]}-{splitext(filename)[0]}{splitext(filename)[1]}'[:50] + f'{splitext(filename)[1]}'
+
+# генератор имени для дополнительных медиа в посте
+def get_image_path_post_ai(instance, filename):
+    return f'posts/{instance.post.author.username}/{instance.post.id}-{instance.post.title[:10]}/{str(datetime.now())[:10]}-{splitext(filename)[0]}'[:50] + f'{splitext(filename)[1]}'
+
+# получение ip адреса пользователя
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    print(ip)
+    return ip
+
+def random_key(len):
+    return ''.join([choice('qwqertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM') for _ in range(20)])

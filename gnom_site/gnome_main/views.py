@@ -10,9 +10,10 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, 
     PasswordResetCompleteView, PasswordResetDoneView
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView
+from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, DetailView, ListView
 
 from .forms import RegisterUserForm, ChangeUserInfoForm, DeleteUserForm
+from .mixins import PostViewCountMixin
 from .models import *
 from .apps import user_delete_signal
 from .utilities import signer
@@ -24,8 +25,41 @@ def main(request):
     return render(request, 'gnome_main/main.html') #, context=context
 
 # Блог
-def blog(request):
-    return render(request, 'gnome_main/blog.html')
+class BlogView(ListView):
+    '''Представление блога'''
+    model = Post
+    template_name = 'gnome_main/blog.html'
+    context_object_name = 'posts'
+    paginate_by = 20
+
+    def get_context_data(self, *args, object_list=None, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        subscriptions = AdvUser.objects.filter(subscriptions=self.request.user)
+        rubrics = SubRubric.objects.all()
+        context['rubrics'] = rubrics
+        context['subscriptions'] = subscriptions
+        return context
+
+    def post(self, request, *args, **kwargs):
+        for (key, value) in dict(request.POST).items():
+            if key == 'csrfmiddlewaretoken':
+                pass
+            elif value[0] == '' or value[0] == 'false' or key == 'x' or key == 'y':
+                pass
+            else:
+                print(f'{key} --- {value}')
+
+        posts = Post.objects.all()
+        subscriptions = AdvUser.objects.filter(subscriptions=request.user)
+        rubrics = SubRubric.objects.all()
+        context = {'rubrics': rubrics, 'subscriptions': subscriptions, 'posts': posts}
+        return render(request, 'gnome_main/blog.html', context)
+
+class PostView(PostViewCountMixin, DetailView):
+    '''Представление детального просмотра поста'''
+    model = Post
+    template_name = 'gnome_main/show_post.html'
+    context_object_name = 'post'
 
 class UserProfile(View):
     '''Представление профиля пользователя'''
@@ -109,6 +143,14 @@ class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy('gnome_main:user-profile', kwargs={'slug': self.slug})
 
+    def form_valid(self, form):
+        super().form_valid(form)
+        response_data = {
+            'success': True,
+            'success_url': self.get_success_url()
+        }
+        return JsonResponse(response_data)
+
 # Сброс пароля
 class PasswordReset(PasswordResetView):
     '''Представление сброса пароля'''
@@ -172,3 +214,9 @@ class DeleteUserView(LoginRequiredMixin, DeleteView):
         if not queryset:
             queryset = self.get_queryset()
         return get_object_or_404(queryset, pk=self.user_id)
+
+
+class PostDetailView(PostViewCountMixin, DetailView):
+    '''Детальный просмотр записи'''
+    model = Post
+    template_name = 'gnome_main/show_post.html'
