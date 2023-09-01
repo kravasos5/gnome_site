@@ -41,7 +41,28 @@ def post_views(value):
     new_value = str(value)
     len_v = len(str(value))
     if len_v <= 3:
-        pass
+        if int(str(value)[-1]) == 1 and value != 11:
+            new_value += ' просмотр'
+        elif 2 <= int(str(value)[-1]) <= 4:
+            new_value += ' просмотра'
+        elif 5 <= int(str(value)[-1]) <= 9 or int(str(value)[-1]) == 0:
+            new_value += ' просмотров'
+        elif 10 <= int(str(value)[-1]) <= 20:
+            new_value += ' просмотров'
+    elif 4 <= len_v < 6:
+        new_value += 'тыс. просмотров'
+    elif 6 <= len_v <= 9:
+        new_value += 'млн. просмотров'
+    elif 9 < len_v <= 12:
+        new_value += 'трлн. просмотров'
+    return new_value
+
+@register.filter(name='likes_dislikes')
+def likes_dislikes(value):
+    new_value = str(value)
+    len_v = len(str(value))
+    if len_v <= 3:
+        new_value += ''
     elif 4 <= len_v < 6:
         new_value += 'тыс.'
     elif 6 <= len_v <= 9:
@@ -128,17 +149,26 @@ def is_video_preview(value):
     else: return False
 
 @register.filter(name='key')
-def key(value, key):
-    answer_count = ''
-    i = value[key]
-    if 10 <= int(str(i)[-2:]) <= 20 or 5 <= int(str(i)[-1]) <= 9 or i == 0:
-        answer_count = 'Ответов'
-    elif int(str(i)[-1]) == 1 and i != 11:
-        answer_count = 'Ответ'
-    elif 2 <= int(str(i)[-1]) <= 4:
-        answer_count = 'Ответа'
-
-    return f'{value[key]} {answer_count}'
+def key(value, key=None):
+    if key == None:
+        answer_count = ''
+        if 10 <= int(str(value)[-2:]) <= 20 or 5 <= int(str(value)[-1]) <= 9 or value == 0:
+            answer_count = 'Ответов'
+        elif int(str(value)[-1]) == 1 and value != 11:
+            answer_count = 'Ответ'
+        elif 2 <= int(str(value)[-1]) <= 4:
+            answer_count = 'Ответа'
+        return f'{value} {answer_count}'
+    else:
+        answer_count = ''
+        i = value[key]
+        if 10 <= int(str(i)[-2:]) <= 20 or 5 <= int(str(i)[-1]) <= 9 or i == 0:
+            answer_count = 'Ответов'
+        elif int(str(i)[-1]) == 1 and i != 11:
+            answer_count = 'Ответ'
+        elif 2 <= int(str(i)[-1]) <= 4:
+            answer_count = 'Ответа'
+        return f'{value[key]} {answer_count}'
 
 @register.filter(name='comment_zero')
 def comment_zero(value, key):
@@ -151,3 +181,7 @@ def comment_zero(value, key):
 @register.filter(name='subcomment')
 def subcomment(value, key):
     return value[key]
+
+@register.filter(name='is_full')
+def is_full(value, user_id):
+    return value.filter(user=user_id).exists()

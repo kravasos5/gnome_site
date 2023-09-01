@@ -211,6 +211,7 @@ class PostLike(models.Model):
     class Meta:
         verbose_name = 'Лайк'
         verbose_name_plural = 'Лайки'
+        unique_together = ['post', 'user']
 
     def __str__(self):
         return f'Лайк. Пост:{self.post.id} - пользователь{self.user.id}'
@@ -225,6 +226,7 @@ class PostDisLike(models.Model):
     class Meta:
         verbose_name = 'Дизлайк'
         verbose_name_plural = 'Дизлайки'
+        unique_together = ['post', 'user']
 
     def __str__(self):
         return f'Дизлайк. Пост:{self.post.id} - пользователь{self.user.id}'
@@ -239,6 +241,7 @@ class PostFavourite(models.Model):
     class Meta:
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
+        unique_together = ['post', 'user']
 
     def __str__(self):
         return f'Избранное. Пост:{self.post.id} - пользователь{self.user.id}'
@@ -312,10 +315,10 @@ class CommentLike(models.Model):
     class Meta:
         verbose_name = 'Лайк комментария'
         verbose_name_plural = 'Лайки комментариев'
+        unique_together = ['comment', 'user']
 
     def __str__(self):
-        return f'Пост: {self.post.id}; User_id: {self.user.id}; super_comment:' \
-               f'{self.comment.id}'
+        return f'Коммент-лайк: {self.comment.id}; User_id: {self.user.id}'
 
 class CommentDisLike(models.Model):
     '''Модель дизлайков комментария'''
@@ -327,7 +330,7 @@ class CommentDisLike(models.Model):
     class Meta:
         verbose_name = 'Дизлайк комментария'
         verbose_name_plural = 'Дизлайки комментариев'
+        unique_together = ['comment', 'user']
 
     def __str__(self):
-        return f'Пост: {self.post.id}; User_id: {self.user.id}; comment:' \
-               f'{self.comment.id}'
+        return f'Коммент-дизлайк: {self.comment.id}; User_id: {self.user.id}'

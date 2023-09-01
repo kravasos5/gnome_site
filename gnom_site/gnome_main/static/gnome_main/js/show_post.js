@@ -5,8 +5,65 @@ $(document).ready(function() {
     });
 
     var old_comment = null;
+    var additional_comments = {}
 
-    $('.more-comments').click(function() {
+    function more_comments() {
+        console.log(1);
+        let s_id = $(this).parent().parent().parent().attr('class').split(' ').slice(-1);
+        let elem = $('div.subcomments-all' + s_id)
+        if (elem.css('display') == 'none') {
+            elem.css('display', 'block');
+            $(this).find('img.up').css('display', 'block');
+            $(this).find('img.down').css('display', 'none');
+            look_more_comments($(this))
+        } else {
+            elem.css('display', 'none');
+            $(this).find('img.up').css('display', 'none');
+            $(this).find('img.down').css('display', 'block');
+        };
+    };
+
+    function look_more_comments(th) {
+        let s_id = th.parent().parent().parent().attr('class').split(' ').slice(-1);
+        console.log(additional_comments);
+        if (!(s_id in additional_comments)) {
+            additional_comments[s_id] = {'start': 0, 'end': 10, 'done': false}
+        };
+        if (s_id in additional_comments && !additional_comments[s_id]['done']) {
+            let start_scomment = additional_comments[s_id]['start'];
+            let end_scomment = additional_comments[s_id]['end'];
+
+            form_data = {'csrfmiddlewaretoken': comment_csrf, 'more_comments': true,
+                    'start_scomment': start_scomment,
+                    'end_scomment': end_scomment,
+                    'super_id': s_id}
+            $.ajax({
+                url: '',
+                type: 'post',
+                data: form_data,
+                data_type: 'json',
+                success: function(response) {
+                    console.log(response);
+                    if (response.subs[0] == undefined) {
+                        console.log('subs is undefined');
+                        additional_comments[s_id]['done'] = true;
+                    };
+
+                    for (let i=0; i < response.subs.length; i++) {
+                        console.log(response['subs'][i]);
+                    };
+
+                    additional_comments[s_id]['start'] = additional_comments[s_id]['end'];
+                    additional_comments[s_id]['end'] = additional_comments[s_id]['end'] + 10;
+                },
+                error: function(response) {
+                    console.log(response);
+                }
+            });
+        };
+    };
+
+    function more_comments1() {
         const img_mc_down = $(this).find('img.down');
         const img_mc_up = $(this).find('img.up');
         const cc = $(this).parent().parent().parent().attr('class').split(' ').slice(-1)[0];
@@ -66,7 +123,9 @@ $(document).ready(function() {
                $(this)[0].style.display = 'none';
             };
         });
-    });
+    };
+
+    $('.more-comments').click(more_comments);
 
     $('.add-btn').find('div.close').click(function() {
         const cc = $(this).parent().parent().parent().attr('class').split(' ').slice(-1)[0];
@@ -184,10 +243,10 @@ $(document).ready(function() {
                     let subbigdiv = $('<div>').addClass('flex-line-container c-likes').
                                     append($('<div>').addClass('flex-line-container c-info').
                                     append($('<p>').text('0')).
-                                    append($('<img>').attr('src', '/static/gnome_main/css/images/likes_mini_white.png').addClass('icon-l pointer'))).
+                                    append($('<img>').attr('src', '/static/gnome_main/css/images/likes_mini_white.png').click(like_fun).addClass('icon-l pointer ' + response.new_comment.id))).
                                     append($('<div>').addClass('flex-line-container c-info').
                                     append($('<p>').text('0')).
-                                    append($('<img>').attr('src', '/static/gnome_main/css/images/dislikes_mini_white.png').addClass('icon-l pointer'))).
+                                    append($('<img>').attr('src', '/static/gnome_main/css/images/dislikes_mini_white.png').click(dislike_fun).addClass('icon-l pointer ' + response.new_comment.id))).
                                     append($('<div>').addClass('flex-line-container c-info answer pointer').click(answerClickHandler).append($('<p>').text('Ответить')));
                     let subdiv = $('<div>').append($('<div>').addClass('flex-line-container c-author-date').
                                     append($('<a>').attr('href', response.new_comment.user_url).text(response.new_comment.username)).
@@ -248,10 +307,10 @@ $(document).ready(function() {
                 let subbigdiv = $('<div>').addClass('flex-line-container c-likes').
                                 append($('<div>').addClass('flex-line-container c-info').
                                 append($('<p>').text('0')).
-                                append($('<img>').attr('src', '/static/gnome_main/css/images/likes_mini_white.png').addClass('icon-l pointer'))).
+                                append($('<img>').attr('src', '/static/gnome_main/css/images/likes_mini_white.png').click(like_fun).addClass('icon-l pointer ' + response.new_comment.id))).
                                 append($('<div>').addClass('flex-line-container c-info').
                                 append($('<p>').text('0')).
-                                append($('<img>').attr('src', '/static/gnome_main/css/images/dislikes_mini_white.png').addClass('icon-l pointer'))).
+                                append($('<img>').attr('src', '/static/gnome_main/css/images/dislikes_mini_white.png').click(dislike_fun).addClass('icon-l pointer ' + response.new_comment.id))).
                                 append($('<div>').addClass('flex-line-container c-info answer pointer').append($('<p>').text('Ответить')));
 
                 let subdiv = $('<div>').append($('<div>').addClass('flex-line-container c-author-date').
@@ -274,5 +333,241 @@ $(document).ready(function() {
 
     $('#cancel-btn').click(function() {
         $(this).parent().parent().find('textarea.c-line').val('');
+    });
+
+    function dis_like_counter(value, i) {
+        if (i === '+') {
+            value.text(parseInt(value.text()) + 1);
+        } else if (i === '-') {
+            value.text(parseInt(value.text()) - 1);
+        };
+    };
+
+    function like_fun() {
+        let number = $(this).attr('class').split(' ').slice(-1);
+        let form_data = {'id': number[0], 'data': 'like', 'csrfmiddlewaretoken': comment_csrf};
+        let name = '/static/gnome_main/css/images/likes_mini_white.png'
+        let name_full = '/static/gnome_main/css/images/likes_mini_white_full.png'
+        let oposite_name = '/static/gnome_main/css/images/dislikes_mini_white.png'
+        let oposite_name_full = '/static/gnome_main/css/images/dislikes_mini_white_full.png'
+
+        if ($(this).attr('src') == name_full) {
+            $(this).attr('src', name)
+            dis_like_counter($(this).parent().find('p'), '-');
+            form_data['c_status'] = 'delete'
+        } else if ($(this).attr('src') == name) {
+            $(this).attr('src', name_full)
+            dis_like_counter($(this).parent().find('p'), '+');
+            form_data['c_status'] = 'append'
+            if ($(this).parent().parent().find('div').find('img.comment-dislike').attr('src') === oposite_name_full) {
+                $(this).parent().parent().find('div').find('img.comment-dislike').attr('src', oposite_name)
+                dis_like_counter($(this).parent().parent().find('div').find('img.comment-dislike').parent().find('p'), '-')
+            };
+        };
+
+        $.ajax({
+            url: '',
+            type: 'post',
+            data: form_data,
+            data_type: 'json',
+            success: function(response) {
+            },
+            error: function(response) {
+                console.log(response)
+            }
+        });
+    };
+
+    function dislike_fun() {
+        let number = $(this).attr('class').split(' ').slice(-1);
+        let form_data = {'id': number[0], 'data': 'dislike', 'csrfmiddlewaretoken': comment_csrf};
+        let name = '/static/gnome_main/css/images/dislikes_mini_white.png'
+        let name_full = '/static/gnome_main/css/images/dislikes_mini_white_full.png'
+        let oposite_name = '/static/gnome_main/css/images/likes_mini_white.png'
+        let oposite_name_full = '/static/gnome_main/css/images/likes_mini_white_full.png'
+
+        if ($(this).attr('src') == name_full) {
+            $(this).attr('src', name)
+            dis_like_counter($(this).parent().find('p'), '-');
+            form_data['c_status'] = 'delete'
+        } else if ($(this).attr('src') == name) {
+            $(this).attr('src', name_full)
+            dis_like_counter($(this).parent().find('p'), '+');
+            form_data['c_status'] = 'append'
+            if ($(this).parent().parent().find('div').find('img.comment-like').attr('src') === oposite_name_full) {
+                $(this).parent().parent().find('div').find('img.comment-like').attr('src', oposite_name)
+                dis_like_counter($(this).parent().parent().find('div').find('img.comment-like').parent().find('p'), '-')
+            };
+        };
+
+        $.ajax({
+            url: '',
+            type: 'post',
+            data: form_data,
+            data_type: 'json',
+            success: function(response) {
+            },
+            error: function(response) {
+                console.log(response)
+            }
+        });
+    };
+
+    $('.comment-like').click(like_fun);
+
+    $('.comment-dislike').click(dislike_fun);
+
+    $('.like-main').click(function() {
+        let form_data = {'main': true, 'data': 'post_like', 'csrfmiddlewaretoken': comment_csrf};
+        let name = '/static/gnome_main/css/images/likes_white.png'
+        let name_full = '/static/gnome_main/css/images/likes_white_full.png'
+        let oposite_name = '/static/gnome_main/css/images/dislikes_white.png'
+        let oposite_name_full = '/static/gnome_main/css/images/dislikes_white_full.png'
+
+        if ($(this).attr('src') == name_full) {
+            $(this).attr('src', name)
+            dis_like_counter($(this).parent().find('p'), '-');
+            form_data['status'] = 'delete'
+        } else if ($(this).attr('src') == name) {
+            $(this).attr('src', name_full)
+            dis_like_counter($(this).parent().find('p'), '+');
+            form_data['status'] = 'append'
+            if ($(this).parent().parent().find('div').find('img.dislike-main').attr('src') === oposite_name_full) {
+                $(this).parent().parent().find('div').find('img.dislike-main').attr('src', oposite_name)
+                dis_like_counter($(this).parent().parent().find('div').find('img.dislike-main').parent().find('p'), '-')
+            };
+        };
+
+        $.ajax({
+            url: '',
+            type: 'post',
+            data: form_data,
+            data_type: 'json',
+            success: function(response) {
+            },
+            error: function(response) {
+                console.log(response)
+            }
+        });
+    });
+
+    $('.dislike-main').click(function() {
+        let form_data = {'main': true, 'data': 'post_dislike', 'csrfmiddlewaretoken': comment_csrf};
+        let name = '/static/gnome_main/css/images/dislikes_white.png'
+        let name_full = '/static/gnome_main/css/images/dislikes_white_full.png'
+        let oposite_name = '/static/gnome_main/css/images/likes_white.png'
+        let oposite_name_full = '/static/gnome_main/css/images/likes_white_full.png'
+
+        if ($(this).attr('src') == name_full) {
+            $(this).attr('src', name)
+            dis_like_counter($(this).parent().find('p'), '-');
+            form_data['status'] = 'delete'
+        } else if ($(this).attr('src') == name) {
+            $(this).attr('src', name_full)
+            dis_like_counter($(this).parent().find('p'), '+');
+            form_data['status'] = 'append'
+            if ($(this).parent().parent().find('div').find('img.like-main').attr('src') === oposite_name_full) {
+                $(this).parent().parent().find('div').find('img.like-main').attr('src', oposite_name)
+                dis_like_counter($(this).parent().parent().find('div').find('img.like-main').parent().find('p'), '-')
+            };
+        };
+
+        $.ajax({
+            url: '',
+            type: 'post',
+            data: form_data,
+            data_type: 'json',
+            success: function(response) {
+            },
+            error: function(response) {
+                console.log(response)
+            }
+        });
+    });
+
+    $('.favourite').click(function() {
+        let form_data = {'main': true, 'data': 'favourite', 'csrfmiddlewaretoken': comment_csrf};
+        let name = '/static/gnome_main/css/images/favourite_white.png'
+        let name_full = '/static/gnome_main/css/images/favourite_white_full.png'
+
+        if ($(this).attr('src') == name_full) {
+            $(this).attr('src', name)
+            form_data['status'] = 'delete'
+        } else if ($(this).attr('src') == name) {
+            $(this).attr('src', name_full)
+            form_data['status'] = 'append'
+        };
+
+        $.ajax({
+            url: '',
+            type: 'post',
+            data: form_data,
+            data_type: 'json',
+            success: function(response) {
+            },
+            error: function(response) {
+                console.log(response)
+            }
+        });
+    });
+
+    $('.filter').click(function() {
+        console.log(1);
+    });
+
+    var start_comment = 1;
+    var end_comment = 2;
+
+    function loadContent() {
+        $.ajax({
+            url: '',
+            type: 'post',
+            data: {'csrfmiddlewaretoken': comment_csrf, 'load_comments': true,
+                'start_comment': start_comment,
+                'end_comment': end_comment},
+            data_type: 'json',
+            success: function(response) {
+//                $('div.comment-all').append(response.template);
+                start_comment = end_comment;
+                end_comment += 1;
+                if (response.sups[0] != undefined) {
+                    let comments_container = $('div.comment-all');
+                    let main = $('<div>').addClass('flex-line-container comment-container ' + response.sups[0].id);
+                    let span = $('<span>').addClass('comment-icon').
+                                append($('<a>').attr('href', response.sups[0].user_url).
+                                append($('<img>').attr('src', response.sups[0].avatar_url)));
+                    let subbigdiv = $('<div>').addClass('flex-line-container c-likes').
+                                    append($('<div>').addClass('flex-line-container c-info').
+                                    append($('<p>').text(response.sups[0].likes)).
+                                    append($('<img>').attr('src', '/static/gnome_main/css/images/likes_mini_white.png').click(like_fun).addClass('icon-l pointer ' + response.sups[0].id))).
+                                    append($('<div>').addClass('flex-line-container c-info').
+                                    append($('<p>').text(response.sups[0].dislikes)).
+                                    append($('<img>').attr('src', '/static/gnome_main/css/images/dislikes_mini_white.png').click(dislike_fun).addClass('icon-l pointer ' + response.sups[0].id))).
+                                    append($('<div>').addClass('flex-line-container c-info more-comments pointer').click(more_comments).
+                                    append($('<p>').text(response.sups[0].ans_count)).
+                                    append($('<img>').attr('src', '/static/gnome_main/css/images/up_arrow.png').css('display', 'none').addClass('icon-l up')).
+                                    append($('<img>').attr('src', '/static/gnome_main/css/images/down_arrow.png').css('display', 'block').addClass('icon-l down'))).
+                                    append($('<div>').addClass('flex-line-container c-info answer pointer').click(answerClickHandler).append($('<p>').text('Ответить')));
+
+                    let subdiv = $('<div>').append($('<div>').addClass('flex-line-container c-author-date').
+                                    append($('<a>').attr('href', response.sups[0].user_url).text(response.sups[0].username)).
+                                    append($('<p>').text(response.sups[0].created_at))).
+                                    append($('<div>').append(response.sups[0].comment)).
+                                    append(subbigdiv);
+                    main.append(span).append(subdiv);
+                    let post_comments = $('div.comments').find('p#comments-count-post')
+                    comments_container.append(main);
+                };
+            },
+            error: function(response) {
+                console.log(response);
+            },
+        });
+    }
+
+    window.addEventListener('scroll', function() {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+            loadContent();
+        };
     });
 });

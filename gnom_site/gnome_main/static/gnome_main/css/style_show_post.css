@@ -61,6 +61,10 @@ a {
     margin-left: 5%;
 }
 
+.comment-all {
+    margin-bottom: 2%;
+}
+
 /*Остальное*/
 .info p {
     margin: 0;
@@ -190,6 +194,7 @@ span.comment-icon:first-child img {
 }
 
 .comment-all p, div.cur-user-comment p {
+    margin: 0;
     margin: 0;
 }
 
