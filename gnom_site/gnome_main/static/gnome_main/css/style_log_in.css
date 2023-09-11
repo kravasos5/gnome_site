@@ -247,3 +247,17 @@ div.cropper-point {
     opacity: .75;
     width: 5px;
 }
+
+textarea {
+    padding: 5px 5px 5px 7px;
+    font-size: 14px;
+    width: 80%;
+    height: 40%;
+}
+
+select {
+    padding: 5px 5px 5px 7px;
+    font-size: 14px;
+    width: 80%;
+    height: 40%;
+}

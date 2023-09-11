@@ -1,0 +1,40 @@
+{% extends "layout/basic_footer.html" %}
+{% load static %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed_withFooter.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_log_in.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="widget-container">
+    <h1>Заполните форму жалобы</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="info">
+            {% if form.errors %}
+                {% for field, error_list in form.errors.items %}
+                    {{ error_list }}
+                {% endfor %}
+            {% endif %}
+            {% for field in form %}
+                <p>{{ field.label }}</p>
+                {% if field.help_text %}
+                    <p>{{ field.help_text }}</p>
+                {% endif %}
+                <p>{{ field }}</p>
+                {% if field.errors %}
+                    <p>{{ field.errors }}</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div>
+            <a class="form-btn-a" href="{% url 'gnome_main:show-post' slug=slug %}">Назад</a>
+            <input type="submit" value="Отправить" class="form-btn">
+        </div>
+    </form>
+</div>
+{% endblock %}

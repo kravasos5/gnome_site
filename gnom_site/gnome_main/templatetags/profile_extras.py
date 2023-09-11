@@ -72,7 +72,7 @@ def likes_dislikes(value):
     return new_value
 
 @register.filter(name='date_ago')
-def date_ago(value):
+def date_ago(value, is_changed=False):
     new_value = ''
     now = timezone.now()
     diff = (now - value).days
@@ -135,6 +135,9 @@ def date_ago(value):
             new_value += f'{diff // 360} года назад'
         elif 5 <= diff // 360:
             new_value += f'{diff // 360} лет назад'
+
+    if is_changed:
+        new_value += ' (изменено)'
     return new_value
 
 @register.filter(name='is_video_preview')

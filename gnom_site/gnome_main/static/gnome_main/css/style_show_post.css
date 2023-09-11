@@ -1,5 +1,6 @@
 body {
     color: #fff;
+    overflow-x: hidden;
 }
 
 p {
@@ -17,6 +18,11 @@ a {
     display: flex;
     align-items: center;
     /*justify-content: center;*/
+}
+
+.flex-space-between {
+    display: flex;
+    justify-content: space-between;
 }
 
 .wrap {
@@ -53,7 +59,7 @@ a {
 .comment-container {
     display: flex;
     justify-content: flex-start;
-    width: 90%;
+    /*width: 100%;*/
     align-items: flex-start;
 }
 
@@ -63,6 +69,11 @@ a {
 
 .comment-all {
     margin-bottom: 2%;
+    margin-top: 5%;
+}
+div.comment-container div.flex-space-between {
+    display: flex;
+    justify-content: space-between;
 }
 
 /*Остальное*/
@@ -195,11 +206,14 @@ span.comment-icon:first-child img {
 
 .comment-all p, div.cur-user-comment p {
     margin: 0;
-    margin: 0;
 }
 
 .c-author-date:first-child a {
     margin-right: 2%;
+}
+
+.c-author-date p {
+    white-space: nowrap;
 }
 
 div.comment-container div:last-child {
@@ -242,4 +256,288 @@ div.c-likes div.answer {
 
 a.nametag {
     color: red;
+}
+
+.dropdown {
+    position: absolute;
+    right: 20%;
+}
+
+/*выпадающий список*/
+div.post-dropdown, div.comment-container div.post-dropdown {
+    background-color: #E3E3E3;
+    text-align: center;
+    width: 150px;
+    display: none;
+}
+
+div.post-dropdown ul, div.comment-container div.post-dropdown ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+div.post-dropdown ul hr, div.comment-container div.post-dropdown ul hr {
+    border: none;
+    border-top: 1px solid #000;
+    padding: 0;
+    margin: 0;
+}
+
+div.post-dropdown ul li a, div.comment-container div.post-dropdown ul li a {
+    color: #000;
+    text-decoration: none;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.post-dropdown, div.comment-container div.post-dropdown {
+    display: none;
+    color: #fff;
+}
+
+div.post-dropdown ul li a img, div.comment-container div.post-dropdown ul li a img {
+    margin-right: 3px;
+}
+
+div.post-dropdown ul li, div.comment-container div.post-dropdown ul li {
+    padding: 3px 0px 3px 0px;
+    transition: all 0.3s ease;
+}
+
+div.post-dropdown ul li:hover, div.comment-container div.post-dropdown ul li:hover {
+    background-color: #B8B8B8;
+}
+
+div.comment-container div.add-dropdown {
+    width: auto;
+}
+
+div.comment-container div.comment-dropdown {
+    visibility: hidden;
+}
+
+.adddrop-post {
+    position: relative;
+}
+
+.delete-comment, .change-comment {
+    color: #000;
+}
+
+.deletion-btn {
+    border: none;
+    border-radius: 10px;
+    background: #7C0000;
+
+    width: 20%;
+    height: 25px;
+
+    color: #fff;
+    font-size: 18px;
+
+    transition: all 0.3s ease;
+}
+
+.deletion-btn:hover {
+    background: #C60000;
+}
+
+.deletion-btn:active {
+    background: #440000;
+}
+
+.end {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.author-name {
+    margin: 0px 15px 0px 7px;
+}
+
+.author-data-aub {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.sub-true, .sub-false, .change-post {
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    text-decoration: none;
+    font-size: 14px;
+
+    text-align: center;
+
+    background-color: #373737;
+    border-radius: 38px;
+    border: none;
+
+    width: 150px;
+    line-height: 30px;
+
+    transition: all 0.3s ease;
+}
+
+.sub-false {
+    background-color: #7C0000;
+}
+
+a.edit:hover {
+    background-color: #262626;
+}
+
+.sub-true:hover, .change-post:hover {
+    background-color: #262626;
+}
+
+.sub-false:hover {
+    background-color: #660000;
+}
+
+.change-post {
+    display: block;
+    text-align: center;
+    align-items: center;
+    line-width: 100px;
+    line-height: 30px;
+}
+
+.filters {
+    margin-left: 4%;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-content: center;
+    align-items: center;
+}
+
+.filter-btn {
+    margin-right: 15px;
+    line-height: 40px;
+    padding: 10px 10px;
+
+    color: #fff;
+    font-size: 14px;
+    text-decoration: none;
+    text-align: center;
+    line-height: 20px;
+
+    background-color: #373737;
+    border-radius: 20px;
+    border: none;
+
+    cursor: pointer;
+
+    transition: all 0.3s;
+}
+
+.filter-btn:hover {
+    background-color: #262626;
+}
+
+.info {
+    width: 100%;
+}
+
+.dropdown-filter {
+    width: 100%;
+}
+
+span.close-filters {
+    font-size: 30px;
+    margin-left: 1%;
+    cursor: pointer;
+    background-color: #373737;
+    border-radius: 100%;
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+span.close-filters:hover {
+    background-color: #262626;
+}
+
+span.close-filters img {
+    object-fit: cover;
+    width: 50%;
+}
+
+#comments-count-post {
+    white-space: nowrap;
+}
+
+/*Рекомендации*/
+.main-container {
+    display: flex;
+    align-items: flex-start;
+}
+
+.post {
+    width: 80%
+}
+
+div.recomendation {
+    width: 20%;
+    height: 100vh;
+    min-height: 100vh;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: center;
+
+    background: linear-gradient(rgba(87, 87, 87, 0.25), rgba(178, 178, 178, 0.25));
+
+    overflow: none;
+}
+
+.rec-info {
+    display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+p.name, p.substring {
+    margin: 0px 0px 6px 0px;
+}
+
+p.name {
+    line-height: 2em;
+    max-height: 2em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+p.last {
+    margin-bottom: 0px;
+}
+
+p.substring {
+    color: #9C9C9C;
+}
+
+.rec-container {
+    width: 92%;
+    margin: 0% 4%;
+}
+
+span.rec-preview {
+    margin-right: 5%;
+}
+
+div.look-more {
+    margin-bottom: 0px;
 }
