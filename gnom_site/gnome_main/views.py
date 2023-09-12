@@ -12,6 +12,10 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, 
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, DetailView, ListView
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+from .serializers import PostCommentSerializer
 
 from .forms import RegisterUserForm, ChangeUserInfoForm, DeleteUserForm, PostReportForm, CommentReportForm
 from .mixins import PostViewCountMixin
@@ -287,3 +291,13 @@ class CommentReportView(LoginRequiredMixin, CreateView):
         else:
             form.add_error(None, 'Ошибка при отправке жалобы')
         return super().form_invalid(form)
+
+# REST
+class PostCommentAPI(APIView):
+    '''ViewSet, который будет возвращать 10 новых комментариев'''
+    # queryset = PostComment.objects.all()
+    # serializer = PostCommentSerializer()
+
+    def get(self, request):
+        queryset = PostComment.objects.all()
+        return Response({'get': PostCommentSerializer(queryset, many=True).data})
