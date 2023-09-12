@@ -77,6 +77,11 @@ class PostAdditionalImageInline(admin.TabularInline):
     '''Встроенный редактор дополнительных медиа-файлов'''
     model = PostAdditionalImage
 
+class PostTagInline(admin.TabularInline):
+    '''Встроенный редактор дополнительных медиа-файлов'''
+    model = Post.tag.through
+    extra = 1
+
 class PostAdminForm(forms.ModelForm):
     content = forms.CharField(label='Содержание', widget=CKEditorUploadingWidget())
     class Meta:
@@ -90,7 +95,7 @@ class PostAdmin(admin.ModelAdmin):
     search_fields = ('title', 'content', 'author')
     fields = ('preview', 'title', 'content', 'rubric', 'is_active',
               'created_at', 'author')
-    inlines = (PostAdditionalImageInline,)
+    inlines = (PostAdditionalImageInline, PostTagInline,)
     readonly_fields = ('created_at',)
     form = PostAdminForm
 

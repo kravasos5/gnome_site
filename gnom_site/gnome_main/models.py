@@ -127,6 +127,8 @@ class Post(models.Model):
     is_active = models.BooleanField(default=True,
                                     db_index=True,
                                     verbose_name='Активна')
+    tag = models.ManyToManyField('PostTag', verbose_name='Тэг',
+                                 null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True,
                                       db_index=True,
                                       verbose_name='Дата создания')
@@ -165,6 +167,10 @@ class Post(models.Model):
     def get_comment_count(self):
         '''Возвращает количество комментариев записи'''
         return self.postcomment_set.count()
+
+    def get_posttags(self):
+        '''Возвращает все связанные с постом тэги'''
+        return self.tag.all()
 
 
 class PostAdditionalImage(models.Model):
@@ -259,7 +265,9 @@ class PostComment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True,
                                       db_index = True,
                                       verbose_name='Дата создания')
-    super_comment = models.ForeignKey('SuperPostComment', on_delete=models.PROTECT,
+    is_changed = models.BooleanField(default=False, null=True,
+                                     verbose_name='Изменён ли')
+    super_comment = models.ForeignKey('SuperPostComment', on_delete=models.CASCADE,
                                      null=True, blank=True,
                                      verbose_name='Надкомментарий')
 
@@ -334,3 +342,64 @@ class CommentDisLike(models.Model):
 
     def __str__(self):
         return f'Коммент-дизлайк: {self.comment.id}; User_id: {self.user.id}'
+
+class PostReport(models.Model):
+    '''Модель жалобы на пост'''
+    type_choices = [
+        ('Дискриминация', 'Дискриминация'),
+        ('Контент сексуального характера', 'Контент сексуального характера'),
+        ('Нежелательный контент', 'Нежелательный контент'),
+        ('Пропаганда наркотиков, алкоголя, табачной продукции', 'Пропаганда наркотиков, алкоголя, табачной продукции'),
+        ('Демонстрация насилия', 'Демонстрация насилия')
+    ]
+
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(AdvUser, on_delete=models.CASCADE)
+    type = models.CharField(choices=type_choices, null=False, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    text = models.CharField(max_length=300, null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Жалоба на запись'
+        verbose_name_plural = 'Жалобы на записи'
+        unique_together = ['post', 'user']
+
+    def __str__(self):
+        return f'Жалоба на пост с id - {self.post.id};' \
+               f'Тип жалобы: {self.type};' \
+               f'пользователь, оставивший жалобу: {self.user.username}'
+
+class CommentReport(models.Model):
+    '''Модель жалобы на пост'''
+    type_choices = [
+        ('Дискриминация', 'Дискриминация'),
+        ('Контент сексуального характера', 'Контент сексуального характера'),
+        ('Нежелательный контент', 'Нежелательный контент'),
+        ('Пропаганда наркотиков, алкоголя, табачной продукции', 'Пропаганда наркотиков, алкоголя, табачной продукции'),
+        ('Демонстрация насилия', 'Демонстрация насилия'),
+        ('Оскорбления', 'Оскорбления')
+    ]
+
+    comment = models.ForeignKey(PostComment, on_delete=models.CASCADE)
+    user = models.ForeignKey(AdvUser, on_delete=models.CASCADE)
+    type = models.CharField(choices=type_choices, null=False, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    text = models.CharField(max_length=300, null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Жалоба на комментарий'
+        verbose_name_plural = 'Жалобы на комментарии'
+        unique_together = ['comment', 'user']
+
+    def __str__(self):
+        return f'Жалоба на комментарий с id - {self.comment.id};' \
+               f'Тип жалобы: {self.type};' \
+               f'пользователь, оставивший жалобу: {self.user.username}'
+
+class PostTag(models.Model):
+    tag = models.CharField(max_length=50, verbose_name='Тэг', null=False,
+                           blank=False)
+
+    class Meta:
+        verbose_name = 'Тэг'
+        verbose_name_plural = 'Тэги'

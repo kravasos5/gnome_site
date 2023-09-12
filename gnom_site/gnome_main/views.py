@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django.core.signing import BadSignature
+from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, PasswordResetConfirmView, \
@@ -11,8 +12,12 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, 
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, DetailView, ListView
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
-from .forms import RegisterUserForm, ChangeUserInfoForm, DeleteUserForm
+from .serializers import PostCommentSerializer
+
+from .forms import RegisterUserForm, ChangeUserInfoForm, DeleteUserForm, PostReportForm, CommentReportForm
 from .mixins import PostViewCountMixin
 from .models import *
 from .apps import user_delete_signal
@@ -31,6 +36,8 @@ class BlogView(ListView):
     template_name = 'gnome_main/blog.html'
     context_object_name = 'posts'
     paginate_by = 20
+    # .annotate(num_likes=Count('like'), num_postcomments=Count('postcomment')) \
+        # .order_by('num_likes', 'num_postcomments')
 
     def get_context_data(self, *args, object_list=None, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -215,8 +222,82 @@ class DeleteUserView(LoginRequiredMixin, DeleteView):
             queryset = self.get_queryset()
         return get_object_or_404(queryset, pk=self.user_id)
 
+class PostReportView(LoginRequiredMixin, CreateView):
+    model = PostReport
+    template_name = 'gnome_main/report.html'
+    form_class = PostReportForm
 
-class PostDetailView(PostViewCountMixin, DetailView):
-    '''Детальный просмотр записи'''
-    model = Post
-    template_name = 'gnome_main/show_post.html'
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        slug = self.kwargs['slug']
+        context['slug'] = slug
+        return context
+
+    def get_success_url(self, *args, **kwargs):
+        slug = self.kwargs['slug']
+        return reverse('gnome_main:show-post', kwargs={'slug': slug})
+
+    def form_valid(self, form, *args, **kwargs):
+        form.instance.user = self.request.user
+        slug = self.kwargs['slug']
+        post = Post.objects.get(slug=slug)
+        form.instance.post = post
+        try:
+            return super().form_valid(form)
+        except IntegrityError as ex:
+            answer = self.form_invalid(form, *args, **kwargs)
+            return answer
+
+    def form_invalid(self, form, *args, **kwargs):
+        slug = self.kwargs['slug']
+        post = Post.objects.get(slug=slug)
+        if PostReport.objects.get(post_id=post, user_id=self.request.user):
+            form.add_error(None, 'Вы уже отправили жалобу на данную запись')
+        else:
+            form.add_error(None, 'Ошибка при отправке жалобы')
+        return super().form_invalid(form)
+
+class CommentReportView(LoginRequiredMixin, CreateView):
+    model = PostReport
+    template_name = 'gnome_main/report.html'
+    form_class = CommentReportForm
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        slug = self.kwargs['slug']
+        context['slug'] = slug
+        return context
+
+    def get_success_url(self):
+        slug = self.kwargs['slug']
+        return reverse('gnome_main:show-post', kwargs={'slug': slug})
+
+    def form_valid(self, form, *args, **kwargs):
+        form.instance.user = self.request.user
+        comment_id = self.kwargs['id']
+        comment = PostComment.objects.get(id=comment_id)
+        form.instance.comment = comment
+        try:
+            return super().form_valid(form)
+        except IntegrityError as ex:
+            answer = self.form_invalid(form, *args, **kwargs)
+            return answer
+
+    def form_invalid(self, form, *args, **kwargs):
+        comment_id = self.kwargs['id']
+        comment = PostComment.objects.get(id=comment_id)
+        if CommentReport.objects.get(comment_id=comment, user_id=self.request.user):
+            form.add_error(None, 'Вы уже отправили жалобу на данный комментарий')
+        else:
+            form.add_error(None, 'Ошибка при отправке жалобы')
+        return super().form_invalid(form)
+
+# REST
+class PostCommentAPI(APIView):
+    '''ViewSet, который будет возвращать 10 новых комментариев'''
+    # queryset = PostComment.objects.all()
+    # serializer = PostCommentSerializer()
+
+    def get(self, request):
+        queryset = PostComment.objects.all()
+        return Response({'get': PostCommentSerializer(queryset, many=True).data})

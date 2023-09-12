@@ -79,6 +79,7 @@ class DeleteUserForm(forms.Form):
         fields = ('username', 'password')
 
 class SubRubricForm(forms.ModelForm):
+    '''Форма подрубрики'''
     super_rubric = forms.ModelChoiceField(
         queryset=SuperRubric.objects.all(), empty_label=None,
         label='Надрубрика', required=True)
@@ -88,6 +89,7 @@ class SubRubricForm(forms.ModelForm):
         fields = '__all__'
 
 class SubPostCommentForm(forms.ModelForm):
+    '''Форма подкомментария'''
     super_comment = forms.ModelChoiceField(
         queryset=SuperPostComment.objects.all(), empty_label=None,
         label='Надрубрика', required=True)
@@ -95,3 +97,41 @@ class SubPostCommentForm(forms.ModelForm):
     class Meta:
         model = SubPostComment
         fields = '__all__'
+
+class PostReportForm(forms.ModelForm):
+    '''Форма жалобы на пост'''
+    type_choices = [
+        ('Дискриминация', 'Дискриминация'),
+        ('Контент сексуального характера', 'Контент сексуального характера'),
+        ('Нежелательный контент', 'Нежелательный контент'),
+        ('Пропаганда наркотиков, алкоголя, табачной продукции', 'Пропаганда наркотиков, алкоголя, табачной продукции'),
+        ('Демонстрация насилия', 'Демонстрация насилия')
+    ]
+
+    text = forms.CharField(label='Дополнительная информация (макс. 300 символов)',
+                           widget=forms.Textarea)
+    type = forms.ChoiceField(label='Тип жалобы', choices=type_choices)
+
+    class Meta:
+        model = PostReport
+        fields = '__all__'
+        exclude = ['created_at', 'post', 'user']
+
+class CommentReportForm(forms.ModelForm):
+    '''Форма жалобы на комментарий'''
+    type_choices = [
+        ('Дискриминация', 'Дискриминация'),
+        ('Контент сексуального характера', 'Контент сексуального характера'),
+        ('Нежелательный контент', 'Нежелательный контент'),
+        ('Пропаганда наркотиков, алкоголя, табачной продукции', 'Пропаганда наркотиков, алкоголя, табачной продукции'),
+        ('Демонстрация насилия', 'Демонстрация насилия')
+    ]
+
+    text = forms.CharField(label='Дополнительная информация (макс. 300 символов)',
+                           widget=forms.Textarea)
+    type = forms.ChoiceField(label='Тип жалобы', choices=type_choices)
+
+    class Meta:
+        model = CommentReport
+        fields = '__all__'
+        exclude = ['created_at', 'comment', 'user']

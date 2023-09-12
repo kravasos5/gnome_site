@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'easy_thumbnails',
     'ckeditor_uploader',
     'ckeditor',
+    'rest_framework',
     # django-cleanup должен быть в конце списка
     'django_cleanup.apps.CleanupConfig',
 ]
@@ -124,7 +125,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Yekaterinburg'
 
 USE_I18N = True
 
@@ -170,6 +171,10 @@ THUMBNAIL_ALIASES = {
     'gnome_main.Post.preview': {
         'default': {
             'size': (260, 260),
+            'crop': 'scale',
+        },
+        'rec_preview': {
+            'size': (100, 120),
             'crop': 'scale',
         }
     },

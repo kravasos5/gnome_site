@@ -19,11 +19,67 @@
 {% endblock %}
 
 {% block content %}
-<div class="flex-line-container">
+<div style="display: none; width: 500px;" id="deletion">
+	<h2>Вы точно хотите удалить этот комментарий ?</h2>
+    <div class="flex-line-container flex-space-between">
+        <button type="button" class="deletion-btn" id="btn-delete-yes">Да</button>
+        <button type="button" class="deletion-btn" id="btn-delete-no">Нет</button>
+    </div>
+</div>
+
+<div style="display: none; width: 500px;" id="deletion_complete">
+	<h2>Комментарий удалён</h2>
+    <div class="flex-line-container end">
+        <button type="button" class="deletion-btn" id="btn-ok">Ок</button>
+    </div>
+</div>
+
+<div class="main-container">
     <div class="post">
-        <h1>{{ post.title }}</h1>
         <div class="flex-line-container author-date">
-            <a href="{{ post.author.get_absolute_url }}"><p>{{ post.author.username }}</p></a>
+            <h1>{{ post.title }}</h1>
+            {% if user.is_authenticated %}
+            <div class="add-dropdown">
+                <img src="{% static 'gnome_main/css/images/triple_dots_white.png' %}" class="adddrop-post pointer">
+                <div class="post-dropdown dropdown">
+                    <ul>
+                        {% if post.author.id == user.id %}
+                        <li><a href="#">Изменить</a></li>
+                        {% else %}
+                        <li>
+                            <a href="{% url 'gnome_main:post-report' slug=slug %}">
+                                <img src="{% static 'gnome_main/css/images/report.png' %}">
+                                Пожаловаться
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="flex-line-container author-date">
+            <div class="flex-line-container author-data-aub">
+                <span class="comment-icon">
+                    <a href="{{ post.author.get_absolute_url }}">
+                        <img src="{{ post.author.avatar.url }}">
+                    </a>
+                </span>
+                <a href="{{ post.author.get_absolute_url }}">
+                    <p class="author-name">{{ post.author.username }}</p>
+                </a>
+                <div>
+                {% if is_subscribe %}
+                    <button type="button" class="sub-true">Отписаться</button>
+                    <button type="button" class="sub-false" style="display: none;">Подписаться</button>
+                    {% elif is_subscribe == False and user != post.author %}
+                    <button type="button" class="sub-false">Подписаться</button>
+                    <button type="button" class="sub-true" style="display: none;">Отписаться</button>
+                    {% elif user == post.author %}
+                    <a href="#" class="change-post">Изменить</a>
+                {% endif %}
+                </div>
+            </div>
             <p>{{ post.created_at|date_ago }}</p>
         </div>
         <div class="flex-line-container wrap">
@@ -51,26 +107,46 @@
             <div class="flex-line-container likes">
                 <div class="flex-line-container info">
                     <p>{{ post.get_like_count }}</p>
+                    {% if post.postlike_set|is_full:user.id %}
+                    <img src="{% static 'gnome_main/css/images/likes_white_full.png' %}" class="icon-l like-main pointer">
+                    {% else %}
                     <img src="{% static 'gnome_main/css/images/likes_white.png' %}" class="icon-l like-main pointer">
+                    {% endif %}
                 </div>
                 <div class="flex-line-container info">
                     <p>{{ post.get_dislike_count }}</p>
+                    {% if post.postdislike_set|is_full:user.id %}
+                    <img src="{% static 'gnome_main/css/images/dislikes_white_full.png' %}" class="icon-l dislike-main pointer">
+                    {% else %}
                     <img src="{% static 'gnome_main/css/images/dislikes_white.png' %}" class="icon-l dislike-main pointer">
+                    {% endif %}
                 </div>
                 <div class="flex-line-container info">
+                    {% if post.postfavourite_set|is_full:user.id %}
+                    <img src="{% static 'gnome_main/css/images/favourite_white_full.png' %}" class="icon-l favourite pointer">
+                    {% else %}
                     <img src="{% static 'gnome_main/css/images/favourite_white.png' %}" class="icon-l favourite pointer">
+                    {% endif %}
                 </div>
             </div>
         </div>
 
         <div class="flex-line-container comments">
             <p id="comments-count-post">{{ post.get_comment_count|comment_pluralize }}</p>
-            <div class="flex-line-container info filter pointer" style="display: none;">
-                <img src="{% static 'gnome_main/css/images/comment_filter.png' %}" class="icon">
-                <p>Упорядочить</p>
-            </div>
-            <div class="flex-line-container info full-filter pointer">
-
+            <div class="flex-line-container info" style="display: flex;">
+                <div class="flex-line-container filter pointer">
+                    <img src="{% static 'gnome_main/css/images/comment_filter.png' %}" class="icon">
+                    <p>Упорядочить</p>
+                </div>
+                <div class="filters dropdown-filter" style="display: none;">
+                    <button type="button" class="filter-btn pointer" id="new">Новые</button>
+                    <button type="button" class="filter-btn pointer" id="old">Старые</button>
+                    <button type="button" class="filter-btn pointer" id="popular">Популярные</button>
+                    <button type="button" class="filter-btn pointer" id="my">Мои</button>
+                    <span class="close-filters">
+                        <img src="{% static 'gnome_main/css/images/icon_xletter.png' %}">
+                    </span>
+                </div>
             </div>
         </div>
 
@@ -94,63 +170,23 @@
             </form>
         </div>
 
-
-        <div class="comment-all">
-            {% for comment in comments %}
-            <div class="flex-line-container comment-container {{ comment.id }}">
-                <span class="comment-icon">
-                    <a href="{{ comment.user.get_absolute_url }}">
-                        <img src="{{ comment.user.avatar.url }}">
-                    </a>
-                </span>
-                <div>
-                    <div class="flex-line-container c-author-date">
-                        <a href="{{ comment.user.get_absolute_url }}">{{ comment.user.username }}</a>
-                        <p>{{ comment.created_at|date_ago }}</p>
-                    </div>
-                    <div><p>{{ comment.comment|safe|linebreaks }}</p></div>
-                    <div class="flex-line-container c-likes">
-                        <div class="flex-line-container c-info">
-                            <p>{{ comment.commentlike_set.count }}</p>
-                            {% if comment.commentlike_set|is_full:user.id %}
-                            <img src="{% static 'gnome_main/css/images/likes_mini_white_full.png' %}" class="icon-l comment-like pointer {{ comment.id }}">
-                            {% else %}
-                            <img src="{% static 'gnome_main/css/images/likes_mini_white.png' %}" class="icon-l comment-like pointer {{ comment.id }}">
-                            {% endif %}
-                        </div>
-                        <div class="flex-line-container c-info">
-                            <p>{{ comment.commentdislike_set.count }}</p>
-                            {% if comment.commentdislike_set|is_full:user.id %}
-                            <img src="{% static 'gnome_main/css/images/dislikes_mini_white_full.png' %}" class="icon-l comment-dislike pointer {{ comment.id }}">
-                            {% else %}
-                            <img src="{% static 'gnome_main/css/images/dislikes_mini_white.png' %}" class="icon-l comment-dislike pointer {{ comment.id }}">
-                            {% endif %}
-                        </div>
-                        {% if comment.super_comment %}
-                        {% else %}
-                        {% if comments_count|comment_zero:comment.id %}
-                        {% else %}
-                        <div class="flex-line-container c-info more-comments pointer">
-                            <p>{{ comments_count|key:comment.id }}</p>
-                            <img src="{% static 'gnome_main/css/images/up_arrow.png' %}" class="icon-l up" style="display: none;">
-                            <img src="{% static 'gnome_main/css/images/down_arrow.png' %}" class="icon-l down" style="display: block;">
-                        </div>
-                        {% endif %}
-                        <div class="flex-line-container c-info answer pointer">
-                            <p>Ответить</p>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="subcomments-all{{comment.id}}" style="display: none;">
-                <p>123</p>
-            </div>
-            {% endfor %}
-        </div>
+        <div class="comment-all"></div>
     </div>
     <div class="recomendation">
-
+        <h1 style="font-weight: normal;">Похожие</h1>
+        <div class="flex-line-container rec-container">
+            <span class="rec-preview">
+                <a>
+                    <img src="">
+                </a>
+            </span>
+            <div class="flex-line-container rec-info">
+                <p class="name">NameNam eNameName NameNameNameNa meNameNameName</p>
+                <p class="substring">authorname</p>
+                <p class="substring">100 тыс.</p>
+                <p class="substring last">2 недели назад</p>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

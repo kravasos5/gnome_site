@@ -1,0 +1,54 @@
+            {% for comment in comments %}
+            <div class="flex-line-container comment-container {{ comment.id }}">
+                <span class="comment-icon">
+                    <a href="{{ comment.user.get_absolute_url }}">
+                        <img src="{{ comment.user.avatar.url }}">
+                    </a>
+                </span>
+                <div>
+                    <div class="flex-line-container c-author-date">
+                        <a href="{{ comment.user.get_absolute_url }}">{{ comment.user.username }}</a>
+                        <p>{{ comment.created_at|date_ago }}</p>
+                    </div>
+                    <div><p>{{ comment.comment|safe|linebreaks }}</p></div>
+                    <div class="flex-line-container c-likes">
+                        <div class="flex-line-container c-info">
+                            <p>{{ comment.commentlike_set.count }}</p>
+                            {% if comment.commentlike_set|is_full:user.id %}
+                            <img src="{% static 'gnome_main/css/images/likes_mini_white_full.png' %}" class="icon-l comment-like pointer {{ comment.id }}">
+                            {% else %}
+                            <img src="{% static 'gnome_main/css/images/likes_mini_white.png' %}" class="icon-l comment-like pointer {{ comment.id }}">
+                            {% endif %}
+                        </div>
+                        <div class="flex-line-container c-info">
+                            <p>{{ comment.commentdislike_set.count }}</p>
+                            {% if comment.commentdislike_set|is_full:user.id %}
+                            <img src="{% static 'gnome_main/css/images/dislikes_mini_white_full.png' %}" class="icon-l comment-dislike pointer {{ comment.id }}">
+                            {% else %}
+                            <img src="{% static 'gnome_main/css/images/dislikes_mini_white.png' %}" class="icon-l comment-dislike pointer {{ comment.id }}">
+                            {% endif %}
+                        </div>
+                        {% if comment.super_comment %}
+                        {% else %}
+                        {% if comments_count|comment_zero:comment.id %}
+                        {% else %}
+                        <div class="flex-line-container c-info more-comments pointer">
+                            <p>{{ comments_count|key:comment.id }}</p>
+                            <img src="{% static 'gnome_main/css/images/up_arrow.png' %}" class="icon-l up" style="display: none;">
+                            <img src="{% static 'gnome_main/css/images/down_arrow.png' %}" class="icon-l down" style="display: block;">
+                        </div>
+                        {% endif %}
+                        <div class="flex-line-container c-info answer pointer">
+                            <p>Ответить</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="subcomments-all{{comment.id}}" style="display: none;">
+                <div class="flex-line-container c-likes subcomment add-btn {{comment.id}}">
+                    <div class="look-more pointer" style="margin:0;">Смотреть ещё</div>
+                    <div class="close pointer">Свернуть</div>
+                </div>
+            </div>
+            {% endfor %}

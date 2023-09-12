@@ -94,6 +94,8 @@ input {
     background-repeat: no-repeat;
     background-size: cover;
     position: relative;
+    left: 0;
+    bottom: 0;
 }
 
 .footer-content {

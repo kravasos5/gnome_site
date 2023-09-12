@@ -20,4 +20,6 @@ urlpatterns = [
     path('register/activate/<str:sign>/', user_activate, name='register-done'),
     path('register/confrim/', RegisterConfrimView.as_view(), name='register-confrim'),
     path('register/', RegisterUserView.as_view(), name='register'),
+    path('report/<slug:slug>/post/', PostReportView.as_view(), name='post-report'),
+    path('report/<slug:slug>/comment/<int:id>/', CommentReportView.as_view(), name='comment-report'),
 ]

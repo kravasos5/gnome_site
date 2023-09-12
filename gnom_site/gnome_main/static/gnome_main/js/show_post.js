@@ -5,17 +5,24 @@ $(document).ready(function() {
     });
 
     var old_comment = null;
-    var additional_comments = {}
+    var additional_comments = {};
+    var deletion = false;
+    var filter_data = 'popular';
+    var start_comment = 0;
+    var end_comment = 10;
+    var start_recommend = 0;
+    var end_recommend = 10;
 
     function more_comments() {
-        console.log(1);
         let s_id = $(this).parent().parent().parent().attr('class').split(' ').slice(-1);
         let elem = $('div.subcomments-all' + s_id)
         if (elem.css('display') == 'none') {
             elem.css('display', 'block');
             $(this).find('img.up').css('display', 'block');
             $(this).find('img.down').css('display', 'none');
-            look_more_comments($(this))
+            if (elem.children().length <= 1) {
+                look_more_comments($(this))
+            };
         } else {
             elem.css('display', 'none');
             $(this).find('img.up').css('display', 'none');
@@ -24,8 +31,13 @@ $(document).ready(function() {
     };
 
     function look_more_comments(th) {
-        let s_id = th.parent().parent().parent().attr('class').split(' ').slice(-1);
-        console.log(additional_comments);
+        let s_id = null;
+        if (th.attr('class').includes('look-more')) {
+            s_id = parseInt(th.parent().parent().attr('class').slice(-1));
+        } else {
+            s_id = parseInt(th.parent().parent().parent().attr('class').split(' ').slice(-1));
+        };
+
         if (!(s_id in additional_comments)) {
             additional_comments[s_id] = {'start': 0, 'end': 10, 'done': false}
         };
@@ -43,18 +55,62 @@ $(document).ready(function() {
                 data: form_data,
                 data_type: 'json',
                 success: function(response) {
-                    console.log(response);
                     if (response.subs[0] == undefined) {
-                        console.log('subs is undefined');
                         additional_comments[s_id]['done'] = true;
-                    };
+                        $('div.subcomments-all' + s_id).find('.add-btn').find('div.look-more').remove()
+                    } else {
 
                     for (let i=0; i < response.subs.length; i++) {
-                        console.log(response['subs'][i]);
+                        let add_btn = $('div.subcomments-all' + response['subs'][i].super_id).last().find('div').find('div.add-btn');
+                        let comments_container = $('div.subcomments-all' + response['subs'][i].super_id);
+                        let main = $('<div>').addClass('flex-line-container comment-container subcomment ' + response['subs'][i].super_id).attr('display', 'flex');
+                        let span = $('<span>').addClass('comment-icon').
+                                    append($('<a>').attr('href', response['subs'][i].user_url).
+                                    append($('<img>').attr('src', response['subs'][i].avatar_url)));
+                        let subbigdiv = $('<div>').addClass('flex-line-container c-likes').
+                                        append($('<div>').addClass('flex-line-container c-info').
+                                        append($('<p>').text(response['subs'][i].likes)).
+                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response['subs'][i].like).click(like_fun).addClass('icon-l pointer ' + response['subs'][i].id))).
+                                        append($('<div>').addClass('flex-line-container c-info').
+                                        append($('<p>').text(response['subs'][i].dislikes)).
+                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response['subs'][i].dislike).click(dislike_fun).addClass('icon-l pointer ' + response['subs'][i].id))).
+                                        append($('<div>').addClass('flex-line-container c-info answer pointer').click(answerClickHandler).append($('<p>').text('Ответить')));
+                        let ul = $('<ul>')
+                        if (response['subs'][i].report) {
+                            ul.append($('<li>').append($('<div>').click(change_comment).addClass('change-comment').text('Изменить'))).
+                                append($('<li>').append($('<div>').click(deletion_assert).addClass('delete-comment').text('Удалить')));
+                        } else {
+                            let a = $('<a>').attr('href', response['subs'][i].report_url).
+                                append($('<img>').attr('src', '/static/gnome_main/css/images/report.png')).
+                                append($('<p>').text('Пожаловаться'));
+                            ul.append($('<li>').append(a));
+                        };
+//                        let subdiv = $('<div>').append($('<div>').addClass('flex-line-container c-author-date').
+//                                        append($('<a>').attr('href', response['subs'][i].user_url).text(response['subs'][i].username)).
+//                                        append($('<p>').text(response['subs'][i].created_at))).
+//                                        append($('<div>').append(response['subs'][i].comment)).
+//                                        append(subbigdiv);
+                        let subdiv = $('<div>').append($('<div>').addClass('flex-line-container c-author-date').
+                                        append($('<a>').attr('href', response['subs'][i].user_url).text(response['subs'][i].username)).
+                                        append($('<div>').addClass('flex-line-container flex-space-between').
+                                        append($('<p>').text(response['subs'][i].created_at)).
+                                        append($('<div>').addClass('add-dropdown comment-dropdown').
+                                            append($('<img>').attr('src', '/static/gnome_main/css/images/triple_dots_mini_white.png').click(adddrop_post).addClass('adddrop-post pointer')).
+                                            append($('<div>').addClass('post-dropdown dropdown pointer').
+                                                append(ul))))).
+                                        append($('<div>').append(response['subs'][i].comment)).
+                                        append(subbigdiv);
+
+                        add_btn.attr('class', 'flex-line-container c-likes add-btn ' + response['subs'][i].id).appendTo(subdiv);
+                        main.append(span).append(subdiv);
+                        main.mouseenter(comment_mouseenter).mouseleave(comment_mouseleave);
+                        comments_container.append(main);
                     };
+                    $('.add-btn.' + s_id).appendTo($('.add-btn.' + s_id).parent());
 
                     additional_comments[s_id]['start'] = additional_comments[s_id]['end'];
                     additional_comments[s_id]['end'] = additional_comments[s_id]['end'] + 10;
+                    };
                 },
                 error: function(response) {
                     console.log(response);
@@ -63,72 +119,16 @@ $(document).ready(function() {
         };
     };
 
-    function more_comments1() {
-        const img_mc_down = $(this).find('img.down');
-        const img_mc_up = $(this).find('img.up');
-        const cc = $(this).parent().parent().parent().attr('class').split(' ').slice(-1)[0];
-        const all = $('.subcomments-all' + cc)[0]
-        const look_more = $('div.look-more' + cc)
-        const sub_comments = $('.' + cc);
-        if (sub_comments.length > 10) {
-             sub_comments_f1 = Math.floor(sub_comments.length/10);
-             sub_comments_f2 = 0;
-        } else {
-            sub_comments_f1 = false;
-            sub_comments_f2 = true;
-        };
-
-        if (img_mc_down[0].style.display == 'block') {
-            img_mc_down[0].style.display = 'none';
-            img_mc_up[0].style.display = 'block';
-            all.style.display = 'block';
-
-            if (sub_comments_f1) {
-                for (i = 1; i < 11; i++) {
-                    let f = sub_comments_f2 * 10
-                    sub_comments[i + f].style.display = 'flex';
-                    if (i == 10) {
-                        look_more.appendTo($($(sub_comments[i + f]).find('div')[0]));
-                    };
-                };
-                sub_comments_f2++;
-            } else if (!sub_comments_f1) {
-                look_more[0].style.display = 'none'
-                for (i = 1; i < sub_comments.length; i++) {
-                    sub_comments[i].style.display = 'flex';
-                };
-            };
-        } else {
-            img_mc_down[0].style.display = 'block';
-            img_mc_up[0].style.display = 'none';
-            all.style.display = 'none';
-        };
-
-        look_more.click(function() {
-            if (sub_comments_f1 || sub_comments_f2 < sub_comments_f1 && sub_comments_len > 0) {
-                for (i = 1; i < 11; i++) {
-                    let f = sub_comments_f2 * 10
-                    try {
-                    sub_comments[i + f].style.display = 'flex';
-                    } catch (TypeError) {
-                        look_more.remove();
-                        break;
-                    };
-                    if (i === 10) {
-                        look_more.appendTo($($(sub_comments[i + f]).find('div')[0]));
-                    };
-                };
-                sub_comments_f2++;
-            } else {
-               $(this)[0].style.display = 'none';
-            };
-        });
-    };
-
     $('.more-comments').click(more_comments);
 
-    $('.add-btn').find('div.close').click(function() {
-        const cc = $(this).parent().parent().parent().attr('class').split(' ').slice(-1)[0];
+    function add_btn_look_more() {
+        look_more_comments($(this));
+    };
+
+    $('.look-more').click(add_btn_look_more);
+
+    function add_btn_close() {
+        const cc = $(this).parent().parent().attr('class').slice(-1)[0];
         const subcomment_all = $('.subcomments-all' + cc);
         subcomment_all[0].style.display = 'none';
 
@@ -137,10 +137,13 @@ $(document).ready(function() {
 
         img_mc_down[0].style.display = 'block';
         img_mc_up[0].style.display = 'none';
-    });
+    };
 
-    function postCommentCountLabel(value) {
-        value = (parseInt(value.split(' ')[0]) + 1).toString();
+    $('div.add-btn').find('div.close').click(add_btn_close);
+
+
+    function postCommentCountLabel(value, number) {
+        value = (parseInt(value.split(' ')[0]) + number).toString();
         let new_value = '';
         if (parseInt(value.slice(-1)) == 0 || parseInt(value.slice(-1)) >= 5) {
             new_value = value + ' комментариев';
@@ -154,8 +157,8 @@ $(document).ready(function() {
         return new_value;
     };
 
-    function answerCommentCountLabel(value) {
-        value = (parseInt(value.split(' ')[0]) + 1).toString();
+    function answerCommentCountLabel(value, number) {
+        value = (parseInt(value.split(' ')[0]) + number).toString();
         let new_value = '';
         if (parseInt(value.slice(-1)) == 0 || parseInt(value.slice(-1)) >= 5 || (10 <= parseInt(value.slice(-2)) && parseInt(value.slice(-2)) <= 20)) {
             new_value = value + ' Ответов';
@@ -175,7 +178,8 @@ $(document).ready(function() {
         };
 
         let parent = $(this).parent()[0];
-        let username = '@' + $(this).parent().parent().find('.c-author-date').find('a').text() + ' ';
+        let username = '@' + $(this).parent().parent().find('.c-author-date').children().first().text() + ' ';
+        let that_comment = $(this).parent().parent().parent();
 
         let c_line = $('<form>').attr({
                     'id': 's-comment',
@@ -229,13 +233,13 @@ $(document).ready(function() {
                 data_type: 'json',
                 success: function(response) {
                     $('#s-comment').remove();
-                    if ($('div.error-div')[0].style.display == 'flex') {
-                        $('div.error-div')[0].style.display = 'none';
+                    if ($('div.error-div').css('display') == 'flex') {
+                        $('div.error-div').css('display') = 'none';
                     };
 
                     // Формирование нового коммента
                     let add_btn = $('div.subcomments-all' + response.new_comment.super_id).last().find('div').find('div.add-btn');
-                    let comments_container = $('div.subcomments-all' + response.new_comment.super_id);
+                    let comments_container_btns = $('div.subcomments-all' + response.new_comment.super_id).find('.add-btn');
                     let main = $('<div>').addClass('flex-line-container comment-container subcomment ' + response.new_comment.super_id).attr('display', 'flex');
                     let span = $('<span>').addClass('comment-icon').
                                 append($('<a>').attr('href', response.new_comment.user_url).
@@ -256,15 +260,20 @@ $(document).ready(function() {
                     add_btn.attr('class', 'flex-line-container c-likes add-btn ' + response.new_comment.id).appendTo(subdiv);
                     main.append(span).append(subdiv);
                     let answer_comments = $('.comment-container.' + response.new_comment.super_id).find('div').find('div.c-likes').find('div.more-comments').find('p');
-                    answer_comments.text(answerCommentCountLabel(answer_comments.text()));
+                    answer_comments.text(answerCommentCountLabel(answer_comments.text(), 1));
                     let post_comments = $('div.comments').find('p#comments-count-post')
-                    post_comments.text(postCommentCountLabel(post_comments.text()));
-                    comments_container.append(main);
+                    post_comments.text(postCommentCountLabel(post_comments.text(), 1));
+                    comments_container_btns.before(main);
+                    if ($('div.error-div')) {
+                        $($('div.error-div').splice(-1)).remove();
+                    };
                 },
                 error: function(response) {
-                    let e_div = $('div.error-div')
-                    e_div[0].style.display = 'flex';
-                    $('div.error-div').find('p.error-p').text(response.responseJSON.ex)
+                    if ($('div.error-div').length == 1) {
+                        let new_error = $('<div>').addClass('flex-line-container error-div').
+                            append($('<p>').text(response.responseJSON.ex).addClass('error-p'))
+                        that_comment.before(new_error);
+                    };
                 },
             });
         });
@@ -320,7 +329,7 @@ $(document).ready(function() {
                                 append(subbigdiv);
                 main.append(span).append(subdiv);
                 let post_comments = $('div.comments').find('p#comments-count-post')
-                post_comments.text(postCommentCountLabel(post_comments.text()));
+                post_comments.text(postCommentCountLabel(post_comments.text(), 1));
                 comments_container.prepend(main);
             },
             error: function(response) {
@@ -512,11 +521,48 @@ $(document).ready(function() {
     });
 
     $('.filter').click(function() {
-        console.log(1);
+        obj = $('.dropdown-filter');
+        if (obj.css('display') === 'none') {
+            obj.css('display', 'flex');
+        } else {
+            obj.css('display', 'none');
+        }
     });
 
-    var start_comment = 1;
-    var end_comment = 2;
+    function clear_comments(new_value) {
+        filter_data = new_value;
+        start_comment = 0;
+        end_comment = end_comment - 10;
+        $('div.comment-all').empty();
+    };
+
+    $('#new').click(function() {
+        if (filter_data !== 'new') {
+            clear_comments('new');
+        };
+    });
+
+    $('#old').click(function() {
+        if (filter_data !== 'old') {
+            clear_comments('old');
+        };
+    });
+
+    $('#popular').click(function() {
+        if (filter_data !== 'popular') {
+            clear_comments('popular');
+        };
+    });
+
+    $('#my').click(function() {
+        if (filter_data !== 'my') {
+            clear_comments('my');
+        };
+    });
+
+    $('span.close-filters').click(function() {
+        $('.dropdown-filter').css('display', 'none');
+    });
 
     function loadContent() {
         $.ajax({
@@ -524,39 +570,61 @@ $(document).ready(function() {
             type: 'post',
             data: {'csrfmiddlewaretoken': comment_csrf, 'load_comments': true,
                 'start_comment': start_comment,
-                'end_comment': end_comment},
+                'end_comment': end_comment,
+                'filter': filter_data},
             data_type: 'json',
             success: function(response) {
-//                $('div.comment-all').append(response.template);
-                start_comment = end_comment;
-                end_comment += 1;
-                if (response.sups[0] != undefined) {
-                    let comments_container = $('div.comment-all');
-                    let main = $('<div>').addClass('flex-line-container comment-container ' + response.sups[0].id);
-                    let span = $('<span>').addClass('comment-icon').
-                                append($('<a>').attr('href', response.sups[0].user_url).
-                                append($('<img>').attr('src', response.sups[0].avatar_url)));
-                    let subbigdiv = $('<div>').addClass('flex-line-container c-likes').
-                                    append($('<div>').addClass('flex-line-container c-info').
-                                    append($('<p>').text(response.sups[0].likes)).
-                                    append($('<img>').attr('src', '/static/gnome_main/css/images/likes_mini_white.png').click(like_fun).addClass('icon-l pointer ' + response.sups[0].id))).
-                                    append($('<div>').addClass('flex-line-container c-info').
-                                    append($('<p>').text(response.sups[0].dislikes)).
-                                    append($('<img>').attr('src', '/static/gnome_main/css/images/dislikes_mini_white.png').click(dislike_fun).addClass('icon-l pointer ' + response.sups[0].id))).
-                                    append($('<div>').addClass('flex-line-container c-info more-comments pointer').click(more_comments).
-                                    append($('<p>').text(response.sups[0].ans_count)).
-                                    append($('<img>').attr('src', '/static/gnome_main/css/images/up_arrow.png').css('display', 'none').addClass('icon-l up')).
-                                    append($('<img>').attr('src', '/static/gnome_main/css/images/down_arrow.png').css('display', 'block').addClass('icon-l down'))).
-                                    append($('<div>').addClass('flex-line-container c-info answer pointer').click(answerClickHandler).append($('<p>').text('Ответить')));
+                if (response.sups.length !== 0) {
+                    start_comment = end_comment;
+                    end_comment += 10;
+                    for (let i = 0; i < response.sups.length; i++) {
+                        let comments_container = $('div.comment-all');
+                        let main = $('<div>').addClass('flex-line-container comment-container ' + response.sups[i].id);
+                        let span = $('<span>').addClass('comment-icon').
+                                    append($('<a>').attr('href', response.sups[i].user_url).
+                                    append($('<img>').attr('src', response.sups[i].avatar_url)));
+                        let subbigdiv = $('<div>').addClass('flex-line-container c-likes').
+                                        append($('<div>').addClass('flex-line-container c-info').
+                                        append($('<p>').text(response.sups[i].likes)).
+                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response.sups[i].like).click(like_fun).addClass('icon-l pointer ' + response.sups[i].id))).
+                                        append($('<div>').addClass('flex-line-container c-info').
+                                        append($('<p>').text(response.sups[i].dislikes)).
+                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response.sups[i].dislike).click(dislike_fun).addClass('icon-l pointer ' + response.sups[i].id))).
+                                        append($('<div>').addClass('flex-line-container c-info more-comments pointer').click(more_comments).
+                                        append($('<p>').text(response.sups[i].ans_count)).
+                                        append($('<img>').attr('src', '/static/gnome_main/css/images/up_arrow.png').css('display', 'none').addClass('icon-l up')).
+                                        append($('<img>').attr('src', '/static/gnome_main/css/images/down_arrow.png').css('display', 'block').addClass('icon-l down'))).
+                                        append($('<div>').addClass('flex-line-container c-info answer pointer').click(answerClickHandler).append($('<p>').text('Ответить')));
+                        let ul = $('<ul>')
+                        if (response.sups[i].report) {
+                            ul.append($('<li>').append($('<div>').click(change_comment).addClass('change-comment').text('Изменить'))).
+                                append($('<li>').append($('<div>').click(deletion_assert).addClass('delete-comment').text('Удалить')));
+                        } else {
+                            let a = $('<a>').attr('href', response.sups[i].report_url).
+                                append($('<img>').attr('src', '/static/gnome_main/css/images/report.png')).
+                                append($('<p>').text('Пожаловаться'));
+                            ul.append($('<li>').append(a));
+                        };
 
-                    let subdiv = $('<div>').append($('<div>').addClass('flex-line-container c-author-date').
-                                    append($('<a>').attr('href', response.sups[0].user_url).text(response.sups[0].username)).
-                                    append($('<p>').text(response.sups[0].created_at))).
-                                    append($('<div>').append(response.sups[0].comment)).
-                                    append(subbigdiv);
-                    main.append(span).append(subdiv);
-                    let post_comments = $('div.comments').find('p#comments-count-post')
-                    comments_container.append(main);
+                        let subdiv = $('<div>').append($('<div>').addClass('flex-line-container c-author-date').
+                                        append($('<a>').attr('href', response.sups[i].user_url).text(response.sups[i].username)).
+                                        append($('<div>').addClass('flex-line-container flex-space-between').
+                                        append($('<p>').text(response.sups[i].created_at)).
+                                        append($('<div>').addClass('add-dropdown comment-dropdown').
+                                            append($('<img>').attr('src', '/static/gnome_main/css/images/triple_dots_mini_white.png').click(adddrop_post).addClass('adddrop-post pointer')).
+                                            append($('<div>').addClass('post-dropdown dropdown pointer').
+                                                append(ul))))).
+                                        append($('<div>').append(response.sups[i].comment)).
+                                        append(subbigdiv);
+                        main.append(span).append(subdiv);
+                        let post_comments = $('div.comments').find('p#comments-count-post')
+                        main.mouseenter(comment_mouseenter).mouseleave(comment_mouseleave);
+                        comments_container.append(main);
+                        main.after($('<div>').addClass('subcomments-all' + response.sups[i].id).css('display', 'none').
+                            append($('<div>').addClass('flex-line-container c-likes subcomment add-btn ' + response.sups[i].id).
+                            append($('<div>').addClass('look-more pointer').css('margin', 'i').text('Смотреть ещё').click(add_btn_look_more)).
+                            append($('<div>').addClass('close pointer').text('Свернуть').click(add_btn_close))));
+                    };
                 };
             },
             error: function(response) {
@@ -565,9 +633,229 @@ $(document).ready(function() {
         });
     }
 
+    function loadRecContent() {
+        $.ajax({
+            url: '',
+            type: 'post',
+            data: {'csrfmiddlewaretoken': comment_csrf, 'load_rec': true,
+                'start_comment': start_comment,
+                'end_comment': end_comment},
+            data_type: 'json',
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(response) {
+                console.log(response);
+            },
+        });
+    };
+
     window.addEventListener('scroll', function() {
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
             loadContent();
+            loadRecContent();
         };
     });
+
+    function adddrop_post() {
+        elem = $(this).parent().find('.post-dropdown');
+        if (elem.css('display') == 'none') {
+            elem.css('display', 'block');
+            elem.mouseleave(function() {
+                elem.css('display', 'none');
+            });
+        } else {
+            elem.css('display', 'none');
+        };
+    };
+
+    $('.adddrop-post').click(adddrop_post);
+
+    function comment_mouseenter() {
+        if ($(this).find('div.comment-dropdown').css('visibility') != 'visible') {
+            $(this).find('div.comment-dropdown').css('visibility', 'visible');
+        };
+    };
+
+    function comment_mouseleave() {
+        if ($(this).find('div.comment-dropdown').css('visibility') != 'hidden') {
+            $(this).find('div.comment-dropdown').css('visibility', 'hidden');
+        };
+    };
+
+    function change_comment() {
+
+        if (old_comment) {
+            old_comment.remove();
+        };
+
+        let div = $(this).parent().parent().parent().parent().parent().parent().parent();
+        let c_text = div.find('div:not([class])').find('p').text();
+
+        let c_line = $('<form>').attr({
+                    'id': 'change_comment',
+                    'method': 'post',
+                    }).css('width', '100%').
+                    append($('<input>').attr({
+                        'type': 'hidden',
+                        'name': 'csrfmiddlewaretoken',
+                        'value': comment_csrf,
+                    })).
+                    append($('<textarea>').attr({
+                        'type': 'text',
+                        'rows': '3',
+                        'name': 'change-comment-line',
+                        'class': 'c-line s-com',
+                        'placeholder': 'Изменить...',
+                        'autocomplete': 'off'
+                    }).val(c_text).focus()).
+                    append($('<div>').attr('class', 'flex-line-container comment-btns').
+                    append($('<button>').click(cancel_ch_com).attr({
+                        'type': 'button',
+                        'id': 'cancel-btn-ch-com',
+                        'class': 'pointer'
+                    }).text('Отменить')).
+                    append($('<button>').attr({
+                        'type': 'submit',
+                        'class': 'last pointer'
+                    }).text('Изменить')));
+        div.css('display', 'none');
+        div.after(c_line);
+        $(this).parent().parent().find('form').find('textarea').focus();
+        old_comment = $(this).parent().parent().find('form');
+
+        $('form#change_comment').submit(function (event) {
+            event.preventDefault();
+            let formData = {};
+            $(this).serializeArray().forEach(function(field) {
+                formData[field.name] = field.value;
+            });
+            formData['с_id'] = $(this).parent().find('div:not([class])').find('div.c-likes').find('img.icon-l').attr('class').split(' ').splice(-1)[0];
+            formData['change_comment'] = true;
+            let th = $(this);
+            $.ajax({
+                url: '',
+                type: 'post',
+                data: formData,
+                data_type: 'json',
+                success: function(response) {
+                    let div = th.parent().find('div:not([class])').css('display', 'block');
+                    th.remove();
+                    div.find('div:not([class])').find('p').text(response.new_comment.comment);
+                    let t_div = div.find('div.c-author-date').find('div.flex-space-between').find('p')
+                    if (t_div.text().split(' ').splice(-1)[0] !== '(изменено)') {
+                        t_div.text(t_div.text() + ' (изменено)')
+                    };
+                    if ($('div.error-div').length != 1) {
+                        $($('div.error-div').splice(-1)).remove();
+                    };
+                },
+                error: function(response) {
+                    if ($('div.error-div').length == 1) {
+                        let new_error = $('<div>').addClass('flex-line-container error-div').
+                            append($('<p>').text(response.responseJSON.ex).addClass('error-p'))
+                        th.parent().before(new_error);
+                    };
+                }
+            });
+        });
+    };
+
+    function cancel_ch_com() {
+        $(this).parent().parent().parent().find('div:not([class])').css('display', 'block');
+        $(this).parent().parent().remove();
+    };
+
+    function deletion_assert() {
+        f_obj = Fancybox.show([{
+            src: '#deletion',
+            type: 'inline'
+        }]);
+
+        let c_id = $(this).parent().parent().parent().parent().parent().parent().parent().
+                    find('div.c-likes').find('img.icon-l').attr('class')
+                    .split(' ').splice(-1)[0];
+        let th = $(this).parent().parent().parent().parent().parent().parent().parent().parent();
+
+        $('#btn-delete-yes').off('click').click(function() {
+            f_obj.close();
+            let form_data = {
+                'delete_comment': true,
+                'csrfmiddlewaretoken': comment_csrf,
+                'c_id': c_id
+            };
+            $.ajax({
+                url: '',
+                type: 'post',
+                data: form_data,
+                data_type: 'json',
+                success: function(response) {
+                    complete_obj = Fancybox.show([{
+                        src: '#deletion_complete',
+                        type: 'inline'
+                    }]);
+
+                    $('#btn-ok').off('click').click(function() {
+                        complete_obj.close();
+                        let number = -1;
+                        if (th.parent().attr('class').split('-')[0] === 'subcomments') {
+                            let super_comment = th.parent().attr('class').substr(15)
+                            let p_answ = $('div.comment-container.' + super_comment).not('.subcomment').
+                                    find('div:not([class])').find('.c-likes').find('.more-comments').
+                                    find('p');
+
+                            p_answ.text(answerCommentCountLabel(p_answ.text(), -1));
+                        } else if (th.parent().attr('class') === 'comment-all') {
+                            let p_answ = th.find('div:not([class])').find('.c-likes').
+                                    find('.more-comments').find('p').text().split(' ')[0];
+                            number = number - p_answ;
+                        };
+                        th.remove();
+                        let post_comments = $('div.comments').find('p#comments-count-post')
+                        post_comments.text(postCommentCountLabel(post_comments.text(), number));
+
+                    });
+
+                    if ($('div.error-div').length != 1) {
+                        $($('div.error-div').splice(-1)).remove();
+                    };
+                },
+                error: function(response) {
+                    if ($('div.error-div').length == 1) {
+                        let new_error = $('<div>').addClass('flex-line-container error-div').
+                            append($('<p>').text(response.responseJSON.ex).addClass('error-p'))
+                        $(this).parent().before(new_error);
+                    };
+                }
+            });
+        });
+
+        $('#btn-delete-no').off('click').click(function() {
+            f_obj.close()
+        });
+    };
+
+    function btn_sub() {
+        let formData = {'csrfmiddlewaretoken': comment_csrf}
+        if ($(this).attr('class').split('-').splice(-1)[0] === 'true' ) {
+            $(this).css('display', 'none');
+            $(this).parent().find('.sub-false').css('display', 'block');
+            formData['subscribe'] = false;
+        } else {
+            $(this).css('display', 'none');
+            $(this).parent().find('.sub-true').css('display', 'block');
+            formData['subscribe'] = true;
+        };
+        $.ajax({
+            url: '',
+                type: 'post',
+                data: formData,
+                data_type: 'json',
+                success: function(response) {},
+                error: function(response) {},
+        });
+    };
+
+    $('button.sub-false').click(btn_sub);
+    $('button.sub-true').click(btn_sub);
 });
