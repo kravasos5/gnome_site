@@ -9,6 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
 <script src="{% static 'gnome_main/js/blog.js' %}"></script>
+<script>
+    var csrf_token = '{{ csrf_token }}';
+</script>
 {% endblock %}
 
 {% block content %}
@@ -17,7 +20,7 @@
         <img src="{% static 'gnome_main/css/images/icon_filter.png' %}">
     </div>
     <div class="filter-container">
-        <form class="filter" method="post">
+        <form class="filter" method="get" action="{% url 'gnome_main:blog' %}">
             {% csrf_token %}
             <div class="flex-line">
                 <h1>Фильтр</h1>
@@ -67,23 +70,23 @@
                     <div class="checkbox-container">
                         <div class="checkbox">
                             <div class="form-label">
-                                <input type="checkbox" name="popular">
-                                <label>популярное</label>
+                                <input type="radio" name="radio-filters" id="popular" value="popular">
+                                <label for="popular">популярное</label>
                             </div>
 
                             <div class="form-label">
-                                <input type="checkbox" name="more-views">
-                                <label>больше просмотров</label>
+                                <input type="radio" name="radio-filters" id="more-views" value="more-views">
+                                <label for="more-views">больше просмотров</label>
                             </div>
 
                             <div class="form-label">
-                                <input type="checkbox" name="old">
-                                <label>старое</label>
+                                <input type="radio" name="radio-filters" id="old" value="old">
+                                <label for="old">старое</label>
                             </div>
 
                             <div class="form-label">
-                                <input type="checkbox" name="new">
-                                <label>новое</label>
+                                <input type="radio" name="radio-filters" id="new" value="new">
+                                <label for="new">новое</label>
                             </div>
                         </div>
                     </div>
@@ -145,118 +148,147 @@
     </div>
 
     <div class="posts">
-        <div class="posts-container">
-            <div class="find-container">
-                <div class="find-edit">
-                    <form id="find_" method="post">
-                        {% csrf_token %}
-                        <input type="text" name="text-find" id="find_input" placeholder="Введите имя записи">
-                        <input type="image" src="{% static 'gnome_main/css/images/find.png' %}" alt="find-button" id="find-button">
-                    </form>
-                </div>
+        <div class="find-container">
+            <div class="find-edit">
+                <form id="find_" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="text-find" id="find_input" placeholder="Введите название записи">
+                    <input type="image" src="{% static 'gnome_main/css/images/find.png' %}" alt="find-button" id="find-button">
+                </form>
             </div>
+        </div>
 
-            <div class="post-container">
-                {% for post in posts %}
-                {% if forloop.last %}
-                <div class="post last">
-                {% else %}
-                <div class="post">
-                {% endif %}
-                    <a href="{% url 'gnome_main:show-post' slug=post.slug %}">
-                        <div class="post-in">
-                            <div class="preview-container">
-                                <img src="{{ post.preview.url }}">
+        <div class="post-container">
+            {% for post in posts %}
+            {% if forloop.last %}
+            <div class="flex-line-container space-between post last {{ post.id }}">
+            {% else %}
+            <div class="flex-line-container space-between post {{ post.id }}">
+            {% endif %}
+                <a href="{{ post.get_absolute_url }}" class="post-a">
+                    <div class="post-in">
+                        <div class="preview-container">
+                            <img src="{{ post.preview.url }}">
+                        </div>
+                        <div class="post-data">
+                            <h1>{{ post.title }}</h1>
+                            <div class="post-content">{{ post.content|safe|truncatewords:100 }}</div>
+                            <div class="author-date">
+                                <p>{{ post.author.username }}</p>
+                                <p>{{ post.created_at|date_ago }}</p>
                             </div>
-                            <div class="post-data">
-                                <h1>{{ post.title }}</h1>
-                                <div class="text">{{ post.content|safe|truncatewords:100 }}</div>
-                                <div class="author-date">
-                                    <p>{{ post.author.username }}</p>
-                                    <p>{{ post.created_at|date_ago }}</p>
+                            <div class="post-likes">
+                                <div class="info">
+                                    <div class="post-l">
+                                        <p>{{ post.get_view_count|post_views }}</p>
+                                        <img src="{% static 'gnome_main/css/images/views.png' %}">
+                                    </div>
+                                    <div class="post-l">
+                                        <p>{{ post.get_like_count }}</p>
+                                        {% if post.postlike_set|is_full:user.id %}
+                                        <img src="{% static 'gnome_main/css/images/likes_full.png' %}">
+                                        {% else %}
+                                        <img src="{% static 'gnome_main/css/images/likes.png' %}">
+                                        {% endif %}
+                                    </div>
+                                    <div class="post-l">
+                                        <p>{{ post.get_dislike_count }}</p>
+                                        {% if post.postdislike_set|is_full:user.id %}
+                                        <img src="{% static 'gnome_main/css/images/dislikes_full.png' %}">
+                                        {% else %}
+                                        <img src="{% static 'gnome_main/css/images/dislikes.png' %}">
+                                        {% endif %}
+                                    </div>
+                                    <div class="post-l">
+                                        <p>{{ post.get_comment_count|comment_pluralize }}</p>
+                                        <img src="{% static 'gnome_main/css/images/comments.png' %}">
+                                    </div>
                                 </div>
-                                <div class="post-likes">
-                                    <div class="info">
-                                        <div class="post-l">
-                                            <p>{{ post.get_view_count|post_views }}</p>
-                                            <img src="{% static 'gnome_main/css/images/views.png' %}">
-                                        </div>
-                                        <div class="post-l">
-                                            <p>{{ post.get_like_count }}</p>
-                                            <img src="{% static 'gnome_main/css/images/likes.png' %}">
-                                        </div>
-                                        <div class="post-l">
-                                            <p>{{ post.get_dislike_count }}</p>
-                                            <img src="{% static 'gnome_main/css/images/dislikes.png' %}">
-                                        </div>
-                                        <div class="post-l">
-                                            <p>{{ post.get_comment_count }}</p>
-                                            <img src="{% static 'gnome_main/css/images/comments.png' %}">
-                                        </div>
-                                    </div>
-                                    <div class="post-r">
-                                        <img src="{% static 'gnome_main/css/images/favourite.png' %}">
-                                    </div>
+                                <div class="post-r">
+                                    {% if post.postfavourite_set|is_full:user.id %}
+                                    <img src="{% static 'gnome_main/css/images/favourite_full.png' %}">
+                                    {% else %}
+                                    <img src="{% static 'gnome_main/css/images/favourite.png' %}">
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
-                    </a>
+                    </div>
+                </a>
+                <div class="add-dropdown rec-dropdown">
+                    <img src="{% static 'gnome_main/css/images/triple_dots.png' %}" class="adddrop-post pointer">
+                    <div class="post-dropdown rec-dropdown-m">
+                        <ul>
+                            {% if user == post.author %}
+                            <li>
+                                <a href="#">Изменить</a>
+                            </li>
+                            {% else %}
+                            <li>
+                                <a href="{% url 'gnome_main:post-report' slug=post.slug %}">
+                                    <img src="{% static 'gnome_main/css/images/report.png' %}">
+                                    <p>Пожаловаться</p>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
-                {% endfor %}
             </div>
-            {% if paginator.num_pages > 1 %}
-            <div class="post-container">
-                <ul class="paginator">
-                    {% for page in paginator.page_range %}
-                    {% if forloop.first and page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number}}" class="non-chose">
-                            <li>
-                                <p><</p>
-                            </li>
-                        </a>
-                        {% if page_obj.number > 2 %}
-                        <a href="?1" class="non-chose">
-                            <li>
-                                <p>1</p>
-                            </li>
-                        </a>
-                        {% endif %}
-                    {% endif %}
-
-                    {% if page_obj.number == page %}
-                    <a>
-                        <li>
-                            <p>{{ page }}</p>
-                        </li>
-                    </a>
-                    {% elif page >= page_obj.number|add:-1 and page <= page_obj.number|add:1 %}
-                    <a href="?page={{ page }}" class="non-chose">
-                        <li>
-                            <p>{{ page }}</p>
-                        </li>
-                    </a>
-                    {% endif %}
-
-                    {% if forloop.last and page_obj.has_next %}
-                        {% if page_obj.number|add:2 <= paginator.num_pages %}
-                            <a href="?{{ paginator.num_pages }}" class="non-chose">
-                                <li>
-                                    <p>{{ paginator.num_pages }}</p>
-                                </li>
-                            </a>
-                        {% endif %}
-                        <a href="?page={{ page_obj.next_page_number}}" class="non-chose last">
-                            <li>
-                                <p>></p>
-                            </li>
-                        </a>
-                    {% endif %}
-                    {% endfor %}
-
-                </ul>
-            </div>
-            {% endif %}
+            {% endfor %}
         </div>
+        {% if paginator.num_pages > 1 %}
+        <div class="post-container">
+            <ul class="paginator">
+                {% for page in paginator.page_range %}
+                {% if forloop.first and page.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number}}" class="non-chose">
+                        <li>
+                            <p><</p>
+                        </li>
+                    </a>
+                    {% if page_obj.number > 2 %}
+                    <a href="?page=1" class="non-chose">
+                        <li>
+                            <p>1</p>
+                        </li>
+                    </a>
+                    {% endif %}
+                {% endif %}
+
+                {% if page_obj.number == page %}
+                <a>
+                    <li>
+                        <p>{{ page }}</p>
+                    </li>
+                </a>
+                {% elif page >= page_obj.number|add:-1 and page <= page_obj.number|add:1 %}
+                <a href="?page={{ page }}" class="non-chose">
+                    <li>
+                        <p>{{ page }}</p>
+                    </li>
+                </a>
+                {% endif %}
+
+                {% if forloop.last and page_obj.has_next %}
+                    {% if page_obj.number|add:2 <= paginator.num_pages %}
+                        <a href="?page={{ paginator.num_pages }}" class="non-chose">
+                            <li>
+                                <p>{{ paginator.num_pages }}</p>
+                            </li>
+                        </a>
+                    {% endif %}
+                    <a href="?page={{ page_obj.next_page_number}}" class="non-chose last">
+                        <li>
+                            <p>></p>
+                        </li>
+                    </a>
+                {% endif %}
+                {% endfor %}
+
+            </ul>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

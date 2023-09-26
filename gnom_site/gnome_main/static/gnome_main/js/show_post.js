@@ -13,6 +13,8 @@ $(document).ready(function() {
     var start_recommend = 0;
     var end_recommend = 10;
 
+    loadRecContent();
+
     function more_comments() {
         let s_id = $(this).parent().parent().parent().attr('class').split(' ').slice(-1);
         let elem = $('div.subcomments-all' + s_id)
@@ -634,15 +636,49 @@ $(document).ready(function() {
     }
 
     function loadRecContent() {
+        let ids = []
+        $('.rec-container').each(function() {
+            ids.push($(this).attr('class').split(' ').slice(-1)[0].slice(3));
+        });
         $.ajax({
             url: '',
             type: 'post',
             data: {'csrfmiddlewaretoken': comment_csrf, 'load_rec': true,
-                'start_comment': start_comment,
-                'end_comment': end_comment},
+                'ids': JSON.stringify(ids)},
             data_type: 'json',
             success: function(response) {
-                console.log(response);
+                let recomendation_container = $('div.recomendation');
+                for (let i=0; i < response.recs.length; i++) {
+                    let main = $('<div>').addClass('flex-line-container rec-container rec' + response.recs[i].id);
+                    let span = $('<span>').addClass('rec-preview').
+                        append($('<a>').attr('href', response.recs[i].post_url).
+                            append($('<img>').attr('src', response.recs[i].preview)));
+                    let ul = $('<ul>')
+                        if (response.recs[i].report) {
+                            ul.append($('<li>').append($('<a>').text('Изменить').attr('href', '#')));
+                        } else {
+                            let a = $('<a>').attr('href', response.recs[i].report_url).
+                                append($('<img>').attr('src', '/static/gnome_main/css/images/report.png')).
+                                append($('<p>').text('Пожаловаться'));
+                            ul.append($('<li>').append(a));
+                        };
+                    let div_ul = $('<div>').addClass('add-dropdown rec-dropdown').
+                        append($('<img>').attr('src', '/static/gnome_main/css/images/triple_dots_mini_white.png').addClass('adddrop-post pointer').click(adddrop_rec)).
+                        append($('<div>').addClass('post-dropdown rec-dropdown-m').
+                            append(ul));
+
+                    let info = $('<div>').addClass('flex-line-container flex-space-between rec-line').
+                        append($('<a>').attr('href', response.recs[i].post_url).
+                            append($('<div>').addClass('flex-line-container rec-info').
+                                append($('<p>').addClass('title').text(response.recs[i].title)).
+                                append($('<p>').addClass('substring').text(response.recs[i].authorname)).
+                                append($('<p>').addClass('substring').text(response.recs[i].views)).
+                                append($('<p>').addClass('substring last').text(response.recs[i].created_at)))).
+                            append(div_ul);
+                    main.append(span).append(info);
+                    main.mouseenter(rec_mouseenter).mouseleave(rec_mouseleave);
+                    recomendation_container.append(main);
+                };
             },
             error: function(response) {
                 console.log(response);
@@ -680,6 +716,33 @@ $(document).ready(function() {
     function comment_mouseleave() {
         if ($(this).find('div.comment-dropdown').css('visibility') != 'hidden') {
             $(this).find('div.comment-dropdown').css('visibility', 'hidden');
+        };
+    };
+
+    function adddrop_rec() {
+        elem = $(this).parent().find('.rec-dropdown-m');
+        if (elem.css('display') == 'none') {
+            elem.css('display', 'block');
+            elem.mouseleave(function() {
+                elem.css('display', 'none');
+            });
+        } else {
+            elem.css('display', 'none');
+        };
+    };
+
+    function rec_mouseenter() {
+        let obj = $(this).find('div.rec-line').find('div.add-dropdown.rec-dropdown');
+        if (obj.css('visibility') != 'visible') {
+            obj.css('visibility', 'visible');
+        };
+    };
+
+    function rec_mouseleave() {
+        let obj = $(this).find('div.rec-line').find('div.add-dropdown.rec-dropdown');
+        if (obj.css('visibility') != 'hidden') {
+            obj.css('visibility', 'hidden');
+            obj.find('.rec-dropdown-m').css('display', 'none');
         };
     };
 

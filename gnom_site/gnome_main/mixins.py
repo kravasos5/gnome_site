@@ -4,7 +4,7 @@ from django.db.utils import DataError, IntegrityError
 from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
 
-from .templatetags.profile_extras import date_ago, key, likes_dislikes, is_full
+from .templatetags.profile_extras import date_ago, key, likes_dislikes, is_full, post_views
 from django.template.defaultfilters import linebreaks
 
 from .models import PostViewCount, SuperPostComment, SubPostComment, PostComment, CommentLike, CommentDisLike, PostLike, \
@@ -124,8 +124,8 @@ class PostViewCountMixin:
                     dislike = PostDisLike.objects.get(post=post, user=request.user)
                     dislike.delete()
                 elif d['data'][0] == 'favourite' and d['status'][0] == 'delete':
-                    like = PostFavourite.objects.get(post=post, user=request.user)
-                    like.delete()
+                    fav = PostFavourite.objects.get(post=post, user=request.user)
+                    fav.delete()
             except Exception as ex:
                 return JsonResponse(data={'ex': 'Неверные данные post'}, status=400)
 
@@ -185,45 +185,41 @@ class PostViewCountMixin:
                 return JsonResponse(data={'ex': f'Неверные данные, {ex}'}, status=400)
 
         elif 'load_rec' in d:
-            # try:
-                # print(d['start_comment'][0], d['end_comment'][0])
-            recs = Post.objects.filter(is_active=True) \
-                [int(d['start_comment'][0]):int(d['end_comment'][0])]
-            context['recs'] = []
-            tags = post.tag.all()
-            print('тэги:', tags)
-                # if recs:
-                #     for i in recs:
-                #         date = date_ago(i.created_at, i.is_changed)
-                #         ccount = key(SubPostComment.objects.filter(super_comment=i.id).count())
-                #         if is_full(i.commentlike_set, request.user.id):
-                #             like = 'likes_mini_white_full.png'
-                #             dislike = 'dislikes_mini_white.png'
-                #         elif is_full(i.commentdislike_set, request.user.id):
-                #             like = 'likes_mini_white.png'
-                #             dislike = 'dislikes_mini_white_full.png'
-                #         else:
-                #             like = 'likes_mini_white.png'
-                #             dislike = 'dislikes_mini_white.png'
-                #
-                #         report = i.user.id == request.user.id
-                #
-                #         context['sups'].append({
-                #             'username': i.user.username,
-                #             'comment': linebreaks(i.comment),
-                #             'created_at': date, 'id': i.id,
-                #             'user_url': i.user.get_absolute_url(),
-                #             'avatar_url': i.user.avatar.url,
-                #             'ans_count': ccount,
-                #             'likes': likes_dislikes(i.commentlike_set.count()),
-                #             'dislikes': likes_dislikes(i.commentdislike_set.count()),
-                #             'like': like,
-                #             'dislike': dislike,
-                #             'report': report,
-                #         })
+            try:
+                ids = d['ids'][0][1:-1].replace('"', '').split(',')
+                if ids[0] == '':
+                    ids = []
+                ids.append(post.id)
+                context['recs'] = []
+                tags = post.tag.all()
+                recs = Post.objects.filter(is_active=True, tag__in=tags).distinct() \
+                           .exclude(id__in=ids)[0:10]
+                if len(recs) < 10:
+                    recs = recs.union(Post.objects.filter(is_active=True).order_by('-created_at') \
+                               .distinct().exclude(id__in=ids)[0:9-len(recs)])
 
-            # except Exception as ex:
-            #     return JsonResponse(data={'ex': f'Неверные данные, {ex}'}, status=400)
+                if recs:
+                    for i in recs:
+                        date = date_ago(i.created_at)
+                        report = i.author.id == request.user.id
+
+                        context['recs'].append({
+                            'title': i.title,
+                            'authorname': i.author.username,
+                            'created_at': date,
+                            'preview': i.preview.url,
+                            'id': i.id,
+                            'views': post_views(i.get_view_count()),
+                            'user_url': i.author.get_absolute_url(),
+                            'post_url': i.get_absolute_url(),
+                            'report': report,
+                        })
+
+                        if report == False:
+                            context['recs'][-1]['report_url'] = f'/report/{i.slug}/post/'
+
+            except Exception as ex:
+                return JsonResponse(data={'ex': f'Неверные данные, {ex}'}, status=400)
 
         elif 'more_comments' in d:
             try:
