@@ -227,11 +227,13 @@ div.more button {
 @media (max-width: 530px) {
     .posts {
         width: 100%;
+        height: 100%;
         flex-basis: auto;
     }
 
     .filter-container {
         width: 100%;
+        height: 100%;
     }
 
     span.close {
@@ -295,14 +297,18 @@ div.more button {
     justify-content: center;
 }
 
-/* посты */
-
+/* Контейнер постов */
 .post-container {
     margin-top: 20px;
+    padding: 0px;
+    width: 100%;
+    height: 100%;
 }
 
+/* посты */
+
 .post {
-    height: 260px;
+    /*height: 260px;*/
     width: 90%;
     background-color: #D9D9D9;
     margin-top: 30px;
@@ -317,7 +323,6 @@ div.more button {
     color: black;
 }
 
-/*нагружает страницу, пока что неактивно*/
 /*.post:hover {
     transform: scale(1.03);
 }
@@ -332,14 +337,11 @@ div.more button {
     justify-content: center;
 }
 
-.last {
-    margin-bottom: 20px;
-}
-
 /* Настройки превью */
 .preview-container {
-    width: 260px;
-    height: 260px;
+    /*width: 260px;
+    height: 260px;*/
+    width: 30%;
     border-radius: 10px;
 }
 
@@ -355,6 +357,7 @@ div.more button {
     display: flex;
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 
 .post-data * {
@@ -376,13 +379,14 @@ div.more button {
     width: 80%;
 }
 
-.post-data .text {
+.post-data .post-content {
     margin: 0px;
     padding: 0px;
     margin-bottom: 7px;
     width: 100%;
     height: 55%;
     overflow: hidden;
+    line-height: 1.3;
 
     font-size: 16px;
 }
@@ -409,6 +413,7 @@ div.more button {
 .post-l, .post-r {
     display: flex;
     align-items: center;
+    white-space: nowrap;
 }
 
 .post-l {
@@ -422,12 +427,60 @@ div.more button {
 }
 
 @media (max-width: 922px) {
-    .post-data .text {
+    .post-data .post-content {
         height: 45%;
     }
 
     .post {
         width: 80%;
+    }
+}
+
+@media (max-width: 970px) {
+    .post {
+        height: auto;
+        padding: 20px 5px;
+    }
+
+    .post-in {
+        flex-direction: column;
+        align-items: center;
+        overflow: none;
+        height: auto;
+    }
+
+    .preview-container {
+        width: auto;
+    }
+
+    .info {
+        flex-direction: column;
+    }
+
+    div.info div.post-l:not(last-child) {
+        margin-top: 10px;
+    }
+
+    .post-data .post-content {
+        height: auto;
+    }
+
+    .post-content {
+        display: none;
+    }
+}
+
+@media (max-width: 1370px) {
+    .post-likes .info {
+        flex-wrap: wrap;
+    }
+
+    .post-l {
+        margin-top: 10px;
+    }
+
+    .post-data .post-content {
+        height: 38%;
     }
 }
 
@@ -477,4 +530,92 @@ ul.paginator a li p {
     font-size: 30px;
     margin: 0;
     padding: 0;
+}
+
+.flex-line-container {
+    display: flex;
+}
+
+.space-between {
+    justify-content: space-between;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+div.add-dropdown {
+    width: auto;
+    position: relative;
+}
+
+div.rec-dropdown {
+    visibility: hidden;
+}
+
+.rec-dropdown-m {
+    position: absolute;
+    right: 15%;
+}
+
+.adddrop-post {
+    position: relative;
+}
+
+div.last {
+    margin-bottom: 20px;
+}
+
+/*выпадающий список*/
+div.post-dropdown {
+    background-color: #E3E3E3;
+    text-align: center;
+    width: 150px;
+    display: none;
+}
+
+div.post-dropdown ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+div.post-dropdown ul hr {
+    border: none;
+    border-top: 1px solid #000;
+    padding: 0;
+    margin: 0;
+}
+
+div.post-dropdown ul li a {
+    color: #000;
+    text-decoration: none;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+div.post-dropdown ul li a p {
+    margin: 0;
+}
+
+div.post-dropdown {
+    display: none;
+    color: #fff;
+}
+
+div.post-dropdown ul li a img {
+    margin-right: 3px;
+}
+
+div.post-dropdown ul li {
+    padding: 3px 0px 3px 0px;
+    transition: all 0.3s ease;
+}
+
+div.post-dropdown ul li:hover {
+    background-color: #B8B8B8;
 }

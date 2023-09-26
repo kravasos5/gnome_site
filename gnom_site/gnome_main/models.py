@@ -127,8 +127,7 @@ class Post(models.Model):
     is_active = models.BooleanField(default=True,
                                     db_index=True,
                                     verbose_name='Активна')
-    tag = models.ManyToManyField('PostTag', verbose_name='Тэг',
-                                 null=True, blank=True)
+    tag = models.ManyToManyField('PostTag', verbose_name='Тэг')
     created_at = models.DateTimeField(auto_now_add=True,
                                       db_index=True,
                                       verbose_name='Дата создания')
@@ -151,6 +150,9 @@ class Post(models.Model):
 
     def __str__(self):
         return f'{self.title} - {self.author.username} - {self.created_at}'
+
+    def get_absolute_url(self):
+        return reverse('gnome_main:show-post', kwargs={'slug': self.slug})
 
     def get_view_count(self):
         '''Возвращает количество просмотров записи'''
@@ -403,3 +405,6 @@ class PostTag(models.Model):
     class Meta:
         verbose_name = 'Тэг'
         verbose_name_plural = 'Тэги'
+
+    def __str__(self):
+        return f'{self.tag}'

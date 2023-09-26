@@ -13,111 +13,13 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
 <script src="{% static 'gnome_main/js/more_text.js' %}"></script>
 <script src="{% static 'gnome_main/js/user_profile.js' %}"></script>
+<script>
+    var csrf_token = '{{ csrf_token }}';
+</script>
 {% endblock %}
 
 {% block content %}
 <div class="content">
-{% if user == cur_user %}
-    <div class="profile-image">
-        {% if user.profile_image %}
-<!--        <img src="{5 cropped_thumbnail user 'profile_image_cropping' 5}" alt="profile-image" class="profile-img">-->
-<!--        <img src="{{ MEDIA_URL }}{{ user.profile_image|thumbnail_url:'default' }}" alt="profile-image" class="profile-img">-->
-        <img src="{{ MEDIA_URL }}{{ user.profile_image.url }}" alt="profile-image" class="profile-img">
-        {% else %}
-        <img src="{% static 'gnome_main/css/images/default_profile_image.jpg' %}" alt="profile-img" class="profile-img">
-        {% endif %}
-    </div>
-    <div class="profile-info-short">
-        <div class="flex-line-container">
-            <div class="avatar-image">
-            {% if user.avatar %}
-<!--                <img src="{5 cropped_thumbnail user 'avatar_cropping' 5}" alt="avatar-image" class="avatar-img">-->
-                <img src="{{ user.avatar.url }}" alt="avatar-image" class="avatar-img">
-            {% else %}
-                <img src="{% static 'gnome_main/css/images/default_profile_avatar.jpg' %}" alt="avatar-image">
-            {% endif %}
-            </div>
-            <div class="short-description">
-                <h1>{{ user.username }}</h1>
-                <div class="flex-line-container">
-                    <p>{{ sub_count|sub_pluralize }}</p>
-                    <p>{{ posts_count|post_pluralize }}</p>
-                </div>
-                <p>{{ user.status }}</p>
-            </div>
-        </div>
-        <a href="{% url 'gnome_main:profile-change' user.slug %}" class="edit">Изменить</a>
-    </div>
-    <div class="profile-info">
-        <h1>Описание</h1>
-        <p id="short-description">{{ user.description|my_truncatewords:10|safe }}</p>
-        <p id="full-description">{{ user.description|btn_add|safe }}</p>
-    </div>
-    <div class="posts">
-        <h1>Записи</h1>
-        <div class="filters">
-            <button class="filter-btn fbtn1">популярное</button>
-            <button class="filter-btn fbtn2">больше просмотров</button>
-            <button class="filter-btn fbtn3">новое</button>
-            <button class="filter-btn fbtn4">старое</button>
-            <button class="filter-btn fbtn5">с медиа файлами</button>
-        </div>
-
-        <div class="post-container">
-            <div class="post">
-                <a href="#пост">
-                    <div class="post-in">
-                        <div class="preview-container">
-                            <img src="{% static 'gnome_main/css/images/preview.png' %}">
-                        </div>
-                        <div class="post-data">
-                            <h1>post-name</h1>
-                            <div class="text">На встрече со злым гномом вы погрузитесь в мрачный мир тайн и опасностей. Столкнувшись лицом к
-                                лицу с этим маленьким, но коварным существом, вы ощутите его злобу и хитрость. Будьте готовы к
-                                схватке с колдовством и отчаянным сопротивлением. Вам предстоит раскрыть его темные планы и
-                                сделать все возможное, чтобы спасти мир от его губительного влияния. Предоставьте свою храбрость
-                                и интеллект, чтобы преодолеть испытания, которые злой гном подготовил специально для вас.
-                                Вам предстоит стать героем и пролить свет на ...</div>
-                            <div class="author-date">
-                                <p>authorname</p>
-                                <p>Неделю назад</p>
-                            </div>
-                            <div class="post-likes">
-                                <div class="info">
-                                    <div class="post-l">
-                                        <p>100 тыс.</p>
-                                        <img src="{% static 'gnome_main/css/images/views.png' %}">
-                                    </div>
-                                    <div class="post-l">
-                                        <p>386</p>
-                                        <img src="{% static 'gnome_main/css/images/likes.png' %}">
-                                    </div>
-                                    <div class="post-l">
-                                        <p>21</p>
-                                        <img src="{% static 'gnome_main/css/images/dislikes.png' %}">
-                                    </div>
-                                    <div class="post-l">
-                                        <p>21</p>
-                                        <img src="{% static 'gnome_main/css/images/comments.png' %}">
-                                    </div>
-                                </div>
-                                <div class="post-r">
-                                    <img src="{% static 'gnome_main/css/images/favourite.png' %}">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <div class="more-posts-div">
-            <a href="#user-posts" class="more-posts">Ещё</a>
-        </div>
-    </div>
-
-{% else %}
-
     <div class="profile-image">
         {% if cur_user.profile_image %}
         <img src="{{ MEDIA_URL }}{{ cur_user.profile_image.url }}" alt="profile-image" class="profile-img">
@@ -143,6 +45,9 @@
                 <p>{{ cur_user.status }}</p>
             </div>
         </div>
+        {% if cur_user == user %}
+            <a href="{% url 'gnome_main:profile-change' user.slug %}" class="edit">Изменить</a>
+        {% else %}
         <div>
             {% csrf_token %}
             {% if is_subscribe %}
@@ -153,74 +58,103 @@
             <button class="sub-true" style="display: none;">Отписаться</button>
             {% endif %}
         </div>
+        {% endif %}
     </div>
     <div class="profile-info">
         <h1>Описание</h1>
-        <p id="short-description">{{ cur_user.description|my_truncatewords:10|safe }}</p>
-        <p id="full-description">{{ cur_user.description|btn_add|safe }}</p>
+        <p id="short-description">{{ cur_user.description|my_truncatewords:10|linebreaksbr }}</p>
+        <p id="full-description">{{ cur_user.description|linebreaksbr }}</p>
+        <button type="button" class="more-text-trunc">Ещё</button>
     </div>
     <div class="posts">
         <h1>Записи</h1>
         <div class="filters">
-            <button class="filter-btn fbtn1">популярное</button>
-            <button class="filter-btn fbtn2">больше просмотров</button>
-            <button class="filter-btn fbtn3">новое</button>
-            <button class="filter-btn fbtn4">старое</button>
-            <button class="filter-btn fbtn5">с медиа файлами</button>
+            <button class="filter-btn" id="popular">популярное</button>
+            <button class="filter-btn" id="more_views">больше просмотров</button>
+            <button class="filter-btn" id="new">новое</button>
+            <button class="filter-btn" id="old">старое</button>
+            <button class="filter-btn" id="with_media">с медиа файлами</button>
         </div>
 
         <div class="post-container">
-            <div class="post">
-                <a href="#пост">
+            {% for post in posts %}
+            <div class="flex-line-container space-between post {{ post.id }}">
+                <a href="{{ post.get_absolute_url }}" class="post-a">
                     <div class="post-in">
                         <div class="preview-container">
-                            <img src="{% static 'gnome_main/css/images/preview.png' %}">
+                            <img src="{{ post.preview.url }}">
                         </div>
                         <div class="post-data">
-                            <h1>post-name</h1>
-                            <div class="text">На встрече со злым гномом вы погрузитесь в мрачный мир тайн и опасностей. Столкнувшись лицом к
-                                лицу с этим маленьким, но коварным существом, вы ощутите его злобу и хитрость. Будьте готовы к
-                                схватке с колдовством и отчаянным сопротивлением. Вам предстоит раскрыть его темные планы и
-                                сделать все возможное, чтобы спасти мир от его губительного влияния. Предоставьте свою храбрость
-                                и интеллект, чтобы преодолеть испытания, которые злой гном подготовил специально для вас.
-                                Вам предстоит стать героем и пролить свет на ...</div>
+                            <h1>{{ post.title }}</h1>
+                            <div class="post-content">{{ post.content|safe|truncatewords:100 }}</div>
                             <div class="author-date">
-                                <p>authorname</p>
-                                <p>Неделю назад</p>
+                                <p>{{ post.author.username }}</p>
+                                <p>{{ post.created_at|date_ago }}</p>
                             </div>
                             <div class="post-likes">
                                 <div class="info">
                                     <div class="post-l">
-                                        <p>100 тыс.</p>
+                                        <p>{{ post.get_view_count|post_views }}</p>
                                         <img src="{% static 'gnome_main/css/images/views.png' %}">
                                     </div>
                                     <div class="post-l">
-                                        <p>386</p>
+                                        <p>{{ post.get_like_count }}</p>
+                                        {% if post.postlike_set|is_full:user.id %}
+                                        <img src="{% static 'gnome_main/css/images/likes_full.png' %}">
+                                        {% else %}
                                         <img src="{% static 'gnome_main/css/images/likes.png' %}">
+                                        {% endif %}
                                     </div>
                                     <div class="post-l">
-                                        <p>21</p>
+                                        <p>{{ post.get_dislike_count }}</p>
+                                        {% if post.postdislike_set|is_full:user.id %}
+                                        <img src="{% static 'gnome_main/css/images/dislikes_full.png' %}">
+                                        {% else %}
                                         <img src="{% static 'gnome_main/css/images/dislikes.png' %}">
+                                        {% endif %}
                                     </div>
                                     <div class="post-l">
-                                        <p>21</p>
+                                        <p>{{ post.get_comment_count|comment_pluralize }}</p>
                                         <img src="{% static 'gnome_main/css/images/comments.png' %}">
                                     </div>
                                 </div>
                                 <div class="post-r">
+                                    {% if post.postfavourite_set|is_full:user.id %}
+                                    <img src="{% static 'gnome_main/css/images/favourite_full.png' %}">
+                                    {% else %}
                                     <img src="{% static 'gnome_main/css/images/favourite.png' %}">
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </a>
+                <div class="add-dropdown rec-dropdown">
+                    <img src="{% static 'gnome_main/css/images/triple_dots.png' %}" class="adddrop-post pointer">
+                    <div class="post-dropdown rec-dropdown-m">
+                        <ul>
+                            {% if cur_user == user %}
+                            <li>
+                                <a href="#">Изменить</a>
+                            </li>
+                            {% else %}
+                            <li>
+                                <a href="{% url 'gnome_main:post-report' slug=post.slug %}">
+                                    <img src="{% static 'gnome_main/css/images/report.png' %}">
+                                    <p>Пожаловаться</p>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
             </div>
+            {% endfor %}
         </div>
 
-        <div class="more-posts-div">
-            <a href="#user-posts" class="more-posts">Ещё</a>
-        </div>
+<!--        <div class="more-posts-div">-->
+<!--            <a href="#user-posts" class="more-posts">Ещё</a>-->
+<!--        </div>-->
     </div>
-{% endif %}
 </div>
 {% endblock %}

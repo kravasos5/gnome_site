@@ -26,7 +26,7 @@ def post_pluralize(value):
     return new_value
 
 @register.filter(name='comment_pluralize')
-def post_pluralize(value):
+def comment_pluralize(value):
     new_value = str(value)
     if int(str(value)[-1]) == 0 or int(str(value)[-1]) >= 5:
         new_value += ' комментариев'

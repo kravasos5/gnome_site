@@ -52,3 +52,151 @@
                 </div>
             </div>
             {% endfor %}
+
+        <div class="flex-line-container rec-container rec1">
+            <span class="rec-preview">
+                <a href="/blog/kravasos666-nNNl5RYCoI3khdsgAmqA/">
+                    <img src="/media/2023-08-13-horror-gnome-blood-scary-forest-night-fangs-warhammer-40k-pagan-ritual-runes-.png">
+                </a>
+            </span>
+            <div class="flex-line-container flex-space-between rec-line">
+                <a href="/blog/kravasos666-nNNl5RYCoI3khdsgAmqA/">
+                    <div class="flex-line-container rec-info">
+                        <p class="title">NameNam eName</p>
+                        <p class="substring">authorname</p>
+                        <p class="substring">100 тыс.</p>
+                        <p class="substring last">2 недели назад</p>
+                    </div>
+                </a>
+                <div class="add-dropdown">
+                    <img src="/static/gnome_main/css/images/triple_dots_mini_white.png" class="adddrop-post pointer">
+                    <div class="post-dropdown rec-dropdown">
+                        <p>123123</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+<div class="flex-line-container description-container">
+            <p id="description-info">{{ user.description|my_truncatewords:10|safe }}</p>
+            <button class="more-text-trunc">Ещё</button>
+        </div>
+
+
+            {% for post in posts %}
+            <div class="post {{ post.id }}">
+                <a href="{{ post.get_absolute_url }}" class="post-a">
+                    <div class="post-in">
+                        <div class="preview-container">
+                            <img src="{{ post.preview.url }}">
+                        </div>
+                        <div class="post-data">
+                            <div class="flex-line-container space-between">
+                                <h1>{{ post.title }}</h1>
+                                <div class="add-dropdown rec-dropdown">
+                                    <img src="{% static 'gnome_main/css/images/triple_dots.png' %}" class="adddrop-post pointer">
+                                    <div class="post-dropdown rec-dropdown-m">
+                                        <ul>
+                                            {% if cur_user == user %}
+                                            <li>
+                                                <a href="#">Изменить</a>
+                                            </li>
+                                            {% else %}
+                                            <li>
+                                                <a href="#">
+                                                    <img src="gnome_main/css/images/report.png">
+                                                    <p>Пожаловаться</p>
+                                                </a>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="post-content">{{ post.content|safe|truncatewords:100 }}</div>
+                            <div class="author-date">
+                                <p>{{ post.author.username }}</p>
+                                <p>{{ post.created_at|date_ago }}</p>
+                            </div>
+                            <div class="post-likes">
+                                <div class="info">
+                                    <div class="post-l">
+                                        <p>{{ post.get_view_count|post_views }}</p>
+                                        <img src="{% static 'gnome_main/css/images/views.png' %}">
+                                    </div>
+                                    <div class="post-l">
+                                        <p>{{ post.get_like_count }}</p>
+                                        {% if post.postlike_set|is_full:user.id %}
+                                        <img src="{% static 'gnome_main/css/images/likes_full.png' %}">
+                                        {% else %}
+                                        <img src="{% static 'gnome_main/css/images/likes.png' %}">
+                                        {% endif %}
+                                    </div>
+                                    <div class="post-l">
+                                        <p>{{ post.get_dislike_count }}</p>
+                                        {% if post.postdislike_set|is_full:user.id %}
+                                        <img src="{% static 'gnome_main/css/images/dislikes_full.png' %}">
+                                        {% else %}
+                                        <img src="{% static 'gnome_main/css/images/dislikes.png' %}">
+                                        {% endif %}
+                                    </div>
+                                    <div class="post-l">
+                                        <p>{{ post.get_comment_count|comment_pluralize }}</p>
+                                        <img src="{% static 'gnome_main/css/images/comments.png' %}">
+                                    </div>
+                                </div>
+                                <div class="post-r">
+                                    {% if post.postfavourite_set|is_full:user.id %}
+                                    <img src="{% static 'gnome_main/css/images/favourite_full.png' %}">
+                                    {% else %}
+                                    <img src="{% static 'gnome_main/css/images/favourite.png' %}">
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+
+
+<a href="{% url 'gnome_main:show-post' slug=post.slug %}">
+                        <div class="post-in">
+                            <div class="preview-container">
+                                <img src="{{ post.preview.url }}">
+                            </div>
+                            <div class="post-data">
+                                <h1>{{ post.title }}</h1>
+                                <div class="text">{{ post.content|safe|truncatewords:100 }}</div>
+                                <div class="author-date">
+                                    <p>{{ post.author.username }}</p>
+                                    <p>{{ post.created_at|date_ago }}</p>
+                                </div>
+                                <div class="post-likes">
+                                    <div class="info">
+                                        <div class="post-l">
+                                            <p>{{ post.get_view_count|post_views }}</p>
+                                            <img src="{% static 'gnome_main/css/images/views.png' %}">
+                                        </div>
+                                        <div class="post-l">
+                                            <p>{{ post.get_like_count }}</p>
+                                            <img src="{% static 'gnome_main/css/images/likes.png' %}">
+                                        </div>
+                                        <div class="post-l">
+                                            <p>{{ post.get_dislike_count }}</p>
+                                            <img src="{% static 'gnome_main/css/images/dislikes.png' %}">
+                                        </div>
+                                        <div class="post-l">
+                                            <p>{{ post.get_comment_count }}</p>
+                                            <img src="{% static 'gnome_main/css/images/comments.png' %}">
+                                        </div>
+                                    </div>
+                                    <div class="post-r">
+                                        <img src="{% static 'gnome_main/css/images/favourite.png' %}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>

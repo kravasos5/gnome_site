@@ -134,6 +134,7 @@ admin.site.register(SuperRubric, SuperRubricAdmin)
 admin.site.register(SubRubric, SubRubricAdmin)
 
 admin.site.register(Post, PostAdmin)
+admin.site.register(PostTag)
 admin.site.register(PostViewCount, PostViewCountAdmin)
 admin.site.register(PostLike, PostActivityAdmin)
 admin.site.register(PostDisLike, PostActivityAdmin)
