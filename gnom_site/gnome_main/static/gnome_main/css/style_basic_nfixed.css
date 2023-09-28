@@ -8,6 +8,12 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+::selection {
+    -webkit-text-fill-color: #4A0801;
+    color: #4A0801;
+    background: #FF937D;
+}
+
 .header {
     width: 100%;
     background: linear-gradient(rgba(178, 178, 178, 0.25), rgba(87, 87, 87, 0.25));
@@ -124,4 +130,17 @@ div.dropdown-list ul li {
 
 div.dropdown-list ul li:hover {
     background-color: #B8B8B8;
+}
+
+.flex-line-container {
+    display: flex;
+
+}
+
+.mini-icons {
+    margin-right: 10px;
+}
+
+.last {
+    margin-left: 10px;
 }

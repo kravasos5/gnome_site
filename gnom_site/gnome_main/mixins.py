@@ -8,7 +8,7 @@ from .templatetags.profile_extras import date_ago, key, likes_dislikes, is_full,
 from django.template.defaultfilters import linebreaks
 
 from .models import PostViewCount, SuperPostComment, SubPostComment, PostComment, CommentLike, CommentDisLike, PostLike, \
-    PostDisLike, PostFavourite, Post
+    PostDisLike, PostFavourite, Post, SubRubric, AdvUser
 from .utilities import get_client_ip
 
 class PostViewCountMixin:
@@ -292,3 +292,24 @@ class PostViewCountMixin:
                         f'подписке/отписке {ex}'}, status=400)
 
         return JsonResponse(data=context, status=200)
+
+class BlogMixin:
+    def get_context_data(self, *args, object_list=None, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['subscriptions'] = AdvUser.objects.filter(subscriptions=self.request.user)
+        context['rubrics'] = SubRubric.objects.all()
+        context['csrf_token'] = get_token(self.request)
+        context['filter_url'] = ''
+        return context
+
+    def post(self, request):
+        d = dict(request.POST)
+        if 'favourite' in d:
+            post = Post.objects.get(id=d['p_id'][0])
+            if d['status'][0] == 'append':
+                PostFavourite.objects.create(post=post, user=request.user)
+            elif d['status'][0] == 'delete':
+                fav = PostFavourite.objects.get(post=post, user=request.user)
+                fav.delete()
+        return JsonResponse({}, status=200)
+
