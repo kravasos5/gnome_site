@@ -1,0 +1,40 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_log_in.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js" integrity="sha512-6lplKUSl86rUVprDIjiW8DuOniNX8UDoRATqZSds/7t6zCQZfaCe3e5zcGaQwxa8Kpn5RTM9Fvl3X2lLV4grPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="{% static 'cropper/css/cropper.min.css' %}"/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+<script src="{% static 'gnome_main/js/changeUserImageLoader.js' %}"></script>
+{% endblock %}
+{% block head %}
+{{ form.media }}
+{% endblock head %}
+
+{% block content %}
+<div class="widget-container">
+    <h1>Изменение данных пользователя {{ user.username }}</h1>
+    <form method="post" enctype="multipart/form-data" id="change-form">
+        {% csrf_token %}
+        <div class="info">
+            {% for field in form %}
+                <p>{{ field.label }}</p>
+                {% if field.help_text %}
+                    <p>{{ field.help_text }}</p>
+                {% endif %}
+                <p>{{ field }}</p>
+                {% if field.errors %}
+                    <p>{{ field.errors }}</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <input type="submit" value="Изменить" class="form-btn">
+        <a class="form-delete" style="margin-top: 15px;" href="{% url 'gnome_main:user-delete-starting' slug=user.slug %}">Удалить аккаунт</a>
+    </form>
+</div>
+{% endblock %}
