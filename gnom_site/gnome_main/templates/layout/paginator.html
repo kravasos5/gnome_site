@@ -1,0 +1,52 @@
+{% if paginator.num_pages > 1 %}
+    <div class="pag-container">
+        <ul class="paginator">
+            {% for page in paginator.page_range %}
+            {% if forloop.first and page_obj.has_previous %}
+                <a href="?{{ filter_url }}page={{ page_obj.previous_page_number}}" class="non-chose">
+                    <li>
+                        <p><</p>
+                    </li>
+                </a>
+                {% if page_obj.number > 2 %}
+                <a href="?{{ filter_url }}page=1" class="non-chose">
+                    <li>
+                        <p>1</p>
+                    </li>
+                </a>
+                {% endif %}
+            {% endif %}
+
+            {% if page_obj.number == page %}
+            <a>
+                <li>
+                    <p>{{ page }}</p>
+                </li>
+            </a>
+            {% elif page >= page_obj.number|add:-1 and page <= page_obj.number|add:1 %}
+            <a href="?{{ filter_url }}page={{ page }}" class="non-chose">
+                <li>
+                    <p>{{ page }}</p>
+                </li>
+            </a>
+            {% endif %}
+
+            {% if forloop.last and page_obj.has_next %}
+                {% if page_obj.number|add:2 <= paginator.num_pages %}
+                    <a href="?{{ filter_url }}page={{ paginator.num_pages }}" class="non-chose">
+                        <li>
+                            <p>{{ paginator.num_pages }}</p>
+                        </li>
+                    </a>
+                {% endif %}
+                <a href="?{{ filter_url }}page={{ page_obj.next_page_number}}" class="non-chose last">
+                    <li>
+                        <p>></p>
+                    </li>
+                </a>
+            {% endif %}
+            {% endfor %}
+
+        </ul>
+    </div>
+{% endif %}

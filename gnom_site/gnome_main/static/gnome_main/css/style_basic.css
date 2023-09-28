@@ -120,3 +120,15 @@ div.dropdown-list ul li {
 div.dropdown-list ul li:hover {
     background-color: #B8B8B8;
 }
+
+.flex-line-container {
+    display: flex;
+}
+
+.mini-icons {
+    margin-right: 10px;
+}
+
+.last {
+    margin-left: 10px;
+}

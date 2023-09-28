@@ -5,6 +5,8 @@ app_name = 'gnome_main'
 
 urlpatterns = [
     path('', main, name='main'),
+    path('blog/filter/', BlogFilterView.as_view(), name='blog-filter'),
+    path('blog/search/', BlogSearchView.as_view(), name='blog-search'),
     path('blog/<slug:slug>/', PostView.as_view(), name='show-post'),
     path('blog/', BlogView.as_view(), name='blog'),
     path('login/', Login_view.as_view(), name='log-in'),
