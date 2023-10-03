@@ -4,6 +4,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <link type="image/x-icon" href="{% static 'gnome_main/css/images/favicon.png' %}" rel="shortcut icon">
+    <link type="Image/x-icon" href="{% static 'gnome_main/css/images/favicon.png' %}" rel="icon">
     {% block links %}
     {% endblock links %}
     <script src="{% static 'gnome_main/js/basic.js' %}"></script>
@@ -36,7 +38,7 @@
                 <!--<div class="notifications pointer">
                     <img src="{% static 'gnome_main/css/images/notifications.png' %}">
                 </div>-->
-                <a class="last" href="#">
+                <a class="last" href="{% url 'gnome_main:create-post' %}">
                     <img src="{% static 'gnome_main/css/images/addpost.png' %}">
                 </a>
             </div>

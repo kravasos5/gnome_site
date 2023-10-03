@@ -214,6 +214,7 @@ div.dropdown-list ul li:hover {
 
 .mini-icons {
     margin-right: 10px;
+    width: auto !important;
 }
 
 .last {

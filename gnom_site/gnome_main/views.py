@@ -10,7 +10,7 @@ from django.db import IntegrityError
 from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, PasswordResetConfirmView, \
     PasswordResetCompleteView, PasswordResetDoneView
 from django.template.defaultfilters import truncatewords, safe
@@ -22,7 +22,8 @@ from rest_framework.response import Response
 
 from .serializers import PostCommentSerializer
 
-from .forms import RegisterUserForm, ChangeUserInfoForm, DeleteUserForm, PostReportForm, CommentReportForm
+from .forms import RegisterUserForm, ChangeUserInfoForm, DeleteUserForm, PostReportForm, CommentReportForm, \
+    PostCreationForm, AIFormSet
 from .mixins import PostViewCountMixin, BlogMixin
 from .models import *
 from .apps import user_delete_signal
@@ -511,6 +512,81 @@ class CommentReportView(LoginRequiredMixin, CreateView):
             form.add_error(None, 'Ошибка при отправке жалобы')
         return super().form_invalid(form)
 
+class PostInLine:
+    '''Базовый класс для представлений создания и обновления поста'''
+    form_class = PostCreationForm
+    model = Post
+
+    def form_valid(self, form):
+        named_formsets = self.get_named_formsets()
+        print(named_formsets)
+        if not all((x.is_valid() for x in named_formsets.values())):
+            return self.render_to_response(self.get_context_data(form=form))
+        form.instance.author = self.request.user
+
+        self.object = form.save()
+
+        for name, formset in named_formsets.items():
+            formset_save_func = getattr(self, f'formset_{name}_valid', None)
+            if formset_save_func is not None:
+                formset_save_func(formset)
+            else:
+                formset.save()
+        return redirect('gnome_main:blog')
+
+    def formset_images_valid(self, formset):
+        """
+        Hook for custom formset saving. Useful if you have multiple formsets
+        """
+        images = formset.save(commit=False)  # self.save_formset(formset, contact)
+        # add this 2 lines, if you have can_delete=True parameter
+        # set in inlineformset_factory func
+        for obj in formset.deleted_objects:
+            obj.delete()
+        for image in images:
+            print(image)
+            image.post = self.object
+            image.save()
+
+class PostCreate(PostInLine, CreateView):
+    '''Создание поста'''
+    template_name = 'gnome_main/post_create.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['named_formsets'] = self.get_named_formsets()
+        return context
+
+    def get_named_formsets(self):
+        if self.request.method == "GET":
+            return {
+                'images': AIFormSet(prefix='images'),
+            }
+        else:
+            return {
+                'images': AIFormSet(self.request.POST or None, self.request.FILES or None, prefix='images'),
+            }
+
+class PostUpdate(PostInLine, UpdateView):
+    '''Представление для обновления поста'''
+    template_name = 'gnome_main/post_update.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['named_formsets'] = self.get_named_formsets()
+        return context
+
+    def get_object(self, queryset=None):
+        if not queryset:
+            queryset = self.get_queryset()
+        return get_object_or_404(queryset, slug=self.kwargs['slug'])
+
+    def get_named_formsets(self):
+        return {
+            'images': AIFormSet(self.request.POST or None, self.request.FILES or None, instance=self.object, prefix='images'),
+        }
+
+
 # REST
 class PostCommentAPI(APIView):
     '''ViewSet, который будет возвращать 10 новых комментариев'''
@@ -520,3 +596,4 @@ class PostCommentAPI(APIView):
     def get(self, request):
         queryset = PostComment.objects.all()
         return Response({'get': PostCommentSerializer(queryset, many=True).data})
+

@@ -1,7 +1,9 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
+from django.utils.deconstruct import deconstructible
 from django.utils.text import slugify
 from .utilities import get_image_path_post, get_image_path_post_ai, random_key
 
@@ -96,6 +98,21 @@ class SubRubric(Rubric):
         verbose_name = 'Подрубрика'
         verbose_name_plural = 'Подрубрики'
 
+@deconstructible
+class WordCountValidator(object):
+    def __init__(self, count):
+        self.count = count
+
+    def __call__(self, val):
+        if len(str(val).split(' ')) < self.count :
+            raise ValidationError('Контент должен содержать как ' +
+                        'минимум %(count)s слов',
+                        code='not_enough_words',
+                        params={'count': self.count})
+
+    def __eq__(self, other):
+        return self.count == other.count
+
 class PostManager(models.Manager):
     '''Менеджер записей'''
     def get_queryset(self):
@@ -118,7 +135,9 @@ class Post(models.Model):
                              verbose_name='Название')
     slug = models.CharField(max_length=50, null=True, blank=True,
                             verbose_name='Слаг')
-    content = models.TextField(verbose_name='Содержание')
+    content = models.TextField(verbose_name='Содержание',
+                               validators=[MinLengthValidator(100, 'Содержание должно быть длинной минимум в 100 символов'),
+                                           WordCountValidator(10)])
     preview = models.ImageField(null=True, blank=True,
                                 upload_to=get_image_path_post,
                                 verbose_name='Превью')
