@@ -24,4 +24,6 @@ urlpatterns = [
     path('register/', RegisterUserView.as_view(), name='register'),
     path('report/<slug:slug>/post/', PostReportView.as_view(), name='post-report'),
     path('report/<slug:slug>/comment/<int:id>/', CommentReportView.as_view(), name='comment-report'),
+    path('post/update/<slug:slug>/', PostUpdate.as_view(), name='update-post'),
+    path('post/new/', PostCreate.as_view(), name='create-post'),
 ]

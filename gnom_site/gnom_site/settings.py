@@ -201,7 +201,7 @@ CKEDITOR_CONFIGS = {
             ['Source', '-', 'Bold', 'Italic']
         ],
         'toolbar_YourCustomToolbarConfig': [
-            {'name': 'document', 'items': ['Save', 'NewPage', 'Preview', 'Print', '-', 'Templates']},
+            {'name': 'document', 'items': ['Templates']}, #'Save', 'NewPage', 'Preview', 'Print', '-',
             {'name': 'clipboard', 'items': ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']},
             {'name': 'editing', 'items': ['Find', 'Replace', '-', 'SelectAll']},
             '/',
@@ -217,7 +217,7 @@ CKEDITOR_CONFIGS = {
             '/',
             {'name': 'styles', 'items': ['Styles', 'Format', 'Font', 'FontSize']},
             {'name': 'colors', 'items': ['TextColor', 'BGColor']},
-            {'name': 'tools', 'items': ['Preview', 'Maximize', 'Youtube', 'ShowBlocks']},
+            {'name': 'tools', 'items': ['Preview', 'Youtube', 'ShowBlocks']},  #'Maximize'
             {'name': 'about', 'items': ['About']},
         ],
         'toolbar': 'YourCustomToolbarConfig',  # put selected toolbar config here

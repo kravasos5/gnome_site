@@ -1,0 +1,18 @@
+<div class="custom-clearable-file-input">
+    <p>it works</p>
+    {% if input %}
+        <label for="{{ input.id }}" class="clearable-file-input-label">
+            {{ input }} <!-- Вывод инпута -->
+        </label>
+    {% endif %}
+    {% if checkbox %}
+        <label for="{{ checkbox.id }}" class="clearable-file-checkbox-label">
+            {{ checkbox }} <!-- Здесь выводите крестик или иконку удаления -->
+        </label>
+    {% endif %}
+    {% if value %}
+        <span class="clearable-file">
+            {{ value }} <!-- Здесь можете выводить имя файла -->
+        </span>
+    {% endif %}
+</div>

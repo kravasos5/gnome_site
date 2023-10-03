@@ -1,0 +1,167 @@
+.pointer {
+    cursor: pointer;
+}
+
+.cke_inner {
+    width: 100% !important;
+    display: block !important;
+}
+
+div#cke_id_content {
+    width: 100% !important;
+    display: block !important;
+}
+
+#cke_1_contents {
+    width: 100% !important;
+}
+
+.django-ckeditor-widget {
+    width: 100% !important;
+}
+
+input#preview {
+    color: #fff;
+}
+
+.fset input {
+    color: #fff;
+}
+
+.widget-container form div.formset-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+#add-image-button {
+    text-decoration: none;
+    color: #000;
+    background-color: #fff;
+    border-radius: 10px;
+    width: 30%;
+    line-height: 30px;
+    text-align: center;
+
+    font-size: 14px;
+    transition: all 0.4s ease;
+}
+
+#add-image-button:hover {
+    background-color: #B5B5B5;
+    text-decoration: none
+}
+
+.formset {
+    width: 100%;
+}
+
+.widget-container form div.fs {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+.widget-container form div.fs div {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+div.info p.fset input {
+    width: 100%;
+}
+
+.widget-container form div.fs div.flex-start {
+    display: flex;
+}
+
+.widget-container form div.fs div.flex-start p {
+    width: auto;
+    margin-right: 10px;
+}
+
+.field {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.is-active  {
+    width: 100%;
+    justify-content: center;
+}
+
+div.is-active p:first-child {
+    margin-right: 15px;
+}
+
+div.is-active p input {
+    width: 100%;
+    height: 100%;
+}
+
+div.flex-line-container p {
+    width: auto;
+}
+
+.flex-line-container p input {
+    height: 100%;
+}
+
+textarea {
+    width: 100%;
+    resize: vertical;
+}
+
+p input[type="text"] {
+    cursor: text;
+}
+
+.delete-image {
+    background-color: #7C0000;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    width: 90px;
+    line-height: 30px;
+    text-align: center;
+
+    transition: all 0.3s ease;
+}
+
+.delete-p {
+    margin-left: 5%;
+}
+
+.delete-image:hover {
+    background-color: #B40000;
+}
+
+.widget-container form div.elem-p-counter {
+    width: 100%;
+
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+p#tag-counter {
+    display: flex;
+    align-items: flex-start;
+}
+
+.widget-container form div.mt {
+    margin-top: 20px;
+    text-align: center;
+    justify-content: center;
+    width: 30%;
+    line-height: 37px;
+}

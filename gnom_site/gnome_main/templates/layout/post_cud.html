@@ -1,0 +1,136 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_log_in.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/create_post.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js" integrity="sha512-6lplKUSl86rUVprDIjiW8DuOniNX8UDoRATqZSds/7t6zCQZfaCe3e5zcGaQwxa8Kpn5RTM9Fvl3X2lLV4grPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="{% static 'cropper/css/cropper.min.css' %}"/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+<script src="{% static 'gnome_main/js/post.js' %}"></script>
+{% endblock %}
+{% block head %}
+{{ form.media }}
+{% endblock head %}
+
+{% block content %}
+<div class="widget-container">
+    {% block page_name %}
+        <h1>Создание новой записи</h1>
+    {% endblock page_name %}
+    <form method="post" enctype="multipart/form-data" id="create-post-form">
+        {% csrf_token %}
+        <div class="info">
+            {% for field in form %}
+                {% if field.name == 'is_active' %}
+                    <div class="flex-line-container is-active">
+                {% else %}
+                    <div class="field">
+                {% endif %}
+                    {% if not field.is_hidden %}
+                        <p>{{ field.label }}</p>
+                    {% endif %}
+                    {% if field.help_text %}
+                        <p>{{ field.help_text }}</p>
+                    {% endif %}
+                    {% if field.name == 'tag' %}
+                    <div class="elem-p-counter">
+                        <p id="tag-counter">Текущая длина: 0</p>
+                        <p>{{ field }}</p>
+                    </div>
+                    {% else %}
+                    <p>{{ field }}</p>
+                    {% endif %}
+                    {% if field.errors %}
+                        <p>{{ field.errors }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <div class="formset-container">
+                <div class="formset">
+                    {% with named_formsets.images as formset %}
+                        {{ formset.management_form }}
+                        <script type="text/html" id="images-template">
+                            <div class="a-image">
+                                <div id="images-__prefix__" class= hide_all>
+                                    {% for field in formset.empty_form.hidden_fields %}
+                                        {{ field }}
+                                    {% endfor %}
+
+                                    {% for field in formset.empty_form.visible_fields %}
+                                        {% if field.name != 'DELETE' %}
+                                            <div class="flex-start">
+                                                    <p>{{ field.label_tag }}</p>
+                                                    <p class="fset">{{ field }}</p>
+                                                    <p class="delete-p">
+                                                        <button class="delete-image pointer" id="__prefix__" type="button">Удалить</button>
+                                                    </p>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </script>
+
+                        {% if formset.non_form_errors %}
+                            <div>
+                                {% for error in formset.non_form_errors %}
+                                <p>{{ error }}</p> <!--| escape-->
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <p>Дополнительные медиа-файлы</p>
+                        <div class="fs">
+                        {% for fs in formset %}
+                            <div class="a-image">
+                                <!--<p class="fset">{{ fset }}</p>-->
+                                {% for hidden in fs.hidden_fields %}
+                                    {{ hidden }}
+                                {% endfor %}
+
+                                {% if fs.non_form_errors %}
+                                    <div>
+                                        {% for error in fs.non_form_errors %}
+                                        <p>{{ error }}</p> <!--| escape-->
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+
+                                {% for field in fs.visible_fields %}
+                                {% if field.name != 'DELETE' %}
+                                    <div id="images-{{ forloop.counter0 }}">
+                                        {% if field.errors %}
+                                            {% for error in field.errors %}
+                                                <p style="color:red;">{{ escape }}</p>
+                                            {% endfor %}
+                                        {% endif %}
+
+                                        <div class="flex-start">
+                                            <p>{{ field.label_tag }}</p>
+                                            <p class="fset">{{ field }}</p>
+                                            <p class="delete-p">
+                                                <button class="delete-image pointer" id="{{ forloop.counter0 }}" type="button">Удалить</button>
+                                            </p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% endwith %}
+                </div>
+                <a href="#" id="add-image-button" class="add-images">Добавить ещё</a>
+            </div>
+        </div>
+        {% block finally_button %}
+            <input type="submit" value="Создать" class="form-btn">
+        {% endblock finally_button %}
+    </form>
+</div>
+{% endblock %}

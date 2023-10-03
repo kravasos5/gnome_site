@@ -449,7 +449,7 @@ div.more button {
 
 @media (max-width: 1370px) {
     .post {
-        height: auto;/*380*/
+        height: auto; /*380*/
     }
 
     .post-likes .info {

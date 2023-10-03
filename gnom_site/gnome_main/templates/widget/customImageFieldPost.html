@@ -1,0 +1,7 @@
+{% if widget.name == 'preview' %}
+<div class="image-new" style="margin: 10px 0px 1em 0px; width: 50%; height: 50%; overflow: hidden; display: none;">
+    <img src="#" style="width: 100%; height: 100%; object-fit: cover; display: none;" class="img-new">
+</div>
+{% endif %}
+
+<p><input type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value %} value="{{ widget.value.url }}"{% endif %} id="{{ widget.attrs.id }}"></p>

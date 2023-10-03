@@ -1,8 +1,11 @@
+from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
 
 # from .apps import user_registered
+from django.forms import inlineformset_factory
+
 from .apps import user_registered
 from .models import *
 
@@ -135,3 +138,63 @@ class CommentReportForm(forms.ModelForm):
         model = CommentReport
         fields = '__all__'
         exclude = ['created_at', 'comment', 'user']
+
+class PostAIForm(forms.ModelForm):
+    class Meta:
+        model = PostAdditionalImage
+        fields = '__all__'
+
+class CustomClearableFileInputPT(forms.ClearableFileInput):
+    initial_text = ''
+    template_name = 'widget/customImageFieldPost.html'
+
+class PostCreationForm(forms.ModelForm):
+    title = forms.CharField(label='Название (максимум 80 символов)')
+    content = forms.CharField(widget=CKEditorWidget(), label='Содержание')
+    preview = forms.ImageField(label='Превью',
+            widget=CustomClearableFileInputPT(attrs={'id': 'preview'}))
+    tag = forms.CharField(label='Тэги (макс 500 символов)', required=False, widget=forms.Textarea)
+
+    is_active = forms.BooleanField(label='Открыть доступ к записи?', required=False)
+
+    class Meta:
+        model = Post
+        fields = ('title', 'rubric', 'content', 'preview', 'tag', 'is_active')
+        widgets = {'author': forms.HiddenInput, 'slug': forms.HiddenInput}
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        tag_list = self.cleaned_data.get('tag', '').split(' ')
+
+        if commit:
+            instance.save()
+
+        instance.tag.clear()
+
+        for tag_name in list(set(tag_list)):
+            tag, created = PostTag.objects.get_or_create(tag=tag_name)
+            instance.tag.add(tag)
+
+        if commit:
+            instance.save()
+
+        return instance
+
+    def clean(self):
+        super().clean()
+        errors = {}
+        if len(self.cleaned_data.get('tag', '').replace(' ', '')) > 500:
+            errors['tag'] = ValidationError('Длина тегов не должна превышать ' +
+                                            '500 символов')
+        if errors:
+            raise ValidationError(errors)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        print(context)
+        context['tag_list'] = ' '.join(self.object.tag.values_list('tag', flat=True))
+        return context
+
+AIFormSet = inlineformset_factory(Post, PostAdditionalImage,
+                                  PostAIForm, can_delete=True,
+                                  extra=1, can_delete_extra=True)
