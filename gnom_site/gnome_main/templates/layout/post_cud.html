@@ -41,6 +41,14 @@
                     <div class="elem-p-counter">
                         <p id="tag-counter">Текущая длина: 0</p>
                         <p>{{ field }}</p>
+                        <script id="tag-script">
+                            window.addEventListener("load", (event) => {
+                                console.log(123);
+                                $('#id_tag').val(`{% for tag in field.value %}
+                                                      {{ tag.tag }}
+                                                  {% endfor %}`.replace(/\s+/g, ' ').trim());
+                            });
+                        </script>
                     </div>
                     {% else %}
                     <p>{{ field }}</p>

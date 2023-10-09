@@ -34,6 +34,8 @@ def comment_pluralize(value):
         new_value += ' комментарий'
     elif 2 <= int(str(value)[-1]) <= 4:
         new_value += ' комментария'
+    elif 10 <= value <= 19:
+        new_value += ' комментариев'
     return new_value
 
 @register.filter(name='post_views')

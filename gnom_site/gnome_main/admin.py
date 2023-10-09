@@ -129,6 +129,11 @@ class PostCommentActivityAdmin(admin.ModelAdmin):
     list_display = ('user', 'comment')
     search_fields = ('user', 'comment')
 
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'title', 'message', 'created_at')
+    readonly_fields = ('created_at',)
+
+
 admin.site.register(AdvUser, AdvUserAdmin)
 admin.site.register(SuperRubric, SuperRubricAdmin)
 admin.site.register(SubRubric, SubRubricAdmin)
@@ -143,3 +148,4 @@ admin.site.register(SuperPostComment, SuperPostCommentAdmin)
 admin.site.register(SubPostComment, SubPostCommentAdmin)
 admin.site.register(CommentLike, PostCommentActivityAdmin)
 admin.site.register(CommentDisLike, PostCommentActivityAdmin)
+admin.site.register(Notification, NotificationAdmin)

@@ -1,0 +1,70 @@
+/* Контейнер карточек уведомлений */
+.notification-container {
+    margin: 20px 0px;
+    padding: 0px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card {
+    /*height: 1000px;*/
+    width: 90%;
+    background-color: #D9D9D9;
+    margin-top: 30px;
+    border-radius: 10px;
+    padding: 20px;
+
+    transition: all 0.4s ease;
+}
+
+.header-line {
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-line h1, .header-line p {
+    margin-top: 0;
+}
+
+a.nametag {
+    color: red;
+    text-decoration: none;
+}
+
+.filter-btn {
+    margin-right: 15px;
+    line-height: 40px;
+    padding: 10px 10px;
+
+    color: #fff;
+    font-size: 14px;
+    text-decoration: none;
+    text-align: center;
+    line-height: 20px;
+
+    background-color: #373737;
+    border-radius: 20px;
+    border: none;
+
+    cursor: pointer;
+
+    transition: all 0.3s;
+}
+
+.filter-btn:hover {
+    background-color: #262626;
+}
+
+.filter {
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.first {
+    margin-top: 0px;
+}

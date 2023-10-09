@@ -6,5 +6,5 @@
 
 {% block finally_button %}
 <input type="submit" value="Изменить" class="form-btn">
-<div class="delete-image mt">Удалить запись</div>
+<a class="delete-image mt" href="{% url 'gnome_main:delete-post' slug=object.slug %}">Удалить запись</a>
 {% endblock finally_button %}

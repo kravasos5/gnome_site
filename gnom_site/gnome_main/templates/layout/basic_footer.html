@@ -34,14 +34,20 @@
                 </div>
             </div>
 
+            {% if user.is_authenticated %}
             <div class="flex-line-container mini-icons">
-                <!--<div class="notifications pointer">
-                    <img src="{% static 'gnome_main/css/images/notifications.png' %}">
-                </div>-->
+                <a href="{% url 'gnome_main:notifications' slug=user.slug %}">
+                    {% if notif_index %}
+                    <img class="dropdown-btn pointer" src="{% static 'gnome_main/css/images/notifications_active.png' %}">
+                    {% else %}
+                    <img class="dropdown-btn pointer" src="{% static 'gnome_main/css/images/notifications.png' %}">
+                    {% endif %}
+                </a>
                 <a class="last" href="{% url 'gnome_main:create-post' %}">
                     <img src="{% static 'gnome_main/css/images/addpost.png' %}">
                 </a>
             </div>
+            {% endif %}
 
             <div class="profile pointer">
                 {% if not user.is_authenticated %}

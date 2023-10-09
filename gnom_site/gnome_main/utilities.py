@@ -8,6 +8,7 @@ from django.template.loader import render_to_string
 
 from gnom_site.settings import ALLOWED_HOSTS
 
+
 # создаю подпись для дополнительной защиты данных
 signer = Signer()
 
@@ -43,7 +44,6 @@ def user_delete(user, protocol, domain):
     em = EmailMessage(subject=subject, body=body_text,
                       to=[f'{user.email}', ])
     em.send()
-
 
 # генератор имени для фото в посте
 def get_image_path_post(instance, filename):

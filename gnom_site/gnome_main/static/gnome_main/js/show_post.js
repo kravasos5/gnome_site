@@ -223,7 +223,7 @@ $(document).ready(function() {
 
             let input = $(this).find('textarea.c-line')
             let comment_text = input.val();
-            let s_username = '@' + $(this).parent().find('.c-author-date').find('a').text();
+            let s_username = '@' + $(this).parent().find('.c-author-date > a').text();
             form_data['s-comment-line'] = comment_text;
             form_data['s-username'] = s_username;
             form_data['super-id'] = $(this).parent().parent().attr('class').split(' ').slice(-1)[0];
@@ -655,7 +655,7 @@ $(document).ready(function() {
                             append($('<img>').attr('src', response.recs[i].preview)));
                     let ul = $('<ul>')
                         if (response.recs[i].report) {
-                            ul.append($('<li>').append($('<a>').text('Изменить').attr('href', '#')));
+                            ul.append($('<li>').append($('<a>').text('Изменить').attr('href', response.recs[i].update_url)));
                         } else {
                             let a = $('<a>').attr('href', response.recs[i].report_url).
                                 append($('<img>').attr('src', '/static/gnome_main/css/images/report.png')).

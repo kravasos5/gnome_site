@@ -1,3 +1,5 @@
+from django.db.models.signals import post_save
+from django.dispatch import Signal
 from django.utils import timezone
 
 from django.contrib.auth import logout
@@ -24,34 +26,126 @@ from .serializers import PostCommentSerializer
 
 from .forms import RegisterUserForm, ChangeUserInfoForm, DeleteUserForm, PostReportForm, CommentReportForm, \
     PostCreationForm, AIFormSet
-from .mixins import PostViewCountMixin, BlogMixin
+from .mixins import PostMixin, BlogMixin, NotificationCheckMixin
 from .models import *
 from .apps import user_delete_signal
 from .templatetags.profile_extras import date_ago, post_views, is_full, comment_pluralize
 from .utilities import signer
 
+
+
+##############################################################
+# Сигналы
+##############################################################
+# Обработчик сигнала создания нового комментария
+def comment_save_dispathcher(sender, **kwargs):
+    if kwargs['created']:
+        instance = kwargs['instance']
+        post_author = instance.post.author
+        if post_author != instance.user:
+            title = 'c'
+            message = f'Пользователь <a href="{instance.user.get_absolute_url()}" ' \
+                      f'class="nametag">' \
+                      f'{instance.user.username}</a> оставил комментарий под вашим ' \
+                      f'постом <a href="{instance.post.get_absolute_url()}" class="nametag">' \
+                      f'{instance.post.title}</a><br>' + \
+                      f'Вот его текст: {instance.comment}'
+            Notification.objects.create(user=post_author, title=title,
+                                                    message=message)
+# сигнал создания нового комментария
+post_save.connect(comment_save_dispathcher, sender=SuperPostComment)
+post_save.connect(comment_save_dispathcher, sender=SubPostComment)
+
+# Обработчик сигнала создания новой жалобы на Пост
+def post_report_save_dispathcher(sender, **kwargs):
+    if kwargs['created']:
+        instance = kwargs['instance']
+        type = instance.type
+
+        title = 'r'
+        message = f'Пользователь <a href="{instance.user.get_absolute_url()}" ' \
+                  f'class="nametag">' \
+                  f'{instance.user.username}</a> подал жалобу на ваш пост: ' \
+                  f'<a href="{instance.post.get_absolute_url()}" class="nametag">' \
+                  f'{instance.post.title}</a><br>' \
+                  f'Тип жалобы: {type}'
+        if instance.text:
+            message += f'<br>Вот текст жалобы: {instance.text}'
+
+        Notification.objects.create(user=instance.post.author, title=title,
+                                                message=message)
+# сигнал создания новой жалобы на Пост
+post_save.connect(post_report_save_dispathcher, sender=PostReport)
+
+# обработчик сигнала создания новой жалобы на Комментарий
+def comment_report_save_dispathcher(sender, **kwargs):
+    if kwargs['created']:
+        instance = kwargs['instance']
+        type = instance.type
+        print(instance.comment.comment)
+
+        title = 'r'
+        message = f'Пользователь <a href="{instance.user.get_absolute_url()}" ' \
+                  f'class="nametag">' \
+                  f'{instance.user.username}</a> подал жалобу на ваш комментарий:<br>' \
+                  f'{instance.comment.comment}<br>' \
+                  f'Тип жалобы: {type}'
+        if instance.text:
+            message += f'<br>Вот текст жалобы: {instance.text}'
+
+        Notification.objects.create(user=instance.comment.user, title=title,
+                                                message=message)
+# сигнал создания новой жалобы на Комментарий
+post_save.connect(comment_report_save_dispathcher, sender=CommentReport)
+
+# обработчик сигнала новой подписки
+def user_subsript_notification(instance, user):
+    message = f'Ваш новый подписчик: <a href={instance.get_absolute_url()} ' \
+              f'class="nametag">' \
+              f'{instance.username}</a>'
+    Notification.objects.create(title='s', user=user, message=message)
+
+# сигнал новой подписки на пользователя
+user_subsript = Signal()
+
+def user_subsript_dispatcher(sender, **kwargs):
+    user_subsript_notification(kwargs['instance'], kwargs['user'])
+
+user_subsript.connect(user_subsript_dispatcher)
+
+
+
+##############################################################
+# Представления
+##############################################################
 # Главная страница
-def main(request):
-    # print(request.context)
-    # context = {'cur_user': cur_user,}
-    return render(request, 'gnome_main/main.html') #, context=context
+class Main(View):
+    template_name = 'gnome_main/main.html'
+
+    def get(self, request):
+        context = {}
+        notification = Notification.objects.filter(user=self.request.user,
+                                                   is_read=False).exists()
+        context['notification'] = notification
+        return render(request, 'gnome_main/main.html', context=context)
+
 
 # Блог
-class BlogView(BlogMixin, ListView):
+class BlogView(NotificationCheckMixin, BlogMixin, ListView):
     '''Представление блога'''
     model = Post
     template_name = 'gnome_main/blog.html'
     context_object_name = 'posts'
-    paginate_by = 2
+    paginate_by = 10
     # .annotate(num_likes=Count('like'), num_postcomments=Count('postcomment')) \
         # .order_by('num_likes', 'num_postcomments')
 
-class BlogFilterView(BlogMixin, ListView):
+class BlogFilterView(NotificationCheckMixin, BlogMixin, ListView):
     '''Представление блога с фильтром'''
     model = Post
     template_name = 'gnome_main/blog.html'
     context_object_name = 'posts'
-    paginate_by = 2
+    paginate_by = 10
 
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset()
@@ -140,12 +234,12 @@ class BlogFilterView(BlogMixin, ListView):
         context['filter_url'] = url_str + '&'
         return context
 
-class BlogSearchView(BlogMixin, ListView):
+class BlogSearchView(NotificationCheckMixin, BlogMixin, ListView):
     '''Представление блога с фильтром'''
     model = Post
     template_name = 'gnome_main/blog.html'
     context_object_name = 'posts'
-    paginate_by = 2
+    paginate_by = 10
 
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset()
@@ -174,13 +268,13 @@ class BlogSearchView(BlogMixin, ListView):
         return context
 
 
-class PostView(PostViewCountMixin, DetailView):
+class PostView(NotificationCheckMixin, PostMixin, DetailView):
     '''Представление детального просмотра поста'''
     model = Post
     template_name = 'gnome_main/show_post.html'
     context_object_name = 'post'
 
-class UserProfile(View):
+class UserProfile(NotificationCheckMixin, View):
     '''Представление профиля пользователя'''
     template_name = 'gnome_main/user_profile.html'
 
@@ -214,6 +308,7 @@ class UserProfile(View):
                     cur_user.subscriptions.remove(user)
                 elif d['subscribe'][0] == 'false':
                     cur_user.subscriptions.add(user)
+                    user_subsript.send(AdvUser, instance=user, user=cur_user)
             except:
                 return JsonResponse(data={'ex': 'Неверные данные post'}, status=400)
         elif 'filter' in d:
@@ -294,6 +389,8 @@ class UserProfile(View):
 
                     if report == False:
                         context['posts'][-1]['report_url'] = f'/report/{i.slug}/post/'
+                    else:
+                        context['posts'][-1]['update_url'] = f'/post/update/{i.slug}/'
             else:
                 context['posts_is_full'] = True
             # except Exception as ex:
@@ -350,7 +447,7 @@ def user_activate(request, sign):
         user.save()
     return render(request, template)
 
-class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+class ChangeUserInfoView(NotificationCheckMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     '''Изменение данных пользователя'''
     model = AdvUser
     template_name = 'gnome_main/change_user_info.html'
@@ -370,13 +467,13 @@ class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy('gnome_main:user-profile', kwargs={'slug': self.slug})
 
-    # def form_valid(self, form):
-    #     super().form_valid(form)
-    #     response_data = {
-    #         'success': True,
-    #         'success_url': self.get_success_url()
-    #     }
-    #     return JsonResponse(response_data)
+    def form_valid(self, form):
+        super().form_valid(form)
+        response_data = {
+            'success': True,
+            'success_url': self.get_success_url()
+        }
+        return JsonResponse(response_data)
 
 # Сброс пароля
 class PasswordReset(PasswordResetView):
@@ -442,7 +539,7 @@ class DeleteUserView(LoginRequiredMixin, DeleteView):
             queryset = self.get_queryset()
         return get_object_or_404(queryset, pk=self.user_id)
 
-class PostReportView(LoginRequiredMixin, CreateView):
+class PostReportView(NotificationCheckMixin, LoginRequiredMixin, CreateView):
     model = PostReport
     template_name = 'gnome_main/report.html'
     form_class = PostReportForm
@@ -477,7 +574,7 @@ class PostReportView(LoginRequiredMixin, CreateView):
             form.add_error(None, 'Ошибка при отправке жалобы')
         return super().form_invalid(form)
 
-class CommentReportView(LoginRequiredMixin, CreateView):
+class CommentReportView(NotificationCheckMixin, LoginRequiredMixin, CreateView):
     model = PostReport
     template_name = 'gnome_main/report.html'
     form_class = CommentReportForm
@@ -548,7 +645,7 @@ class PostInLine:
             image.post = self.object
             image.save()
 
-class PostCreate(PostInLine, CreateView):
+class PostCreateView(NotificationCheckMixin, LoginRequiredMixin, PostInLine, CreateView):
     '''Создание поста'''
     template_name = 'gnome_main/post_create.html'
 
@@ -567,7 +664,7 @@ class PostCreate(PostInLine, CreateView):
                 'images': AIFormSet(self.request.POST or None, self.request.FILES or None, prefix='images'),
             }
 
-class PostUpdate(PostInLine, UpdateView):
+class PostUpdateView(NotificationCheckMixin, LoginRequiredMixin, PostInLine, UpdateView):
     '''Представление для обновления поста'''
     template_name = 'gnome_main/post_update.html'
 
@@ -586,6 +683,55 @@ class PostUpdate(PostInLine, UpdateView):
             'images': AIFormSet(self.request.POST or None, self.request.FILES or None, instance=self.object, prefix='images'),
         }
 
+class PostDeleteView(NotificationCheckMixin, LoginRequiredMixin, DeleteView):
+    '''Представление удаления записи'''
+    model = Post
+    template_name = 'gnome_main/post_delete.html'
+    success_url = reverse_lazy('gnome_main:blog')
+
+class NotificationView(NotificationCheckMixin, ListView):
+    '''Представление уведомлений'''
+    template_name = 'gnome_main/notifications.html'
+    context_object_name = 'notification'
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user)[:10]
+
+    def get_context_data(self, *args, object_list=None, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['csrf_token'] = get_token(self.request)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        d = dict(request.POST)
+        context = {}
+        print(d)
+        if 'more-notif' in d:
+            ids = d['ids[]']
+            if ids == '' or ids[0] == 'false':
+                ids = []
+            new_notif = Notification.objects.filter(user=self.request.user)\
+                        .exclude(id__in=ids)
+            filter = d['filter'][0]
+            if filter != '' and filter != 'all':
+                if filter == 'reports':
+                    new_notif = new_notif.filter(title='r')
+                elif filter == 'comments':
+                    new_notif = new_notif.filter(title='c')
+                elif filter == 'subs':
+                    new_notif = new_notif.filter(title='s')
+            new_notif[:10]
+            context['new_notif'] = []
+            for i in new_notif:
+                context['new_notif'].append(
+                    {'id': i.id,
+                    'title': i.get_title_display(),
+                     'message': safe(i.message),
+                     'is_read': i.is_read,
+                     'created_at': date_ago(i.created_at)}
+                )
+            new_notif.update(is_read=True)
+        return JsonResponse(data=context, status=200)
 
 # REST
 class PostCommentAPI(APIView):
