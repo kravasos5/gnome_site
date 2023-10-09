@@ -76,7 +76,7 @@
                     <button type="button" class="sub-false">Подписаться</button>
                     <button type="button" class="sub-true" style="display: none;">Отписаться</button>
                     {% elif user == post.author %}
-                    <a href="#" class="change-post">Изменить</a>
+                    <a href="{% url 'gnome_main:update-post' slug=post.slug %}" class="change-post">Изменить</a>
                 {% endif %}
                 </div>
             </div>

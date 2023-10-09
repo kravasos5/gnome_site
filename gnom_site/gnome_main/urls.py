@@ -4,7 +4,7 @@ from .views import *
 app_name = 'gnome_main'
 
 urlpatterns = [
-    path('', main, name='main'),
+    path('', Main.as_view(), name='main'),
     path('blog/filter/', BlogFilterView.as_view(), name='blog-filter'),
     path('blog/search/', BlogSearchView.as_view(), name='blog-search'),
     path('blog/<slug:slug>/', PostView.as_view(), name='show-post'),
@@ -24,6 +24,8 @@ urlpatterns = [
     path('register/', RegisterUserView.as_view(), name='register'),
     path('report/<slug:slug>/post/', PostReportView.as_view(), name='post-report'),
     path('report/<slug:slug>/comment/<int:id>/', CommentReportView.as_view(), name='comment-report'),
-    path('post/update/<slug:slug>/', PostUpdate.as_view(), name='update-post'),
-    path('post/new/', PostCreate.as_view(), name='create-post'),
+    path('post/update/<slug:slug>/', PostUpdateView.as_view(), name='update-post'),
+    path('post/delete/<slug:slug>/', PostDeleteView.as_view(), name='delete-post'),
+    path('post/new/', PostCreateView.as_view(), name='create-post'),
+    path('notifications/<slug:slug>/', NotificationView.as_view(), name='notifications')
 ]

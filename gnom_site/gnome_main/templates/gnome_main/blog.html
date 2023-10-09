@@ -222,7 +222,7 @@
                         <ul>
                             {% if user == post.author %}
                             <li>
-                                <a href="#">Изменить</a>
+                                <a href="{% url 'gnome_main:update-post' slug=post.slug %}">Изменить</a>
                             </li>
                             {% else %}
                             <li>

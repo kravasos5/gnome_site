@@ -1,17 +1,34 @@
 from django.db.models import Count
+from django.dispatch import Signal
 from django.http import JsonResponse
 from django.db.utils import DataError, IntegrityError
 from django.middleware.csrf import get_token
-from django.template.loader import render_to_string
 
 from .templatetags.profile_extras import date_ago, key, likes_dislikes, is_full, post_views
 from django.template.defaultfilters import linebreaks
 
 from .models import PostViewCount, SuperPostComment, SubPostComment, PostComment, CommentLike, CommentDisLike, PostLike, \
-    PostDisLike, PostFavourite, Post, SubRubric, AdvUser
+    PostDisLike, PostFavourite, Post, SubRubric, AdvUser, Notification
 from .utilities import get_client_ip
 
-class PostViewCountMixin:
+
+# обработчик сигнала новой подписки
+def user_subsript_notification(instance, user):
+    message = f'Ваш новый подписчик: <a href={instance.get_absolute_url()} ' \
+              f'class="nametag">' \
+              f'{instance.username}</a>'
+    Notification.objects.create(title='s', user=user, message=message)
+
+# сигнал новой подписки на пользователя
+user_subsript = Signal()
+
+def user_subsript_dispatcher(sender, **kwargs):
+    user_subsript_notification(kwargs['instance'], kwargs['user'])
+
+user_subsript.connect(user_subsript_dispatcher)
+
+
+class PostMixin:
 
     '''Миксин, увеличивающий просмотры'''
     def get_object(self):
@@ -217,6 +234,8 @@ class PostViewCountMixin:
 
                         if report == False:
                             context['recs'][-1]['report_url'] = f'/report/{i.slug}/post/'
+                        else:
+                            context['recs'][-1]['update_url'] = f'/post/update/{i.slug}/'
 
             except Exception as ex:
                 return JsonResponse(data={'ex': f'Неверные данные, {ex}'}, status=400)
@@ -287,6 +306,7 @@ class PostViewCountMixin:
                     author.subscriptions.remove(request.user)
                 elif d['subscribe'][0] == 'true':
                     author.subscriptions.add(request.user)
+                    user_subsript.send(AdvUser, instance=request.user, user=author)
             except Exception as ex:
                 return JsonResponse(data={'ex': 'Ошибка при '
                         f'подписке/отписке {ex}'}, status=400)
@@ -313,3 +333,11 @@ class BlogMixin:
                 fav.delete()
         return JsonResponse({}, status=200)
 
+class NotificationCheckMixin:
+    '''Миксин для добавление в контекст'''
+    def get_context_data(self, *args, object_list=None, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        notification = Notification.objects.filter(user=self.request.user,
+                                                   is_read=False).exists()
+        context['notif_index'] = notification
+        return context

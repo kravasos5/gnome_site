@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <link type="image/x-icon" href="{% static 'gnome_main/css/images/favicon.png' %}" rel="shortcut icon">
     <link type="Image/x-icon" href="{% static 'gnome_main/css/images/favicon.png' %}" rel="icon">
-    {% block links %}css/images/
+    {% block links %}
     {% endblock links %}
     <script src="{% static 'gnome_main/js/basic.js' %}"></script>
     <title>{% block title %}Правда о гномах{% endblock title %}</title>
@@ -30,20 +30,24 @@
                     <a class="nav-item" href="{% url 'gnome_main:blog' %}">Блог</a>
                     {% if not user.is_authenticated %}
                     <a class="nav-item-last" href="{% url 'gnome_main:log-in' %}">Войти</a>
-                    {% else %}
-
                     {% endif %}
                 </div>
             </div>
 
+            {% if user.is_authenticated %}
             <div class="flex-line-container mini-icons">
-                <!--<div class="notifications pointer">
-                    <img src="{% static 'gnome_main/css/images/notifications.png' %}">
-                </div>-->
+                <a href="{% url 'gnome_main:notifications' slug=user.slug %}">
+                    {% if notif_index %}
+                    <img class="dropdown-btn pointer" src="{% static 'gnome_main/css/images/notifications_active.png' %}">
+                    {% else %}
+                    <img class="dropdown-btn pointer" src="{% static 'gnome_main/css/images/notifications.png' %}">
+                    {% endif %}
+                </a>
                 <a class="last" href="{% url 'gnome_main:create-post' %}">
                     <img src="{% static 'gnome_main/css/images/addpost.png' %}">
                 </a>
             </div>
+            {% endif %}
 
             <div class="profile pointer">
                 {% if not user.is_authenticated %}

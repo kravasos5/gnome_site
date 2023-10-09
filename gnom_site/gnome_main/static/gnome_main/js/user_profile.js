@@ -61,7 +61,7 @@ $(document).ready(function() {
                 append($('<img>').attr('src', post.preview));
             let ul = $('<ul>')
             if (post.report) {
-                ul.append($('<li>').append($('<a>').text('Изменить').attr('href', '#')));
+                ul.append($('<li>').append($('<a>').text('Изменить').attr('href', post.update_url)));
             } else {
                 let a = $('<a>').attr('href', post.report_url).
                     append($('<img>').attr('src', '/static/gnome_main/css/images/report.png')).

@@ -374,11 +374,13 @@ class PostReport(models.Model):
         ('Демонстрация насилия', 'Демонстрация насилия')
     ]
 
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    user = models.ForeignKey(AdvUser, on_delete=models.CASCADE)
-    type = models.CharField(choices=type_choices, null=False, blank=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    text = models.CharField(max_length=300, null=True, blank=True)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, verbose_name='Запись')
+    user = models.ForeignKey(AdvUser, on_delete=models.CASCADE, verbose_name='Пользователь')
+    type = models.CharField(choices=type_choices, null=False, blank=False,
+                            verbose_name='Тип жалобы')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    text = models.CharField(max_length=300, null=True, blank=True,
+                            verbose_name='Текст жалобы')
 
     class Meta:
         verbose_name = 'Жалоба на запись'
@@ -427,3 +429,24 @@ class PostTag(models.Model):
 
     def __str__(self):
         return f'{self.tag}'
+
+class Notification(models.Model):
+    user = models.ForeignKey(AdvUser, null=False, blank=False, verbose_name='Адресат',
+                             on_delete=models.CASCADE)
+    title = models.CharField(max_length=1, choices=(
+        ('r', 'На вас поступила новая жалоба'),
+        ('s', 'У вас новый подписчик!'),
+        ('c', 'У вас новый комментарий!')
+    ), verbose_name='Сообщение')
+    message = models.CharField(null=False, blank=False,
+                               verbose_name='Сообщение')
+    is_read = models.BooleanField(default=False, verbose_name='Прочитано автором?')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Уведомление'
+        verbose_name_plural = 'Уведомления'
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return f'notification_id - {self.id}; destination - {self.user}'

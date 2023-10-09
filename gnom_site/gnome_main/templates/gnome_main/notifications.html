@@ -1,0 +1,40 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+{% load profile_extras %}
+{% block links %}
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/notification.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<script src="{% static 'gnome_main/js/hogan-3.0.2.js' %}"></script>
+<script src="{% static 'gnome_main/js/notification.js' %}"></script>
+<script>
+    var csrf_token = '{{ csrf_token }}';
+</script>
+{% endblock links %}
+
+{% block content %}
+<div class="filter flex-line-container">
+    <a class="filter-btn" id="reports">Жалобы</a>
+    <a class="filter-btn" id="comments">Комментарии</a>
+    <a class="filter-btn" id="subs">Подписки</a>
+    <a class="filter-btn" id="all">Все уведомления</a>
+</div>
+<div class="notification-container flex-line-container">
+    {% for note in notification %}
+        {% if forloop.counter0 == 0 %}
+        <div class="card notification first {{ note.id }}">
+        {% else %}
+        <div class="card notification {{ note.id }}">
+        {% endif %}
+            <div class="flex-line-container header-line">
+                <h1>{{ note.get_title_display }}</h1>
+                <p>{{ note.created_at|date_ago }}</p>
+            </div>
+            <p>{{ note.message|safe }}</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock content %}

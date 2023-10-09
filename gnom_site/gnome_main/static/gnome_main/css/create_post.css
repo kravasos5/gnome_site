@@ -158,10 +158,18 @@ p#tag-counter {
     align-items: flex-start;
 }
 
-.widget-container form div.mt {
+.widget-container form .mt {
     margin-top: 20px;
     text-align: center;
     justify-content: center;
     width: 30%;
     line-height: 37px;
+}
+
+p.fset a {
+    color: #7C0000;
+}
+
+a.delete-image {
+    text-decoration: none;
 }
