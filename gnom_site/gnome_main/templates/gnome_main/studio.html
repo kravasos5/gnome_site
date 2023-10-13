@@ -1,0 +1,42 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+{% load profile_extras %}
+{% block links %}
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/studio.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+{% endblock links %}
+
+{% block content %}
+<div class="studio-container">
+<div class="flex-line-container filter">
+    <a class="filter-btn" href="{% url 'gnome_main:blog-author' slug=user.slug %}">Мои записи</a>
+</div>
+<div class="flex-line-container cards">
+    {% for item in data %}
+    <a class="card pointer" href="{% url 'gnome_main:studio-detail' slug=user.slug section=item.section %}">
+        <h1>{{ item.title }}</h1>
+        <div class="graph" id="views">
+            <p>Всего {{ item.all_title }}: {{ item.all }}</p>
+            {% if item.diff %}
+            <div class="flex-line-container last-c">
+                <p>Просмотров за последнюю неделю: {{ item.last_week }}</p>
+                {% if item.up %}
+                <span class="flex-line-container data-chang-icon up">
+                {% else %}
+                <span class="flex-line-container data-chang-icon down">
+                {% endif %}
+                    <img src="{{ item.arrow_url }}">
+                    <p>{{ item.diff }}%</p>
+                </span>
+            </div>
+            {% endif %}
+        </div>
+    </a>
+    {% endfor %}
+</div>
+</div>
+{% endblock content %}

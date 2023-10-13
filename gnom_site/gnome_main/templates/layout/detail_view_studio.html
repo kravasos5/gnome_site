@@ -1,0 +1,25 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+{% load profile_extras %}
+{% block links %}
+<link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/studio.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/data.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/stock/modules/accessibility.js"></script>
+
+<script src="{% static 'gnome_main/js/studio.js' %}"></script>
+
+<script>
+    var data = {{ data|safe }};
+    var g_title = '{{ g_title }}';
+    var ld_indicator = {{ ld_indicator }};
+</script>
+{% endblock links %}

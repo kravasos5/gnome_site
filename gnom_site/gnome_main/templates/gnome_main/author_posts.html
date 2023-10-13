@@ -1,0 +1,21 @@
+{% extends 'layout/blog_basic.html' %}
+
+{% block filter_url %}
+{% url 'gnome_main:blog-filter-author' slug=author_slug %}
+{% endblock filter_url %}
+
+{% block by_author %}
+<div class="by-author" style="display: none;">
+    <p class="param-name">По автору</p>
+    <div class="edit">
+        <label for="by-author">имя</label>
+        <input type="text" name="author" id="by-author" placeholder="authorname"
+               value="{{author_slug}}">
+    </div>
+</div>
+{% endblock by_author %}
+
+{% block blog_search %}
+{% url 'gnome_main:blog-search-author' slug=author_slug %}
+{% endblock blog_search %}
+

@@ -241,7 +241,7 @@ class PostLike(models.Model):
         unique_together = ['post', 'user']
 
     def __str__(self):
-        return f'Лайк. Пост:{self.post.id} - пользователь{self.user.id}'
+        return f'Лайк. Пост: {self.post.id} - пользователь: {self.user.id}'
 
 class PostDisLike(models.Model):
     '''Модель дизлайков поста'''
@@ -256,7 +256,7 @@ class PostDisLike(models.Model):
         unique_together = ['post', 'user']
 
     def __str__(self):
-        return f'Дизлайк. Пост:{self.post.id} - пользователь{self.user.id}'
+        return f'Дизлайк. Пост: {self.post.id} - пользователь: {self.user.id}'
 
 class PostFavourite(models.Model):
     '''Модель избранных постов пользователя'''

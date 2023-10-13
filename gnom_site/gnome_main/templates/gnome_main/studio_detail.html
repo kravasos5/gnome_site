@@ -1,0 +1,13 @@
+{% extends 'layout/detail_view_studio.html' %}
+
+{% block content %}
+<div class="studio-container">
+    <div class="flex-line-container analytics-container">
+        <div id="graph-container">
+
+        </div>
+
+        <a class="filter-btn" href="{% url 'gnome_main:studio' slug=user.slug %}">Назад</a>
+    </div>
+</div>
+{% endblock content %}

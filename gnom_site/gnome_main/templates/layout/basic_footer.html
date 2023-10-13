@@ -65,7 +65,7 @@
     <ul>
         <li><a href="{{ user.get_absolute_url }}">Мой профиль</a></li>
         <hr>
-        <li><a href="#">Мои записи</a></li>
+        <li><a href="{% url 'gnome_main:blog-author' slug=user.slug %}">Мои записи</a></li>
         <hr>
         <li><a href="{% url 'gnome_main:log-out' %}">Выйти</a></li>
     </ul>

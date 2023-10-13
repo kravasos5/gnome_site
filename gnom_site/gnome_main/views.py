@@ -1,3 +1,6 @@
+from time import mktime
+
+from django.db.models.functions import TruncDate
 from django.db.models.signals import post_save
 from django.dispatch import Signal
 from django.utils import timezone
@@ -9,14 +12,15 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django.core.signing import BadSignature
 from django.db import IntegrityError
-from django.db.models import Count, Q
-from django.http import JsonResponse
+from django.db.models import Count, Q, F
+from django.http import JsonResponse, HttpResponseRedirect
 from django.middleware.csrf import get_token
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, PasswordResetConfirmView, \
     PasswordResetCompleteView, PasswordResetDoneView
 from django.template.defaultfilters import truncatewords, safe
 from django.urls import reverse_lazy
+from django.utils.datetime_safe import datetime
 from django.views import View
 from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, DetailView, ListView
 from rest_framework.views import APIView
@@ -26,7 +30,7 @@ from .serializers import PostCommentSerializer
 
 from .forms import RegisterUserForm, ChangeUserInfoForm, DeleteUserForm, PostReportForm, CommentReportForm, \
     PostCreationForm, AIFormSet
-from .mixins import PostMixin, BlogMixin, NotificationCheckMixin
+from .mixins import PostMixin, BlogMixin, NotificationCheckMixin, BlogFilterMixin, BlogSearchMixin
 from .models import *
 from .apps import user_delete_signal
 from .templatetags.profile_extras import date_ago, post_views, is_full, comment_pluralize
@@ -129,144 +133,22 @@ class Main(View):
         context['notification'] = notification
         return render(request, 'gnome_main/main.html', context=context)
 
+class BlogBase:
+    '''Блог базовый класс'''
+    model = Post
+    template_name = 'gnome_main/blog.html'
+    context_object_name = 'posts'
+    paginate_by = 10
 
 # Блог
-class BlogView(NotificationCheckMixin, BlogMixin, ListView):
+class BlogView(BlogBase, NotificationCheckMixin, BlogMixin, ListView):
     '''Представление блога'''
-    model = Post
-    template_name = 'gnome_main/blog.html'
-    context_object_name = 'posts'
-    paginate_by = 10
-    # .annotate(num_likes=Count('like'), num_postcomments=Count('postcomment')) \
-        # .order_by('num_likes', 'num_postcomments')
 
-class BlogFilterView(NotificationCheckMixin, BlogMixin, ListView):
+class BlogFilterView(BlogBase, NotificationCheckMixin, BlogMixin, BlogFilterMixin, ListView):
     '''Представление блога с фильтром'''
-    model = Post
-    template_name = 'gnome_main/blog.html'
-    context_object_name = 'posts'
-    paginate_by = 10
 
-    def get_queryset(self, *args, **kwargs):
-        queryset = super().get_queryset()
-        date_from = self.request.GET.get('date-from')
-        date_to = self.request.GET.get('date-to')
-        author = self.request.GET.get('author')
-        rubrics = self.request.GET.getlist('rubric')
-        radio = self.request.GET.get('radio-filters')
-        find_text = self.request.GET.get('text-find')
-        d = dict(self.request.GET)
-        print(d)
-        if find_text == None:
-            if len(rubrics) > 0:
-                queryset = queryset.filter(is_active=True,
-                                           rubric__name__in=rubrics)
-            if author != '':
-                queryset2 = queryset.filter(author__username__icontains=author,
-                                           is_active=True)
-                queryset1 = queryset.filter(author__username__contains=author,
-                                            is_active=True)
-                queryset = (queryset1 | queryset2).distinct()
-            if radio != None:
-                if radio == 'new':
-                    queryset = queryset.filter(is_active=True).order_by('-created_at')
-                elif radio == 'old':
-                    queryset = queryset.filter(is_active=True).order_by('created_at')
-                elif radio == 'more-views':
-                    queryset = queryset.filter(is_active=True) \
-                        .distinct() \
-                        .annotate(views_count=Count('postviewcount')) \
-                        .order_by('views_count')
-                elif radio == 'popular':
-                    queryset = queryset.filter(is_active=True) \
-                        .distinct() \
-                        .annotate(num_likes=Count('postlike'),
-                                  num_dislikes=Count('postdislike'),
-                                  num_comments=Count('postcomment'),
-                                  num_favourite=Count('postfavourite'),
-                                  views_count=Count('postviewcount')) \
-                        .order_by('-views_count', '-num_likes',
-                                  '-num_comments', '-num_favourite',
-                                  'num_dislikes')
-            if date_from != '' and date_to == '':
-                date_list = date_from.split('-')
-                date = timezone.make_aware(timezone.datetime(int(date_list[0]), int(date_list[1]), int(date_list[2])))
-                queryset = queryset.filter(created_at__gte=date,
-                                            is_active=True)
-            elif date_to != '' and date_from == '':
-                date_list = date_to.split('-')
-                date = timezone.make_aware(timezone.datetime(int(date_list[0]), int(date_list[1]), int(date_list[2])))
-                queryset = queryset.filter(created_at__lte=date,
-                                            is_active=True)
-            elif date_from != '' and date_to != '':
-                date_list_from = date_from.split('-')
-                date_list_to = date_to.split('-')
-                date_f = timezone.make_aware(timezone.datetime(int(date_list_from[0]), int(date_list_from[1]), int(date_list_from[2])))
-                date_t = timezone.make_aware(timezone.datetime(int(date_list_to[0]), int(date_list_to[1]), int(date_list_to[2])))
-                queryset = queryset.filter(created_at__gte=date_f,
-                                            created_at__lte=date_t,
-                                            is_active=True)
-        elif find_text != None:
-            tags = PostTag.objects.filter(tag__icontains=find_text)
-            queryset = (queryset | Post.objects.filter(Q(tag__in=tags) |
-                                        Q(title__icontains=find_text) |
-                                        Q(content__icontains=find_text))).distinct()
-        # print(queryset)
-        return queryset
-
-    def get_context_data(self, *args, object_list=None, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context['subscriptions'] = AdvUser.objects.filter(subscriptions=self.request.user)
-        context['rubrics'] = SubRubric.objects.all()
-        context['csrf_token'] = get_token(self.request)
-
-        date_from = self.request.GET.get('date-from')
-        date_to = self.request.GET.get('date-to')
-        author = self.request.GET.get('author')
-        rubrics = self.request.GET.getlist('rubric')
-        radio = self.request.GET.get('radio-filters')
-
-        url_str = f'date-from={date_from}&date-to={date_to}&author={author}'
-        if len(rubrics) > 0:
-            url_str += '&' + f'&'.join([f"rubric={r}" for r in rubrics])
-        if radio != None:
-            url_str += f'&radio-filters={radio}'
-        context['filter_url'] = url_str + '&'
-        return context
-
-class BlogSearchView(NotificationCheckMixin, BlogMixin, ListView):
+class BlogSearchView(BlogBase, NotificationCheckMixin, BlogMixin, BlogSearchMixin, ListView):
     '''Представление блога с фильтром'''
-    model = Post
-    template_name = 'gnome_main/blog.html'
-    context_object_name = 'posts'
-    paginate_by = 10
-
-    def get_queryset(self, *args, **kwargs):
-        queryset = super().get_queryset()
-        find_text = self.request.GET.get('text-find')
-        d = dict(self.request.GET)
-        print(d)
-        if find_text != None:
-            tags = PostTag.objects.filter(tag__icontains=find_text)
-            queryset = queryset.filter(Q(tag__in=tags) |
-                        Q(title__icontains=find_text) |
-                        Q(content__icontains=find_text) |
-                        Q(author__username__icontains=find_text)).distinct()
-        # print(queryset)
-        return queryset
-
-    def get_context_data(self, *args, object_list=None, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context['subscriptions'] = AdvUser.objects.filter(subscriptions=self.request.user)
-        context['rubrics'] = SubRubric.objects.all()
-        context['csrf_token'] = get_token(self.request)
-
-        find_text = self.request.GET.get('text-find')
-
-        url_str = f'text-find={find_text}&'
-        context['filter_url'] = url_str
-        return context
-
 
 class PostView(NotificationCheckMixin, PostMixin, DetailView):
     '''Представление детального просмотра поста'''
@@ -732,6 +614,225 @@ class NotificationView(NotificationCheckMixin, ListView):
                 )
             new_notif.update(is_read=True)
         return JsonResponse(data=context, status=200)
+
+############################################################################
+# Студия аналитики пользователя Highcharts
+class UserStudio(NotificationCheckMixin, View):
+    template_name = 'gnome_main/studio.html'
+
+    def get(self, request, *args, **kwargs):
+        if request.user.slug != self.kwargs['slug']:
+            return HttpResponseRedirect(reverse_lazy('gnome_main:access-denied'))
+        context = self.get_context_data(request, *args, **kwargs)
+        return render(request, 'gnome_main/studio.html', context=context)
+
+    def get_context_data(self, *args, **kwargs):
+        context = {}
+        notification = Notification.objects.filter(user=self.request.user,
+                                                   is_read=False).exists()
+        context['notification'] = notification
+        # данные аналитики
+        cur_user = AdvUser.objects.get(slug=self.kwargs['slug'])
+        posts = Post.objects.filter(author=cur_user)
+        end_date_week = timezone.now()
+        start_date_week = end_date_week - timezone.timedelta(days=7)
+        end_date_2week = start_date_week
+        start_date_2week = end_date_2week - timezone.timedelta(days=14)
+        # нахожу все просмотры
+        views = PostViewCount.objects.filter(post__in=posts).count()
+        views_last_week = PostViewCount.objects.filter(post__in=posts,
+                        viewed_on__range=(start_date_week, end_date_week)).count()
+        views_last_2week = PostViewCount.objects.filter(post__in=posts,
+                        viewed_on__range=(start_date_2week, end_date_2week)).count()
+        if views_last_week > 0 and views_last_2week > 0:
+            views_diff = views_last_week * 100 / views_last_2week - 100
+            if views_diff < 0:
+                views_diff = abs(views_diff)
+                views_arrow = '/static/gnome_main/css/images/arrow_down.png'
+                up = False
+            else:
+                views_arrow = '/static/gnome_main/css/images/arrow_up.png'
+                up = True
+        else:
+            views_diff = 0
+            views_arrow = '/static/gnome_main/css/images/arrow_up.png'
+            up = True
+        # нахожу все лайки и дизлайки
+        likes = PostLike.objects.filter(post__in=posts).count()
+        dislikes = PostDisLike.objects.filter(post__in=posts).count()
+        # нахожу все комментарии
+        comments = PostComment.objects.filter(post__in=posts).count()
+        # нахожу все жалобы
+        reports = PostReport.objects.filter(post__in=posts).count() + \
+            CommentReport.objects.filter(comment__user=cur_user).count()
+        # добавляю аналитику в контекст
+        context['data'] = (
+            {
+                'title': 'Просмотры',
+                'all': views,
+                'all_title': 'просмотров',
+                'last_week': views_last_week,
+                'diff': int(views_diff),
+                'arrow_url': views_arrow,
+                'up': up,
+                'section': 'views',
+            },
+            {
+                'title': 'Лайки',
+                'all': likes,
+                'all_title': 'лайков',
+                'section': 'likes',
+            },
+            {
+                'title': 'Дизлайки',
+                'all': dislikes,
+                'all_title': 'дизлайков',
+                'section': 'dislikes',
+            },
+            {
+                'title': 'Комментарии',
+                'all': comments,
+                'all_title': 'комментариев',
+                'section': 'comments',
+            },
+            {
+                'title': 'Жалобы',
+                'all': reports,
+                'all_title': 'жалоб',
+                'section': 'reports',
+            },
+        )
+        return context
+
+class StudioDetailView(View):
+    '''Детальный просмотр категории'''
+    template_name = 'gnome_main/studio_detail.html'
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(request, *args, **kwargs)
+        section = self.kwargs['section']
+        ld_indicator = 'false'
+        if section == 'views':
+            context['g_title'] = 'Просмотры'
+            cur_model = PostViewCount
+            field = 'viewed_on'
+        elif section == 'likes':
+            context['g_title'] = 'Лайки'
+            cur_model = PostLike
+            field = 'created_at'
+            ld_indicator = 'true'
+        elif section == 'dislikes':
+            context['g_title'] = 'Дизлайки'
+            cur_model = PostDisLike
+            field = 'created_at'
+            ld_indicator = 'true'
+        elif section == 'reports':
+            context['g_title'] = 'Жалобы'
+            field = 'created_at'
+        elif section == 'comments':
+            context['g_title'] = 'Комментарии'
+            cur_model = PostComment
+            field = 'created_at'
+        context['ld_indicator'] = ld_indicator
+        if section == 'reports':
+            # извлекаю жалобы на комменты и посты пользователя
+            views = PostReport.objects.filter(post__author__slug=self.kwargs['slug']) \
+                .annotate(report_date=TruncDate(field)) \
+                .values('report_date')\
+                .annotate(rep_count=Count('id')) \
+                .order_by('report_date')
+            views1 = CommentReport.objects.filter(comment__user__slug=self.kwargs['slug']) \
+                .annotate(report_date=TruncDate(field)) \
+                .values('report_date') \
+                .annotate(rep_count=Count('id')) \
+                .order_by('report_date')
+            # собираю все жалобы в data
+            data = []
+            combined_reports = list(views) + list(views1)
+            print(combined_reports)
+            for view in combined_reports:
+                date = mktime(view['report_date'].timetuple()) * 1000
+                views = view['rep_count']
+                data.append([date, views])
+            # убираю повторяющиеся и обновляю количество для них же
+            new_data = []
+            for d in data:
+                count = data.count(d)
+                new_data.append([d[0], count])
+                for i in range(count):
+                    data.remove(d)
+            data = new_data
+        elif ld_indicator == 'false' and section != 'reports':
+            views = cur_model.objects.filter(post__author__slug=self.kwargs['slug']) \
+                .annotate(viewing_date=TruncDate(field)) \
+                .values('viewing_date').annotate(view_count=Count('id')) \
+                .order_by('viewing_date')
+            data = []
+
+            for view in views:
+                date = mktime(view['viewing_date'].timetuple()) * 1000
+                views = view['view_count']
+                data.append([date, views])
+        elif ld_indicator == 'true' and section != 'reports':
+            views = cur_model.objects.filter(post__author__slug=self.kwargs['slug']) \
+                .values('post__title') \
+                .annotate(ld_count=Count('post')) \
+                .order_by('post')
+            all_views_count = cur_model.objects.filter(post__author__slug=self.kwargs['slug']).count()
+
+            data = []
+            for view in views:
+                data.append({'name': view['post__title'], 'y': view['ld_count']*100/all_views_count,
+                            'count': view['ld_count']})
+
+        context['data'] = data
+        return render(request, 'gnome_main/studio_detail.html', context=context)
+
+    def get_context_data(self, *args, **kwargs):
+        context = {}
+        notification = Notification.objects.filter(user=self.request.user,
+                                                   is_read=False).exists()
+        context['notification'] = notification
+        context['section'] = self.kwargs['section']
+        return context
+
+############################################################################
+# Запрет доступа
+class AccessDenied(View):
+    template_name = 'gnome_main/access_denied.html'
+
+    def get(self, request):
+        context = {}
+        notification = Notification.objects.filter(user=self.request.user,
+                                                   is_read=False).exists()
+        context['notification'] = notification
+        return render(request, 'gnome_main/access_denied.html', context=context)
+
+############################################################################
+# Записи пользователя
+class AuthorPostsBase(BlogBase):
+    '''Базовый класс для записей пользователя'''
+    template_name = 'gnome_main/author_posts.html'
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = super().get_queryset(*args, **kwargs)
+        queryset = queryset.filter(author__slug=self.kwargs['slug'])
+        return queryset
+
+    def get_context_data(self, *args, object_list=None, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['author_slug'] = self.kwargs['slug']
+        return context
+
+class AuthorPostsView(NotificationCheckMixin, BlogMixin, AuthorPostsBase, ListView):
+    '''Представление окна записей пользователя'''
+
+class AuthorPostsFilteredView(NotificationCheckMixin, BlogMixin, BlogFilterMixin, AuthorPostsBase, ListView):
+    '''Представление окна записей пользователя фильтр'''
+
+class AuthorPostsSearchView(NotificationCheckMixin, BlogMixin, BlogSearchMixin, AuthorPostsBase, ListView):
+    '''Представление окна записей пользователя поиск'''
+
 
 # REST
 class PostCommentAPI(APIView):

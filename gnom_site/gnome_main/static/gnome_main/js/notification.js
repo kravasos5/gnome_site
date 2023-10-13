@@ -9,7 +9,7 @@ $(document).ready(function() {
                 <h1>{{ title }}</h1>
                 <p>{{ created_at }}</p>
             </div>
-            <p>{{ message }}</p>
+            <p>{{{ message }}}</p>
         </div>
     `
     function loadMoreNotif() {

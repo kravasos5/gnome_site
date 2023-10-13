@@ -146,3 +146,7 @@ div.dropdown-list ul li:hover {
 .last {
     margin-left: 10px;
 }
+
+.pointer {
+    cursor: pointer;
+}
