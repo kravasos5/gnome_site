@@ -63,5 +63,6 @@ def get_client_ip(request):
     print(ip)
     return ip
 
+# случайный ключ
 def random_key(len):
     return ''.join([choice('qwqertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM') for _ in range(20)])

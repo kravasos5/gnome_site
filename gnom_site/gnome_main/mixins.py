@@ -1,4 +1,6 @@
-from django.db.models import Count
+from django.utils import timezone
+
+from django.db.models import Count, Q
 from django.dispatch import Signal
 from django.http import JsonResponse
 from django.db.utils import DataError, IntegrityError
@@ -8,7 +10,7 @@ from .templatetags.profile_extras import date_ago, key, likes_dislikes, is_full,
 from django.template.defaultfilters import linebreaks
 
 from .models import PostViewCount, SuperPostComment, SubPostComment, PostComment, CommentLike, CommentDisLike, PostLike, \
-    PostDisLike, PostFavourite, Post, SubRubric, AdvUser, Notification
+    PostDisLike, PostFavourite, Post, SubRubric, AdvUser, Notification, PostTag
 from .utilities import get_client_ip
 
 
@@ -332,6 +334,121 @@ class BlogMixin:
                 fav = PostFavourite.objects.get(post=post, user=request.user)
                 fav.delete()
         return JsonResponse({}, status=200)
+
+class BlogFilterMixin:
+    def get_queryset(self, *args, **kwargs):
+        queryset = super().get_queryset()
+        date_from = self.request.GET.get('date-from')
+        date_to = self.request.GET.get('date-to')
+        author = self.request.GET.get('author')
+        rubrics = self.request.GET.getlist('rubric')
+        radio = self.request.GET.get('radio-filters')
+        find_text = self.request.GET.get('text-find')
+        d = dict(self.request.GET)
+        print(d)
+        if find_text == None:
+            if len(rubrics) > 0:
+                queryset = queryset.filter(is_active=True,
+                                           rubric__name__in=rubrics)
+            if author != '':
+                queryset2 = queryset.filter(author__username__icontains=author,
+                                           is_active=True)
+                queryset1 = queryset.filter(author__username__contains=author,
+                                            is_active=True)
+                queryset = (queryset1 | queryset2).distinct()
+            if radio != None:
+                if radio == 'new':
+                    queryset = queryset.filter(is_active=True).order_by('-created_at')
+                elif radio == 'old':
+                    queryset = queryset.filter(is_active=True).order_by('created_at')
+                elif radio == 'more-views':
+                    queryset = queryset.filter(is_active=True) \
+                        .distinct() \
+                        .annotate(views_count=Count('postviewcount')) \
+                        .order_by('views_count')
+                elif radio == 'popular':
+                    queryset = queryset.filter(is_active=True) \
+                        .distinct() \
+                        .annotate(num_likes=Count('postlike'),
+                                  num_dislikes=Count('postdislike'),
+                                  num_comments=Count('postcomment'),
+                                  num_favourite=Count('postfavourite'),
+                                  views_count=Count('postviewcount')) \
+                        .order_by('-views_count', '-num_likes',
+                                  '-num_comments', '-num_favourite',
+                                  'num_dislikes')
+            if date_from != '' and date_to == '':
+                date_list = date_from.split('-')
+                date = timezone.make_aware(timezone.datetime(int(date_list[0]), int(date_list[1]), int(date_list[2])))
+                queryset = queryset.filter(created_at__gte=date,
+                                            is_active=True)
+            elif date_to != '' and date_from == '':
+                date_list = date_to.split('-')
+                date = timezone.make_aware(timezone.datetime(int(date_list[0]), int(date_list[1]), int(date_list[2])))
+                queryset = queryset.filter(created_at__lte=date,
+                                            is_active=True)
+            elif date_from != '' and date_to != '':
+                date_list_from = date_from.split('-')
+                date_list_to = date_to.split('-')
+                date_f = timezone.make_aware(timezone.datetime(int(date_list_from[0]), int(date_list_from[1]), int(date_list_from[2])))
+                date_t = timezone.make_aware(timezone.datetime(int(date_list_to[0]), int(date_list_to[1]), int(date_list_to[2])))
+                queryset = queryset.filter(created_at__gte=date_f,
+                                            created_at__lte=date_t,
+                                            is_active=True)
+        elif find_text != None:
+            tags = PostTag.objects.filter(tag__icontains=find_text)
+            queryset = (queryset | Post.objects.filter(Q(tag__in=tags) |
+                                        Q(title__icontains=find_text) |
+                                        Q(content__icontains=find_text))).distinct()
+        # print(queryset)
+        return queryset
+
+    def get_context_data(self, *args, object_list=None, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['subscriptions'] = AdvUser.objects.filter(subscriptions=self.request.user)
+        context['rubrics'] = SubRubric.objects.all()
+        context['csrf_token'] = get_token(self.request)
+
+        date_from = self.request.GET.get('date-from')
+        date_to = self.request.GET.get('date-to')
+        author = self.request.GET.get('author')
+        rubrics = self.request.GET.getlist('rubric')
+        radio = self.request.GET.get('radio-filters')
+
+        url_str = f'date-from={date_from}&date-to={date_to}&author={author}'
+        if len(rubrics) > 0:
+            url_str += '&' + f'&'.join([f"rubric={r}" for r in rubrics])
+        if radio != None:
+            url_str += f'&radio-filters={radio}'
+        context['filter_url'] = url_str + '&'
+        return context
+
+class BlogSearchMixin:
+    def get_queryset(self, *args, **kwargs):
+        queryset = super().get_queryset()
+        find_text = self.request.GET.get('text-find')
+        d = dict(self.request.GET)
+        print(d)
+        if find_text != None:
+            tags = PostTag.objects.filter(tag__icontains=find_text)
+            queryset = queryset.filter(Q(tag__in=tags) |
+                        Q(title__icontains=find_text) |
+                        Q(content__icontains=find_text) |
+                        Q(author__username__icontains=find_text)).distinct()
+        # print(queryset)
+        return queryset
+
+    def get_context_data(self, *args, object_list=None, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['subscriptions'] = AdvUser.objects.filter(subscriptions=self.request.user)
+        context['rubrics'] = SubRubric.objects.all()
+        context['csrf_token'] = get_token(self.request)
+
+        find_text = self.request.GET.get('text-find')
+
+        url_str = f'text-find={find_text}&'
+        context['filter_url'] = url_str
+        return context
 
 class NotificationCheckMixin:
     '''Миксин для добавление в контекст'''

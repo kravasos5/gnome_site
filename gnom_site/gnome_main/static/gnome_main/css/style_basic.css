@@ -15,6 +15,16 @@
     background: #FF937D;
 }
 
+body {
+    margin: 0;
+    padding: 0;
+    background: url(images/bg-site-blog.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    font-family: 'Roboto', sans-serif;
+}
+
 .header {
     width: 100%;
     background: linear-gradient(rgba(178, 178, 178, 0.25), rgba(87, 87, 87, 0.25));

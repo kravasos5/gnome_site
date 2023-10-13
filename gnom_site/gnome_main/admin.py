@@ -133,6 +133,14 @@ class NotificationAdmin(admin.ModelAdmin):
     list_display = ('user', 'title', 'message', 'created_at')
     readonly_fields = ('created_at',)
 
+class PostReportAdmin(admin.ModelAdmin):
+    list_display = ('type', 'post', 'text', 'user', 'created_at')
+    readonly_fields = ('created_at',)
+
+class CommentReportAdmin(admin.ModelAdmin):
+    list_display = ('type', 'comment', 'text', 'user', 'created_at')
+    readonly_fields = ('created_at',)
+
 
 admin.site.register(AdvUser, AdvUserAdmin)
 admin.site.register(SuperRubric, SuperRubricAdmin)
@@ -149,3 +157,5 @@ admin.site.register(SubPostComment, SubPostCommentAdmin)
 admin.site.register(CommentLike, PostCommentActivityAdmin)
 admin.site.register(CommentDisLike, PostCommentActivityAdmin)
 admin.site.register(Notification, NotificationAdmin)
+admin.site.register(PostReport, PostReportAdmin)
+admin.site.register(CommentReport, CommentReportAdmin)

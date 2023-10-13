@@ -46,6 +46,7 @@
             </div>
         </div>
         {% if cur_user == user %}
+            <a href="{% url 'gnome_main:studio' user.slug %}" class="edit" style="margin-right: 10px;">Студия</a>
             <a href="{% url 'gnome_main:profile-change' user.slug %}" class="edit">Изменить</a>
         {% else %}
         <div>
@@ -152,9 +153,9 @@
             {% endfor %}
         </div>
 
-<!--        <div class="more-posts-div">-->
-<!--            <a href="#user-posts" class="more-posts">Ещё</a>-->
-<!--        </div>-->
+        <div class="more-posts-div">
+            <a href="{% url 'gnome_main:blog-author' slug=cur_user.slug %}" class="more-posts">Ещё</a>
+        </div>
     </div>
 </div>
 {% endblock %}

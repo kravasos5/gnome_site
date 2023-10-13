@@ -391,6 +391,8 @@ div.more button {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    /*убрать если что-то идёт не так*/
+    align-items: flex-start;
 }
 
 /* Настройки превью */
@@ -521,6 +523,7 @@ div.more button {
         width: 100%;
         height: 100%;
         flex-basis: auto;
+        overflow: hidden;
     }
 
     .filter-container {
