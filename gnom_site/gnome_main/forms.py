@@ -1,7 +1,7 @@
+from captcha.fields import CaptchaField
 from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib.auth import password_validation
-from django.core.exceptions import ValidationError
 
 # from .apps import user_registered
 from django.forms import inlineformset_factory
@@ -18,6 +18,7 @@ class RegisterUserForm(forms.ModelForm):
                                 help_text=password_validation.password_validators_help_text_html())
     password2 = forms.CharField(label='Введите пароль повторно',
                                 widget=forms.PasswordInput)
+    captcha = CaptchaField(label='Каптча')
 
     def clean_password1(self):
         password1 = self.cleaned_data['password1']

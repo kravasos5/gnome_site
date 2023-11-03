@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'ckeditor_uploader',
     'ckeditor',
     'rest_framework',
+    'captcha',
     # django-cleanup должен быть в конце списка
     'django_cleanup.apps.CleanupConfig',
 ]

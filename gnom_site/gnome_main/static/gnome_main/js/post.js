@@ -82,7 +82,7 @@ window.addEventListener("load", (event) => {
     function deleteAImage() {
         let count = $('.formset').children().length;
 //        let ai_id = $(this).attr('id');
-        $(this).parent().parent().remove();
+        $(this).parent().parent().parent().remove();
         $('#id_images-TOTAL_FORMS').attr('value', count-1);
     };
 

@@ -7,12 +7,28 @@
 
     font-family: DkFears;
     src: url(fonts/dkfears.ttf);
-   }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #fff;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #7C0000, #7C1E00);
+}
 
 ::selection {
     -webkit-text-fill-color: #4A0801;
     color: #4A0801;
     background: #FF937D;
+}
+
+.main-content {
+    min-height: 500px;
 }
 
 .header {

@@ -20,8 +20,6 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, 
     PasswordResetCompleteView, PasswordResetDoneView
 from django.template.defaultfilters import truncatewords, safe
 from django.urls import reverse_lazy
-from django.utils.datetime_safe import datetime
-from django.views import View
 from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, DetailView, ListView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -30,7 +28,8 @@ from .serializers import PostCommentSerializer
 
 from .forms import RegisterUserForm, ChangeUserInfoForm, DeleteUserForm, PostReportForm, CommentReportForm, \
     PostCreationForm, AIFormSet
-from .mixins import PostMixin, BlogMixin, NotificationCheckMixin, BlogFilterMixin, BlogSearchMixin
+from .mixins import BlogMixin, NotificationCheckMixin, BlogFilterMixin, BlogSearchMixin, ViewIncrementMixin, \
+    CommentDispatcherMixin, RecLoaderMixin, PostInfoAddMixin, CsrfMixin, SubscribeMixin
 from .models import *
 from .apps import user_delete_signal
 from .templatetags.profile_extras import date_ago, post_views, is_full, comment_pluralize
@@ -123,15 +122,8 @@ user_subsript.connect(user_subsript_dispatcher)
 # Представления
 ##############################################################
 # Главная страница
-class Main(View):
+class Main(NotificationCheckMixin, TemplateView):
     template_name = 'gnome_main/main.html'
-
-    def get(self, request):
-        context = {}
-        notification = Notification.objects.filter(user=self.request.user,
-                                                   is_read=False).exists()
-        context['notification'] = notification
-        return render(request, 'gnome_main/main.html', context=context)
 
 class BlogBase:
     '''Блог базовый класс'''
@@ -141,41 +133,82 @@ class BlogBase:
     paginate_by = 10
 
 # Блог
-class BlogView(BlogBase, NotificationCheckMixin, BlogMixin, ListView):
+class BlogView(BlogBase, NotificationCheckMixin, CsrfMixin, BlogMixin, ListView):
     '''Представление блога'''
 
-class BlogFilterView(BlogBase, NotificationCheckMixin, BlogMixin, BlogFilterMixin, ListView):
+class BlogFilterView(BlogBase, NotificationCheckMixin, CsrfMixin, BlogFilterMixin, ListView):
     '''Представление блога с фильтром'''
 
-class BlogSearchView(BlogBase, NotificationCheckMixin, BlogMixin, BlogSearchMixin, ListView):
+class BlogSearchView(BlogBase, NotificationCheckMixin, CsrfMixin, BlogSearchMixin, ListView):
     '''Представление блога с фильтром'''
 
-class PostView(NotificationCheckMixin, PostMixin, DetailView):
+class PostView(NotificationCheckMixin, ViewIncrementMixin, CommentDispatcherMixin,
+               RecLoaderMixin, PostInfoAddMixin, CsrfMixin,
+               SubscribeMixin, DetailView):
     '''Представление детального просмотра поста'''
     model = Post
     template_name = 'gnome_main/show_post.html'
     context_object_name = 'post'
 
-class UserProfile(NotificationCheckMixin, View):
+    def post(self, request, *args, **kwargs):
+        post = self.get_object()
+        d = dict(request.POST)
+        # print(d)
+        # формирования контекста
+        context = {}
+        # если пользователь оставил SuperComment
+        if 'new_supercomment' in d:
+            self.new_supercomment(context, post, d['new_supercomment'][0])
+        # если пользователь оставил SubComment
+        elif 'new_subcomment' in d:
+            self.new_subcomment(context, post, d['new_subcomment'][0],
+                                d['s-username'][0], d['super-id'][0])
+        # если пользователь поставил лайк/дизлайк на комментарий
+        elif 'comment-id-new-info' in d:
+            self.comment_like_dislike(d['data'][0], d['c_status'][0], d['comment-id-new-info'][0])
+        # если пользователь поставил лайк/дизлайк на пост или добавил пост в избранное
+        elif 'post-new-info' in d:
+            self.add_info(d['data'][0], d['status'][0], post)
+        # подгрузить дополнительные НАДкомментарии
+        elif 'load_supercomments' in d:
+            self.load_supercomments(context, d['filter'][0], int(d['start_comment'][0]),
+                                    int(d['end_comment'][0]), post)
+        # подгрузить рекомендации
+        elif 'load_rec' in d:
+            self.load_rec(context, post, d['ids'][0])
+        # подгрузить дополнительные ПОДкомментарии
+        elif 'load_subcomments' in d:
+            self.load_subcomments(context, d['super_id'][0], int(d['start_scomment'][0]),
+                                  int(d['end_scomment'][0]))
+        # изменить комментарий
+        elif 'change_comment' in d:
+            self.change_comment(context, d['с_id'][0], d['change-comment-line'][0])
+        # удалить комментарий
+        elif 'delete_comment' in d:
+            self.delete_comment(d['c_id'][0])
+        # подписаться на автора поста
+        elif 'subscribe' in d:
+            self.subscribe(post, d['subscribe'][0])
+
+        return JsonResponse(data=context, status=200)
+
+class UserProfile(NotificationCheckMixin, CsrfMixin, TemplateView):
     '''Представление профиля пользователя'''
     template_name = 'gnome_main/user_profile.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        csrf_token = get_token(self.request)
-        context['csrf_token'] = csrf_token
-        return context
-
-    def get(self, request, slug):
-        cur_user = get_object_or_404(AdvUser, slug=slug)
-        user = request.user
+        cur_user = get_object_or_404(AdvUser, slug=self.kwargs.get('slug'))
+        user = self.request.user
         count = cur_user.subscriptions.count()
         is_subscribe = cur_user.subscriptions.filter(id=user.id).exists()
         posts = Post.objects.filter(author=cur_user).order_by('-created_at')[:10]
-        context = {'cur_user': cur_user, 'sub_count': count,
-                   'is_subscribe': is_subscribe, 'posts_count': posts.count(),
-                   'posts': posts}
-        return render(request, 'gnome_main/user_profile.html', context=context)
+        context['cur_user'] = cur_user
+        context['sub_count'] = count
+        context['is_subscribe'] = is_subscribe
+        context['posts_count'] = posts.count()
+        context['posts'] = posts
+        return context
 
     def post(self, request, slug):
         d = dict(request.POST)
@@ -311,7 +344,7 @@ class RegisterUserView(CreateView):
 
 class RegisterConfrimView(TemplateView):
     '''подтверждение регистрации'''
-    template_name = 'gnome_main/register_confrim.html'
+    template_name = 'gnome_main/register_confirm.html'
 
 # активация пользователя
 def user_activate(request, sign):
@@ -351,11 +384,7 @@ class ChangeUserInfoView(NotificationCheckMixin, SuccessMessageMixin, LoginRequi
 
     def form_valid(self, form):
         super().form_valid(form)
-        response_data = {
-            'success': True,
-            'success_url': self.get_success_url()
-        }
-        return JsonResponse(response_data)
+        return HttpResponseRedirect(self.get_success_url())
 
 # Сброс пароля
 class PasswordReset(PasswordResetView):
@@ -372,7 +401,7 @@ class PasswordResetDone(PasswordResetDoneView):
 
 class PasswordResetConfrim(PasswordResetConfirmView):
     '''Представление подтверждения сброса пароля (ввод нового пароля)'''
-    template_name = 'gnome_main/password_reset_confrim.html'
+    template_name = 'gnome_main/password_reset_confirm.html'
     success_url = reverse_lazy('gnome_main:password-reset-complete')
 
 class PasswordResetComplete(PasswordResetCompleteView):
@@ -550,6 +579,11 @@ class PostUpdateView(NotificationCheckMixin, LoginRequiredMixin, PostInLine, Upd
     '''Представление для обновления поста'''
     template_name = 'gnome_main/post_update.html'
 
+    def get(self, request, *args, **kwargs):
+        if request.user.slug != self.kwargs['slug'].split('-')[0]:
+            return HttpResponseRedirect(reverse_lazy('gnome_main:access-denied'))
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['named_formsets'] = self.get_named_formsets()
@@ -571,17 +605,25 @@ class PostDeleteView(NotificationCheckMixin, LoginRequiredMixin, DeleteView):
     template_name = 'gnome_main/post_delete.html'
     success_url = reverse_lazy('gnome_main:blog')
 
-class NotificationView(NotificationCheckMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        if request.user.slug != self.kwargs['slug'].split('-')[0]:
+            return HttpResponseRedirect(reverse_lazy('gnome_main:access-denied'))
+        return super().get(request, *args, **kwargs)
+
+class NotificationView(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, ListView):
     '''Представление уведомлений'''
     template_name = 'gnome_main/notifications.html'
     context_object_name = 'notification'
 
     def get_queryset(self):
-        return Notification.objects.filter(user=self.request.user)[:10]
+        notif = Notification.objects.filter(user=self.request.user)
+        # Обновление текущих нотификаций
+        notif.update(is_read=True)
+        return notif[:10]
 
     def get_context_data(self, *args, object_list=None, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['csrf_token'] = get_token(self.request)
+        context['notif_index'] = False
         return context
 
     def post(self, request, *args, **kwargs):
@@ -612,25 +654,21 @@ class NotificationView(NotificationCheckMixin, ListView):
                      'is_read': i.is_read,
                      'created_at': date_ago(i.created_at)}
                 )
-            new_notif.update(is_read=True)
         return JsonResponse(data=context, status=200)
 
 ############################################################################
-# Студия аналитики пользователя Highcharts
-class UserStudio(NotificationCheckMixin, View):
+# Студия аналитики пользователя
+class UserStudio(LoginRequiredMixin, NotificationCheckMixin, TemplateView):
     template_name = 'gnome_main/studio.html'
 
     def get(self, request, *args, **kwargs):
         if request.user.slug != self.kwargs['slug']:
             return HttpResponseRedirect(reverse_lazy('gnome_main:access-denied'))
-        context = self.get_context_data(request, *args, **kwargs)
+        context = self.get_context_data(*args, **kwargs)
         return render(request, 'gnome_main/studio.html', context=context)
 
     def get_context_data(self, *args, **kwargs):
-        context = {}
-        notification = Notification.objects.filter(user=self.request.user,
-                                                   is_read=False).exists()
-        context['notification'] = notification
+        context = super().get_context_data(*args, **kwargs)
         # данные аналитики
         cur_user = AdvUser.objects.get(slug=self.kwargs['slug'])
         posts = Post.objects.filter(author=cur_user)
@@ -704,12 +742,14 @@ class UserStudio(NotificationCheckMixin, View):
         )
         return context
 
-class StudioDetailView(View):
+class StudioDetailView(LoginRequiredMixin, NotificationCheckMixin, TemplateView):
     '''Детальный просмотр категории'''
     template_name = 'gnome_main/studio_detail.html'
 
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data(request, *args, **kwargs)
+        if request.user.slug != self.kwargs['slug']:
+            return HttpResponseRedirect(reverse_lazy('gnome_main:access-denied'))
+        context = self.get_context_data(*args, **kwargs)
         section = self.kwargs['section']
         ld_indicator = 'false'
         if section == 'views':
@@ -789,24 +829,14 @@ class StudioDetailView(View):
         return render(request, 'gnome_main/studio_detail.html', context=context)
 
     def get_context_data(self, *args, **kwargs):
-        context = {}
-        notification = Notification.objects.filter(user=self.request.user,
-                                                   is_read=False).exists()
-        context['notification'] = notification
+        context = super().get_context_data(*args, **kwargs)
         context['section'] = self.kwargs['section']
         return context
 
 ############################################################################
 # Запрет доступа
-class AccessDenied(View):
+class AccessDenied(NotificationCheckMixin, TemplateView):
     template_name = 'gnome_main/access_denied.html'
-
-    def get(self, request):
-        context = {}
-        notification = Notification.objects.filter(user=self.request.user,
-                                                   is_read=False).exists()
-        context['notification'] = notification
-        return render(request, 'gnome_main/access_denied.html', context=context)
 
 ############################################################################
 # Записи пользователя
@@ -824,13 +854,13 @@ class AuthorPostsBase(BlogBase):
         context['author_slug'] = self.kwargs['slug']
         return context
 
-class AuthorPostsView(NotificationCheckMixin, BlogMixin, AuthorPostsBase, ListView):
+class AuthorPostsView(NotificationCheckMixin, CsrfMixin, BlogMixin, AuthorPostsBase, ListView):
     '''Представление окна записей пользователя'''
 
-class AuthorPostsFilteredView(NotificationCheckMixin, BlogMixin, BlogFilterMixin, AuthorPostsBase, ListView):
+class AuthorPostsFilteredView(NotificationCheckMixin, CsrfMixin, BlogFilterMixin, AuthorPostsBase, ListView):
     '''Представление окна записей пользователя фильтр'''
 
-class AuthorPostsSearchView(NotificationCheckMixin, BlogMixin, BlogSearchMixin, AuthorPostsBase, ListView):
+class AuthorPostsSearchView(NotificationCheckMixin, CsrfMixin, BlogSearchMixin, AuthorPostsBase, ListView):
     '''Представление окна записей пользователя поиск'''
 
 
@@ -843,4 +873,3 @@ class PostCommentAPI(APIView):
     def get(self, request):
         queryset = PostComment.objects.all()
         return Response({'get': PostCommentSerializer(queryset, many=True).data})
-

@@ -4,6 +4,7 @@ $(document).ready(function() {
         contentClick: false,
     });
 
+    // переменные
     var old_comment = null;
     var additional_comments = {};
     var deletion = false;
@@ -16,6 +17,7 @@ $(document).ready(function() {
     loadRecContent();
 
     function more_comments() {
+        // Показывает скрытый блок подкомментариев
         let s_id = $(this).parent().parent().parent().attr('class').split(' ').slice(-1);
         let elem = $('div.subcomments-all' + s_id)
         if (elem.css('display') == 'none') {
@@ -33,6 +35,7 @@ $(document).ready(function() {
     };
 
     function look_more_comments(th) {
+        // Подгружает новые подкомментарии
         let s_id = null;
         if (th.attr('class').includes('look-more')) {
             s_id = parseInt(th.parent().parent().attr('class').slice(-1));
@@ -47,7 +50,7 @@ $(document).ready(function() {
             let start_scomment = additional_comments[s_id]['start'];
             let end_scomment = additional_comments[s_id]['end'];
 
-            form_data = {'csrfmiddlewaretoken': comment_csrf, 'more_comments': true,
+            form_data = {'csrfmiddlewaretoken': csrf_token, 'load_subcomments': true,
                     'start_scomment': start_scomment,
                     'end_scomment': end_scomment,
                     'super_id': s_id}
@@ -72,10 +75,10 @@ $(document).ready(function() {
                         let subbigdiv = $('<div>').addClass('flex-line-container c-likes').
                                         append($('<div>').addClass('flex-line-container c-info').
                                         append($('<p>').text(response['subs'][i].likes)).
-                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response['subs'][i].like).click(like_fun).addClass('icon-l pointer ' + response['subs'][i].id))).
+                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response['subs'][i].like).click(like_fun).addClass('icon-l pointer comment-like ' + response['subs'][i].id))).
                                         append($('<div>').addClass('flex-line-container c-info').
                                         append($('<p>').text(response['subs'][i].dislikes)).
-                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response['subs'][i].dislike).click(dislike_fun).addClass('icon-l pointer ' + response['subs'][i].id))).
+                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response['subs'][i].dislike).click(dislike_fun).addClass('icon-l pointer comment-dislike ' + response['subs'][i].id))).
                                         append($('<div>').addClass('flex-line-container c-info answer pointer').click(answerClickHandler).append($('<p>').text('Ответить')));
                         let ul = $('<ul>')
                         if (response['subs'][i].report) {
@@ -121,16 +124,23 @@ $(document).ready(function() {
         };
     };
 
+    // Привязка обработчика к кнопке "Ответы", показывающей подкомментарии
     $('.more-comments').click(more_comments);
 
     function add_btn_look_more() {
+        // Функция, вызывающая при нажатии на кнопку "Смотреть ещё"
+        // подгрузку подкомментариев
         look_more_comments($(this));
     };
 
+    // Привязка к кнопке "Смотреть ещё" обработчика add_btn_look_more
     $('.look-more').click(add_btn_look_more);
 
+
     function add_btn_close() {
-        const cc = $(this).parent().parent().attr('class').slice(-1)[0];
+        // При нажатии на кнопку "Ответы" меняет стрелочку на противоположную
+        // и отображает кнопки "Смотреть ещё" и "Свернуть" у блока подкомментариев
+        const cc = $(this).parent().parent().attr('class').slice(15);
         const subcomment_all = $('.subcomments-all' + cc);
         subcomment_all[0].style.display = 'none';
 
@@ -141,10 +151,12 @@ $(document).ready(function() {
         img_mc_up[0].style.display = 'none';
     };
 
+    // Привязка обпаботчика add_btn_close к блоку дополнительных кнопок
+    // подкомментариев
     $('div.add-btn').find('div.close').click(add_btn_close);
 
-
     function postCommentCountLabel(value, number) {
+        // При написании нового комментария обновляет счётчик комментариев
         value = (parseInt(value.split(' ')[0]) + number).toString();
         let new_value = '';
         if (parseInt(value.slice(-1)) == 0 || parseInt(value.slice(-1)) >= 5) {
@@ -160,6 +172,7 @@ $(document).ready(function() {
     };
 
     function answerCommentCountLabel(value, number) {
+        // При написании ответа на комментарий, обновляет счётчик ответов
         value = (parseInt(value.split(' ')[0]) + number).toString();
         let new_value = '';
         if (parseInt(value.slice(-1)) == 0 || parseInt(value.slice(-1)) >= 5 || (10 <= parseInt(value.slice(-2)) && parseInt(value.slice(-2)) <= 20)) {
@@ -174,15 +187,20 @@ $(document).ready(function() {
         return new_value;
     };
 
-    function answerClickHandler() {
+    // Оборачиваем функцию в декоратор
+    answerClickHandler = userAuthDecorator(answerClickHandler_orig)
+    function answerClickHandler_orig() {
+        // Функция обработчик события нажатия на кнопку "Ответить" на комментарий
         if (old_comment) {
             old_comment.remove();
         };
 
+        // сбор данных
         let parent = $(this).parent()[0];
         let username = '@' + $(this).parent().parent().find('.c-author-date').children().first().text() + ' ';
         let that_comment = $(this).parent().parent().parent();
 
+        // формирование новой формы ответа
         let c_line = $('<form>').attr({
                     'id': 's-comment',
                     'method': 'post',
@@ -190,12 +208,12 @@ $(document).ready(function() {
                     append($('<input>').attr({
                         'type': 'hidden',
                         'name': 'csrfmiddlewaretoken',
-                        'value': comment_csrf,
+                        'value': csrf_token,
                     })).
                     append($('<textarea>').attr({
                         'type': 'text',
                         'rows': '3',
-                        'name': 's-comment-line',
+                        'name': 'new_subcomment',
                         'class': 'c-line s-com',
                         'placeholder': 'Ввести ответ...',
                         'autocomplete': 'off'
@@ -214,6 +232,7 @@ $(document).ready(function() {
         $(this).parent().parent().find('form').find('textarea').focus();
         old_comment = $(this).parent().parent().find('form');
 
+        // обработчик отправки формы нового ответа
         $('#s-comment').submit(function(event) {
             event.preventDefault();
 
@@ -224,7 +243,7 @@ $(document).ready(function() {
             let input = $(this).find('textarea.c-line')
             let comment_text = input.val();
             let s_username = '@' + $(this).parent().find('.c-author-date > a').text();
-            form_data['s-comment-line'] = comment_text;
+            form_data['new_subcomment'] = comment_text;
             form_data['s-username'] = s_username;
             form_data['super-id'] = $(this).parent().parent().attr('class').split(' ').slice(-1)[0];
 
@@ -234,12 +253,14 @@ $(document).ready(function() {
                 data: form_data,
                 data_type: 'json',
                 success: function(response) {
+                    // удаление формы
                     $('#s-comment').remove();
+                    // если до этого были ошибки, то нужно скрыть их
                     if ($('div.error-div').css('display') == 'flex') {
                         $('div.error-div').css('display') = 'none';
                     };
 
-                    // Формирование нового коммента
+                    // Формирование нового подкомментария
                     let add_btn = $('div.subcomments-all' + response.new_comment.super_id).last().find('div').find('div.add-btn');
                     let comments_container_btns = $('div.subcomments-all' + response.new_comment.super_id).find('.add-btn');
                     let main = $('<div>').addClass('flex-line-container comment-container subcomment ' + response.new_comment.super_id).attr('display', 'flex');
@@ -249,10 +270,10 @@ $(document).ready(function() {
                     let subbigdiv = $('<div>').addClass('flex-line-container c-likes').
                                     append($('<div>').addClass('flex-line-container c-info').
                                     append($('<p>').text('0')).
-                                    append($('<img>').attr('src', '/static/gnome_main/css/images/likes_mini_white.png').click(like_fun).addClass('icon-l pointer ' + response.new_comment.id))).
+                                    append($('<img>').attr('src', '/static/gnome_main/css/images/likes_mini_white.png').click(like_fun).addClass('icon-l pointer comment-like ' + response.new_comment.id))).
                                     append($('<div>').addClass('flex-line-container c-info').
                                     append($('<p>').text('0')).
-                                    append($('<img>').attr('src', '/static/gnome_main/css/images/dislikes_mini_white.png').click(dislike_fun).addClass('icon-l pointer ' + response.new_comment.id))).
+                                    append($('<img>').attr('src', '/static/gnome_main/css/images/dislikes_mini_white.png').click(dislike_fun).addClass('icon-l pointer comment-dislike ' + response.new_comment.id))).
                                     append($('<div>').addClass('flex-line-container c-info answer pointer').click(answerClickHandler).append($('<p>').text('Ответить')));
                     let subdiv = $('<div>').append($('<div>').addClass('flex-line-container c-author-date').
                                     append($('<a>').attr('href', response.new_comment.user_url).text(response.new_comment.username)).
@@ -266,12 +287,14 @@ $(document).ready(function() {
                     let post_comments = $('div.comments').find('p#comments-count-post')
                     post_comments.text(postCommentCountLabel(post_comments.text(), 1));
                     comments_container_btns.before(main);
+                    // если были ошибки, то очистить текст элемента ошибок
                     if ($('div.error-div')) {
-                        $($('div.error-div').splice(-1)).remove();
+                        $('div.error-div').find('p').text('');
                     };
                 },
                 error: function(response) {
                     if ($('div.error-div').length == 1) {
+                        // вывод ошибки
                         let new_error = $('<div>').addClass('flex-line-container error-div').
                             append($('<p>').text(response.responseJSON.ex).addClass('error-p'))
                         that_comment.before(new_error);
@@ -280,23 +303,28 @@ $(document).ready(function() {
             });
         });
 
+        // обработчик кнопки отмены написания нового комментария
         $('#cancel-btn-s-com').click(function() {
             $(this).parent().parent().remove();
         });
     };
 
+    // подввязка обработчика ответа на комментарий
     $('div.answer').click(answerClickHandler);
 
-    $('#main-comment').submit(function(event) {
+    // подвязка обработчика для формы нового суперкомментария
+    $('#main-comment').submit(function() {
         event.preventDefault();
-
+        // оборачиваем функцию
+        userAuthDecorator(function() {
+        // сбор информации
         let form_data = {};
-        let csrf = $(this).find('input[name=csrfmiddlewaretoken]').val();
+        let csrf = $('#main-comment').find('input[name=csrfmiddlewaretoken]').val();
         form_data['csrfmiddlewaretoken'] = csrf;
 
-        let input = $(this).find('textarea.c-line')
+        let input = $('#main-comment').find('textarea.c-line')
         let comment_text = input.val();
-        form_data['main-comment-line'] = comment_text;
+        form_data['new_supercomment'] = comment_text;
         input.val('');
 
         $.ajax({
@@ -305,6 +333,7 @@ $(document).ready(function() {
             data: form_data,
             data_type: 'json',
             success: function(response) {
+                // если до этого были ошибки, то нужно скрыть их
                 if ($('div.error-div')[0].style.display == 'flex') {
                     $('div.error-div')[0].style.display = 'none';
                 };
@@ -315,38 +344,62 @@ $(document).ready(function() {
                 let span = $('<span>').addClass('comment-icon').
                             append($('<a>').attr('href', response.new_comment.user_url).
                             append($('<img>').attr('src', response.new_comment.avatar_url)));
+
                 let subbigdiv = $('<div>').addClass('flex-line-container c-likes').
                                 append($('<div>').addClass('flex-line-container c-info').
                                 append($('<p>').text('0')).
-                                append($('<img>').attr('src', '/static/gnome_main/css/images/likes_mini_white.png').click(like_fun).addClass('icon-l pointer ' + response.new_comment.id))).
+                                append($('<img>').attr('src', '/static/gnome_main/css/images/likes_mini_white.png').click(like_fun).addClass('icon-l pointer comment-like ' + response.new_comment.id))).
                                 append($('<div>').addClass('flex-line-container c-info').
                                 append($('<p>').text('0')).
-                                append($('<img>').attr('src', '/static/gnome_main/css/images/dislikes_mini_white.png').click(dislike_fun).addClass('icon-l pointer ' + response.new_comment.id))).
-                                append($('<div>').addClass('flex-line-container c-info answer pointer').append($('<p>').text('Ответить')));
+                                append($('<img>').attr('src', '/static/gnome_main/css/images/dislikes_mini_white.png').click(dislike_fun).addClass('icon-l pointer comment-dislike ' + response.new_comment.id))).
+                                append($('<div>').addClass('flex-line-container c-info more-comments pointer').click(more_comments).
+                                append($('<p>').text('0 Ответов')).
+                                append($('<img>').attr('src', '/static/gnome_main/css/images/up_arrow.png').css('display', 'none').addClass('icon-l up')).
+                                append($('<img>').attr('src', '/static/gnome_main/css/images/down_arrow.png').css('display', 'block').addClass('icon-l down'))).
+                                append($('<div>').addClass('flex-line-container c-info answer pointer').click(answerClickHandler).append($('<p>').text('Ответить')));
+
+                let ul = $('<ul>')
+                ul.append($('<li>').append($('<div>').click(change_comment).addClass('change-comment').text('Изменить'))).
+                    append($('<li>').append($('<div>').click(deletion_assert).addClass('delete-comment').text('Удалить')));
 
                 let subdiv = $('<div>').append($('<div>').addClass('flex-line-container c-author-date').
                                 append($('<a>').attr('href', response.new_comment.user_url).text(response.new_comment.username)).
-                                append($('<p>').text(response.new_comment.created_at))).
+                                append($('<div>').addClass('flex-line-container flex-space-between').
+                                append($('<p>').text(response.new_comment.created_at)).
+                                append($('<div>').addClass('add-dropdown comment-dropdown').
+                                    append($('<img>').attr('src', '/static/gnome_main/css/images/triple_dots_mini_white.png').click(adddrop_post).addClass('adddrop-post pointer')).
+                                    append($('<div>').addClass('post-dropdown dropdown pointer').
+                                        append(ul))))).
                                 append($('<div>').append(response.new_comment.comment)).
                                 append(subbigdiv);
+
                 main.append(span).append(subdiv);
+                main.mouseenter(comment_mouseenter).mouseleave(comment_mouseleave);
                 let post_comments = $('div.comments').find('p#comments-count-post')
                 post_comments.text(postCommentCountLabel(post_comments.text(), 1));
                 comments_container.prepend(main);
+                main.after($('<div>').addClass('subcomments-all' + response.new_comment.id).css('display', 'none').
+                            append($('<div>').addClass('flex-line-container c-likes subcomment add-btn ' + response.new_comment.id).
+                            append($('<div>').addClass('look-more pointer').css('margin', 'i').text('Смотреть ещё').click(add_btn_look_more)).
+                            append($('<div>').addClass('close pointer').text('Свернуть').click(add_btn_close))));
             },
             error: function(response) {
+                // вывод ошибки
                 let e_div = $('div.error-div')
                 e_div[0].style.display = 'flex';
                 $('div.error-div').find('p.error-p').text(response.responseJSON.ex)
             },
         });
+        })();
     });
 
+    // обработчик кнопки отмены написания нового комментария
     $('#cancel-btn').click(function() {
         $(this).parent().parent().find('textarea.c-line').val('');
     });
 
     function dis_like_counter(value, i) {
+        // Функция обработчик обновления счётчика лайка или дизлайка
         if (i === '+') {
             value.text(parseInt(value.text()) + 1);
         } else if (i === '-') {
@@ -354,9 +407,12 @@ $(document).ready(function() {
         };
     };
 
-    function like_fun() {
+    // Оборачиваем декоратором
+    like_fun = userAuthDecorator(like_fun_orig);
+    function like_fun_orig() {
+        // функция обработчик нового лайка на комментарии
         let number = $(this).attr('class').split(' ').slice(-1);
-        let form_data = {'id': number[0], 'data': 'like', 'csrfmiddlewaretoken': comment_csrf};
+        let form_data = {'comment-id-new-info': number[0], 'data': 'like', 'csrfmiddlewaretoken': csrf_token};
         let name = '/static/gnome_main/css/images/likes_mini_white.png'
         let name_full = '/static/gnome_main/css/images/likes_mini_white_full.png'
         let oposite_name = '/static/gnome_main/css/images/dislikes_mini_white.png'
@@ -389,9 +445,12 @@ $(document).ready(function() {
         });
     };
 
-    function dislike_fun() {
+    // Оборачиваем в декоратор
+    dislike_fun = userAuthDecorator(dislike_fun_orig);
+    function dislike_fun_orig() {
+        // функция обработчик нового дизлайка на комментарии
         let number = $(this).attr('class').split(' ').slice(-1);
-        let form_data = {'id': number[0], 'data': 'dislike', 'csrfmiddlewaretoken': comment_csrf};
+        let form_data = {'comment-id-new-info': number[0], 'data': 'dislike', 'csrfmiddlewaretoken': csrf_token};
         let name = '/static/gnome_main/css/images/dislikes_mini_white.png'
         let name_full = '/static/gnome_main/css/images/dislikes_mini_white_full.png'
         let oposite_name = '/static/gnome_main/css/images/likes_mini_white.png'
@@ -424,28 +483,31 @@ $(document).ready(function() {
         });
     };
 
+    // Подвзка обработчиков новых лайков и дизлайков на комментариях
     $('.comment-like').click(like_fun);
-
     $('.comment-dislike').click(dislike_fun);
 
     $('.like-main').click(function() {
-        let form_data = {'main': true, 'data': 'post_like', 'csrfmiddlewaretoken': comment_csrf};
+        // оборачиваем эту функцию
+        userAuthDecorator(function() {
+        // Функция обработчик нового лайка на посте
+        let form_data = {'post-new-info': true, 'data': 'post_like', 'csrfmiddlewaretoken': csrf_token};
         let name = '/static/gnome_main/css/images/likes_white.png'
         let name_full = '/static/gnome_main/css/images/likes_white_full.png'
         let oposite_name = '/static/gnome_main/css/images/dislikes_white.png'
         let oposite_name_full = '/static/gnome_main/css/images/dislikes_white_full.png'
-
-        if ($(this).attr('src') == name_full) {
-            $(this).attr('src', name)
-            dis_like_counter($(this).parent().find('p'), '-');
+        // !!! th = $(this)
+        if (th.attr('src') == name_full) {
+            th.attr('src', name)
+            dis_like_counter(th.parent().find('p'), '-');
             form_data['status'] = 'delete'
-        } else if ($(this).attr('src') == name) {
-            $(this).attr('src', name_full)
-            dis_like_counter($(this).parent().find('p'), '+');
+        } else if (th.attr('src') == name) {
+            th.attr('src', name_full)
+            dis_like_counter(th.parent().find('p'), '+');
             form_data['status'] = 'append'
-            if ($(this).parent().parent().find('div').find('img.dislike-main').attr('src') === oposite_name_full) {
-                $(this).parent().parent().find('div').find('img.dislike-main').attr('src', oposite_name)
-                dis_like_counter($(this).parent().parent().find('div').find('img.dislike-main').parent().find('p'), '-')
+            if (th.parent().parent().find('div').find('img.dislike-main').attr('src') === oposite_name_full) {
+                th.parent().parent().find('div').find('img.dislike-main').attr('src', oposite_name)
+                dis_like_counter(th.parent().parent().find('div').find('img.dislike-main').parent().find('p'), '-')
             };
         };
 
@@ -460,26 +522,30 @@ $(document).ready(function() {
                 console.log(response)
             }
         });
+        }, th=$(this))();
     });
 
     $('.dislike-main').click(function() {
-        let form_data = {'main': true, 'data': 'post_dislike', 'csrfmiddlewaretoken': comment_csrf};
+        // оборачиваем
+        userAuthDecorator(function() {
+        // Функция обработчик нового дизлайка на посте
+        let form_data = {'post-new-info': true, 'data': 'post_dislike', 'csrfmiddlewaretoken': csrf_token};
         let name = '/static/gnome_main/css/images/dislikes_white.png'
         let name_full = '/static/gnome_main/css/images/dislikes_white_full.png'
         let oposite_name = '/static/gnome_main/css/images/likes_white.png'
         let oposite_name_full = '/static/gnome_main/css/images/likes_white_full.png'
-
-        if ($(this).attr('src') == name_full) {
-            $(this).attr('src', name)
-            dis_like_counter($(this).parent().find('p'), '-');
+        // !!! th = $(this)
+        if (th.attr('src') == name_full) {
+            th.attr('src', name)
+            dis_like_counter(th.parent().find('p'), '-');
             form_data['status'] = 'delete'
-        } else if ($(this).attr('src') == name) {
-            $(this).attr('src', name_full)
-            dis_like_counter($(this).parent().find('p'), '+');
+        } else if (th.attr('src') == name) {
+            th.attr('src', name_full)
+            dis_like_counter(th.parent().find('p'), '+');
             form_data['status'] = 'append'
-            if ($(this).parent().parent().find('div').find('img.like-main').attr('src') === oposite_name_full) {
-                $(this).parent().parent().find('div').find('img.like-main').attr('src', oposite_name)
-                dis_like_counter($(this).parent().parent().find('div').find('img.like-main').parent().find('p'), '-')
+            if (th.parent().parent().find('div').find('img.like-main').attr('src') === oposite_name_full) {
+                th.parent().parent().find('div').find('img.like-main').attr('src', oposite_name)
+                dis_like_counter(th.parent().parent().find('div').find('img.like-main').parent().find('p'), '-')
             };
         };
 
@@ -494,18 +560,22 @@ $(document).ready(function() {
                 console.log(response)
             }
         });
+        }, th=$(this))();
     });
 
     $('.favourite').click(function() {
-        let form_data = {'main': true, 'data': 'favourite', 'csrfmiddlewaretoken': comment_csrf};
+        // Жёстко оборачиваем
+        userAuthDecorator(function() {
+        // Функция обработчик добавления поста в избранное
+        let form_data = {'post-new-info': true, 'data': 'favourite', 'csrfmiddlewaretoken': csrf_token};
         let name = '/static/gnome_main/css/images/favourite_white.png'
         let name_full = '/static/gnome_main/css/images/favourite_white_full.png'
-
-        if ($(this).attr('src') == name_full) {
-            $(this).attr('src', name)
+        // !!! th = $(this)
+        if (th.attr('src') == name_full) {
+            th.attr('src', name)
             form_data['status'] = 'delete'
-        } else if ($(this).attr('src') == name) {
-            $(this).attr('src', name_full)
+        } else if (th.attr('src') == name) {
+            th.attr('src', name_full)
             form_data['status'] = 'append'
         };
 
@@ -520,8 +590,10 @@ $(document).ready(function() {
                 console.log(response)
             }
         });
+        }, th=$(this))();
     });
 
+    // подвязка обработчика к кнопке фильтров комментариев
     $('.filter').click(function() {
         obj = $('.dropdown-filter');
         if (obj.css('display') === 'none') {
@@ -532,45 +604,55 @@ $(document).ready(function() {
     });
 
     function clear_comments(new_value) {
+        // Функция, необходимая для работы фильтрации
+        // удаляет все комментарии на странице, чтобы потом можно
+        // было вывести новые
+
+        // после того как все комменты удалятся, при промотке вниз
+        // отработает функция подвязанная к событию достижения экрана
+        // пользователя нижней части страницы
         filter_data = new_value;
         start_comment = 0;
         end_comment = end_comment - 10;
         $('div.comment-all').empty();
     };
 
+    // подвязка обработчиков к кнопкам фильтров
+    // новые комментарии
     $('#new').click(function() {
         if (filter_data !== 'new') {
             clear_comments('new');
         };
     });
-
+    // старые комментарии
     $('#old').click(function() {
         if (filter_data !== 'old') {
             clear_comments('old');
         };
     });
-
+    // популярные комментарии
     $('#popular').click(function() {
         if (filter_data !== 'popular') {
             clear_comments('popular');
         };
     });
-
+    // мои комментарии
     $('#my').click(function() {
         if (filter_data !== 'my') {
             clear_comments('my');
         };
     });
-
+    // обработчик закрытия блока с кнопками фильтрами
     $('span.close-filters').click(function() {
         $('.dropdown-filter').css('display', 'none');
     });
 
     function loadContent() {
+        // Функция, подгружающая новые комментарии
         $.ajax({
             url: '',
             type: 'post',
-            data: {'csrfmiddlewaretoken': comment_csrf, 'load_comments': true,
+            data: {'csrfmiddlewaretoken': csrf_token, 'load_supercomments': true,
                 'start_comment': start_comment,
                 'end_comment': end_comment,
                 'filter': filter_data},
@@ -580,6 +662,7 @@ $(document).ready(function() {
                     start_comment = end_comment;
                     end_comment += 10;
                     for (let i = 0; i < response.sups.length; i++) {
+                        // формирование нового комментария
                         let comments_container = $('div.comment-all');
                         let main = $('<div>').addClass('flex-line-container comment-container ' + response.sups[i].id);
                         let span = $('<span>').addClass('comment-icon').
@@ -588,10 +671,10 @@ $(document).ready(function() {
                         let subbigdiv = $('<div>').addClass('flex-line-container c-likes').
                                         append($('<div>').addClass('flex-line-container c-info').
                                         append($('<p>').text(response.sups[i].likes)).
-                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response.sups[i].like).click(like_fun).addClass('icon-l pointer ' + response.sups[i].id))).
+                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response.sups[i].like).click(like_fun).addClass('icon-l pointer comment-like ' + response.sups[i].id))).
                                         append($('<div>').addClass('flex-line-container c-info').
                                         append($('<p>').text(response.sups[i].dislikes)).
-                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response.sups[i].dislike).click(dislike_fun).addClass('icon-l pointer ' + response.sups[i].id))).
+                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response.sups[i].dislike).click(dislike_fun).addClass('icon-l pointer comment-dislike ' + response.sups[i].id))).
                                         append($('<div>').addClass('flex-line-container c-info more-comments pointer').click(more_comments).
                                         append($('<p>').text(response.sups[i].ans_count)).
                                         append($('<img>').attr('src', '/static/gnome_main/css/images/up_arrow.png').css('display', 'none').addClass('icon-l up')).
@@ -636,6 +719,7 @@ $(document).ready(function() {
     }
 
     function loadRecContent() {
+        // Функция, подгружающая новые рекомендации
         let ids = []
         $('.rec-container').each(function() {
             ids.push($(this).attr('class').split(' ').slice(-1)[0].slice(3));
@@ -643,12 +727,13 @@ $(document).ready(function() {
         $.ajax({
             url: '',
             type: 'post',
-            data: {'csrfmiddlewaretoken': comment_csrf, 'load_rec': true,
+            data: {'csrfmiddlewaretoken': csrf_token, 'load_rec': true,
                 'ids': JSON.stringify(ids)},
             data_type: 'json',
             success: function(response) {
                 let recomendation_container = $('div.recomendation');
                 for (let i=0; i < response.recs.length; i++) {
+                    // Формирование рекомендаций
                     let main = $('<div>').addClass('flex-line-container rec-container rec' + response.recs[i].id);
                     let span = $('<span>').addClass('rec-preview').
                         append($('<a>').attr('href', response.recs[i].post_url).
@@ -686,6 +771,8 @@ $(document).ready(function() {
         });
     };
 
+    // Привязка функций к событию достижения экрана пользователя
+    // нижней границы страницы
     window.addEventListener('scroll', function() {
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
             loadContent();
@@ -694,6 +781,10 @@ $(document).ready(function() {
     });
 
     function adddrop_post() {
+        // функция обработчик, выводящая выпадающий список
+        // для комментариев, рекомендации и поста,
+        // в этом выпадающем списке будет выбор из:
+        // жалобы, изменения комментария/записи
         elem = $(this).parent().find('.post-dropdown');
         if (elem.css('display') == 'none') {
             elem.css('display', 'block');
@@ -705,21 +796,28 @@ $(document).ready(function() {
         };
     };
 
+    // подвязка обработчика adddrop_post к кнопке, после нажатия на которую
+    // должен появляться выпадающий список
     $('.adddrop-post').click(adddrop_post);
 
     function comment_mouseenter() {
+        // Функция, отображающая кнопку выпадающего списка, при
+        // нахождении курсора на комментарии
         if ($(this).find('div.comment-dropdown').css('visibility') != 'visible') {
             $(this).find('div.comment-dropdown').css('visibility', 'visible');
         };
     };
 
     function comment_mouseleave() {
+        // Функция, скрывающая кнопку выпадающего списка, при
+        // выводе курсора из-под комментария
         if ($(this).find('div.comment-dropdown').css('visibility') != 'hidden') {
             $(this).find('div.comment-dropdown').css('visibility', 'hidden');
         };
     };
 
     function adddrop_rec() {
+        // Функция выводящая выпадающий список с жалобой или изменением
         elem = $(this).parent().find('.rec-dropdown-m');
         if (elem.css('display') == 'none') {
             elem.css('display', 'block');
@@ -732,6 +830,8 @@ $(document).ready(function() {
     };
 
     function rec_mouseenter() {
+        // Функция, отображающая кнопку выпадающего списка, при
+        // нахождении курсора на рекомендации
         let obj = $(this).find('div.rec-line').find('div.add-dropdown.rec-dropdown');
         if (obj.css('visibility') != 'visible') {
             obj.css('visibility', 'visible');
@@ -739,6 +839,8 @@ $(document).ready(function() {
     };
 
     function rec_mouseleave() {
+        // Функция, скрывающая кнопку выпадающий спискок, при
+        // выводе курсора из-под нужного рекомендации
         let obj = $(this).find('div.rec-line').find('div.add-dropdown.rec-dropdown');
         if (obj.css('visibility') != 'hidden') {
             obj.css('visibility', 'hidden');
@@ -747,7 +849,7 @@ $(document).ready(function() {
     };
 
     function change_comment() {
-
+        // Функция изменения комментария
         if (old_comment) {
             old_comment.remove();
         };
@@ -762,7 +864,7 @@ $(document).ready(function() {
                     append($('<input>').attr({
                         'type': 'hidden',
                         'name': 'csrfmiddlewaretoken',
-                        'value': comment_csrf,
+                        'value': csrf_token,
                     })).
                     append($('<textarea>').attr({
                         'type': 'text',
@@ -810,7 +912,7 @@ $(document).ready(function() {
                         t_div.text(t_div.text() + ' (изменено)')
                     };
                     if ($('div.error-div').length != 1) {
-                        $($('div.error-div').splice(-1)).remove();
+                        $('div.error-div').find('p').text('');
                     };
                 },
                 error: function(response) {
@@ -825,11 +927,13 @@ $(document).ready(function() {
     };
 
     function cancel_ch_com() {
+        // Функция отмены изменения комментария
         $(this).parent().parent().parent().find('div:not([class])').css('display', 'block');
         $(this).parent().parent().remove();
     };
 
     function deletion_assert() {
+        // Функция выводящая модальное окно при удалении комментария
         f_obj = Fancybox.show([{
             src: '#deletion',
             type: 'inline'
@@ -840,11 +944,12 @@ $(document).ready(function() {
                     .split(' ').splice(-1)[0];
         let th = $(this).parent().parent().parent().parent().parent().parent().parent().parent();
 
+        // обработка нажатия на кнопку подтверждения удаления комментария
         $('#btn-delete-yes').off('click').click(function() {
             f_obj.close();
             let form_data = {
                 'delete_comment': true,
-                'csrfmiddlewaretoken': comment_csrf,
+                'csrfmiddlewaretoken': csrf_token,
                 'c_id': c_id
             };
             $.ajax({
@@ -880,7 +985,7 @@ $(document).ready(function() {
                     });
 
                     if ($('div.error-div').length != 1) {
-                        $($('div.error-div').splice(-1)).remove();
+                        $('div.error-div').find('p').text('');
                     };
                 },
                 error: function(response) {
@@ -892,14 +997,16 @@ $(document).ready(function() {
                 }
             });
         });
-
+        // отмена удаления комментария
         $('#btn-delete-no').off('click').click(function() {
             f_obj.close()
         });
     };
 
     function btn_sub() {
-        let formData = {'csrfmiddlewaretoken': comment_csrf}
+        // Функция обработчик подписки на пользователя, выложевшего
+        // текущую запись
+        let formData = {'csrfmiddlewaretoken': csrf_token}
         if ($(this).attr('class').split('-').splice(-1)[0] === 'true' ) {
             $(this).css('display', 'none');
             $(this).parent().find('.sub-false').css('display', 'block');
@@ -919,6 +1026,7 @@ $(document).ready(function() {
         });
     };
 
+    // Подвязка ко кнопке подписки и отписки обработчика btn_sub
     $('button.sub-false').click(btn_sub);
     $('button.sub-true').click(btn_sub);
 });

@@ -193,12 +193,29 @@ class Post(models.Model):
         '''Возвращает все связанные с постом тэги'''
         return self.tag.all()
 
+@deconstructible
+class MaxFileSizeValidator(object):
+    '''Валидотор размера дополнительного медиа'''
+    # max_size указывать в мб
+    def __init__(self, max_size):
+        self.max_size = max_size * 1024 * 1024
+        self.orig_size = max_size
+
+    def __call__(self, value, *args, **kwargs):
+        if value.size > self.max_size:
+            raise ValidationError('Размер файла превышает %(max_size)s мб',
+                        code='file_exceeded_size',
+                        params={'max_size': self.orig_size})
+
+    def __eq__(self, other):
+        return self.max_size == other.max_size
 
 class PostAdditionalImage(models.Model):
     '''Модель дополнительных изображений'''
     post = models.ForeignKey(Post, on_delete=models.CASCADE,
                              verbose_name='Пост')
     media = models.FileField(upload_to=get_image_path_post_ai,
+                             validators=[MaxFileSizeValidator(100)],
                              verbose_name='Медиа')
 
     class Meta:
@@ -403,11 +420,16 @@ class CommentReport(models.Model):
         ('Оскорбления', 'Оскорбления')
     ]
 
-    comment = models.ForeignKey(PostComment, on_delete=models.CASCADE)
-    user = models.ForeignKey(AdvUser, on_delete=models.CASCADE)
-    type = models.CharField(choices=type_choices, null=False, blank=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    text = models.CharField(max_length=300, null=True, blank=True)
+    comment = models.ForeignKey(PostComment, on_delete=models.CASCADE,
+                                verbose_name='Комментарий')
+    user = models.ForeignKey(AdvUser, on_delete=models.CASCADE,
+                             verbose_name='Пользователь')
+    type = models.CharField(choices=type_choices, null=False, blank=False,
+                            verbose_name='Тип жалобы')
+    created_at = models.DateTimeField(auto_now_add=True,
+                                      verbose_name='Дата создания')
+    text = models.CharField(max_length=300, null=True, blank=True,
+                            verbose_name='Текст жалобы')
 
     class Meta:
         verbose_name = 'Жалоба на комментарий'
@@ -441,7 +463,8 @@ class Notification(models.Model):
     message = models.CharField(null=False, blank=False,
                                verbose_name='Сообщение')
     is_read = models.BooleanField(default=False, verbose_name='Прочитано автором?')
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True,
+                                      verbose_name='Дата создания')
 
     class Meta:
         verbose_name = 'Уведомление'

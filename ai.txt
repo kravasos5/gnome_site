@@ -1,1 +1,0 @@
-https://www.letscodemore.com/blog/django-inline-formset-factory-with-examples/

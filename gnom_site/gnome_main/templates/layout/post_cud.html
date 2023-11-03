@@ -43,7 +43,6 @@
                         <p>{{ field }}</p>
                         <script id="tag-script">
                             window.addEventListener("load", (event) => {
-                                console.log(123);
                                 $('#id_tag').val(`{% for tag in field.value %}
                                                       {{ tag.tag }}
                                                   {% endfor %}`.replace(/\s+/g, ' ').trim());
@@ -114,7 +113,7 @@
                                     <div id="images-{{ forloop.counter0 }}">
                                         {% if field.errors %}
                                             {% for error in field.errors %}
-                                                <p style="color:red;">{{ escape }}</p>
+                                                <p style="color:red;">{{ error|escape }}</p>
                                             {% endfor %}
                                         {% endif %}
 

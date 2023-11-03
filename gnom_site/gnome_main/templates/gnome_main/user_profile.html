@@ -15,6 +15,8 @@
 <script src="{% static 'gnome_main/js/user_profile.js' %}"></script>
 <script>
     var csrf_token = '{{ csrf_token }}';
+    var userIsAuthenticated = {{ user.is_authenticated|yesno:"true,false"}};
+    var login_html = '{% url "gnome_main:log-in" %}';
 </script>
 {% endblock %}
 
@@ -51,12 +53,18 @@
         {% else %}
         <div>
             {% csrf_token %}
-            {% if is_subscribe %}
-            <button class="sub-true">Отписаться</button>
-            <button class="sub-false" style="display: none;">Подписаться</button>
+            {% if user.is_authenticated %}
+                {% if is_subscribe %}
+                <button class="sub-true">Отписаться</button>
+                <button class="sub-false" style="display: none;">Подписаться</button>
+                {% else %}
+                <button class="sub-false">Подписаться</button>
+                <button class="sub-true" style="display: none;">Отписаться</button>
+                {% endif %}
             {% else %}
-            <button class="sub-false">Подписаться</button>
-            <button class="sub-true" style="display: none;">Отписаться</button>
+                <a href="{% url 'gnome_main:log-in' %}">
+                    <button class="sub-false">Подписаться</button>
+                </a>
             {% endif %}
         </div>
         {% endif %}
@@ -140,7 +148,11 @@
                             </li>
                             {% else %}
                             <li>
+                                {% if user.is_authenticated %}
                                 <a href="{% url 'gnome_main:post-report' slug=post.slug %}">
+                                {% else %}
+                                <a href="{% url 'gnome_main:log-in' %}">
+                                {% endif %}
                                     <img src="{% static 'gnome_main/css/images/report.png' %}">
                                     <p>Пожаловаться</p>
                                 </a>

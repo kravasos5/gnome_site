@@ -266,3 +266,7 @@ select {
 .flex-line-container {
     display: flex;
 }
+
+.errorlist {
+    padding: 0;
+}

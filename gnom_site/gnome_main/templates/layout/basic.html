@@ -6,9 +6,9 @@
     <meta charset="UTF-8">
     <link type="image/x-icon" href="{% static 'gnome_main/css/images/favicon.png' %}" rel="shortcut icon">
     <link type="Image/x-icon" href="{% static 'gnome_main/css/images/favicon.png' %}" rel="icon">
+    <script src="{% static 'gnome_main/js/basic.js' %}"></script>
     {% block links %}
     {% endblock links %}
-    <script src="{% static 'gnome_main/js/basic.js' %}"></script>
     <title>{% block title %}Правда о гномах{% endblock title %}</title>
     {% block head %}
     {% endblock head %}
@@ -72,8 +72,10 @@
 </div>
 {% endif %}
 
+<div class="main-content">
 {% block content %}
 {% endblock content %}
+</div>
 
 </body>
 

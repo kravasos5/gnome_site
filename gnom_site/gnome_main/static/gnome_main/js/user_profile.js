@@ -1,9 +1,23 @@
 $(document).ready(function() {
-
-    var csrf = $('input[name=csrfmiddlewaretoken]').val();
     var cur_filter = 'new';
     var dropdown_status = false;
     var posts_is_full = false;
+
+    function userAuthDecorator(func) {
+        // Декоратор, проверяющий авторизован ли пользователь
+        // Если он не авторизован, то происходит перевод на страницу авторизации
+        // этот декоратор нужен для перевода не авторизованного пользователя
+        // на страницу авторизации, при попытке выполнения действия, доступного
+        // только авторизованным пользователям, например при нажатии лайка
+        // или попытке написания комментария
+        return function() {
+            if (userIsAuthenticated) {
+                return func.apply(this, arguments)
+            } else {
+                window.location.href = login_html;
+            };
+        };
+    };
 
     $('.sub-true').click(function() {
         $.ajax({
@@ -11,8 +25,7 @@ $(document).ready(function() {
             type: 'post',
             data: {
                 subscribe: true,
-                csrfmiddlewaretoken: csrf
-
+                csrfmiddlewaretoken: csrf_token
             },
             success: function(response) {
                 $('.sub-true').hide()
@@ -27,7 +40,7 @@ $(document).ready(function() {
             type: 'post',
             data: {
                 subscribe: false,
-                csrfmiddlewaretoken: csrf
+                csrfmiddlewaretoken: csrf_token
 
             },
             success: function(response) {
@@ -63,9 +76,14 @@ $(document).ready(function() {
             if (post.report) {
                 ul.append($('<li>').append($('<a>').text('Изменить').attr('href', post.update_url)));
             } else {
-                let a = $('<a>').attr('href', post.report_url).
-                    append($('<img>').attr('src', '/static/gnome_main/css/images/report.png')).
-                    append($('<p>').text('Пожаловаться'));
+                if (userIsAuthenticated) {
+                    var a = $('<a>').attr('href', post.report_url);
+                } else {
+                    var a = $('<a>').attr('href', '/login/');
+                };
+                a.
+                  append($('<img>').attr('src', '/static/gnome_main/css/images/report.png')).
+                  append($('<p>').text('Пожаловаться'));
                 ul.append($('<li>').append(a));
             };
             let post_data = $('<div>').addClass('post-data').
@@ -172,7 +190,8 @@ $(document).ready(function() {
         };
     };
 
-    function favourite_post() {
+    favourite_post = userAuthDecorator(favourite_post_orig);
+    function favourite_post_orig() {
         let p_id = $(this).parent().parent().parent().parent().parent().parent().
             attr('class').split(' ').slice(-1)[0];
         let form_data = {'favourite': true,
