@@ -9,10 +9,6 @@ $(document).ready(function() {
     var additional_comments = {};
     var deletion = false;
     var filter_data = 'popular';
-    var start_comment = 0;
-    var end_comment = 10;
-    var start_recommend = 0;
-    var end_recommend = 10;
 
     loadRecContent();
 
@@ -38,7 +34,7 @@ $(document).ready(function() {
         // Подгружает новые подкомментарии
         let s_id = null;
         if (th.attr('class').includes('look-more')) {
-            s_id = parseInt(th.parent().parent().attr('class').slice(-1));
+            s_id = parseInt(th.parent().attr('class').split(' ').slice(-1));
         } else {
             s_id = parseInt(th.parent().parent().parent().attr('class').split(' ').slice(-1));
         };
@@ -60,9 +56,9 @@ $(document).ready(function() {
                 data: form_data,
                 data_type: 'json',
                 success: function(response) {
-                    if (response.subs[0] == undefined) {
+                    if (response.subs[0] === undefined) {
                         additional_comments[s_id]['done'] = true;
-                        $('div.subcomments-all' + s_id).find('.add-btn').find('div.look-more').remove()
+                        $('div.subcomments-all' + s_id).find('.add-btn').find('div.look-more').remove();
                     } else {
 
                     for (let i=0; i < response.subs.length; i++) {
@@ -75,10 +71,10 @@ $(document).ready(function() {
                         let subbigdiv = $('<div>').addClass('flex-line-container c-likes').
                                         append($('<div>').addClass('flex-line-container c-info').
                                         append($('<p>').text(response['subs'][i].likes)).
-                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response['subs'][i].like).click(like_fun).addClass('icon-l pointer comment-like ' + response['subs'][i].id))).
+                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response['subs'][i].like).click(comment_like).addClass('icon-l pointer comment-like ' + response['subs'][i].id))).
                                         append($('<div>').addClass('flex-line-container c-info').
                                         append($('<p>').text(response['subs'][i].dislikes)).
-                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response['subs'][i].dislike).click(dislike_fun).addClass('icon-l pointer comment-dislike ' + response['subs'][i].id))).
+                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response['subs'][i].dislike).click(comment_dislike).addClass('icon-l pointer comment-dislike ' + response['subs'][i].id))).
                                         append($('<div>').addClass('flex-line-container c-info answer pointer').click(answerClickHandler).append($('<p>').text('Ответить')));
                         let ul = $('<ul>')
                         if (response['subs'][i].report) {
@@ -270,10 +266,10 @@ $(document).ready(function() {
                     let subbigdiv = $('<div>').addClass('flex-line-container c-likes').
                                     append($('<div>').addClass('flex-line-container c-info').
                                     append($('<p>').text('0')).
-                                    append($('<img>').attr('src', '/static/gnome_main/css/images/likes_mini_white.png').click(like_fun).addClass('icon-l pointer comment-like ' + response.new_comment.id))).
+                                    append($('<img>').attr('src', '/static/gnome_main/css/images/likes_mini_white.png').click(comment_like).addClass('icon-l pointer comment-like ' + response.new_comment.id))).
                                     append($('<div>').addClass('flex-line-container c-info').
                                     append($('<p>').text('0')).
-                                    append($('<img>').attr('src', '/static/gnome_main/css/images/dislikes_mini_white.png').click(dislike_fun).addClass('icon-l pointer comment-dislike ' + response.new_comment.id))).
+                                    append($('<img>').attr('src', '/static/gnome_main/css/images/dislikes_mini_white.png').click(comment_dislike).addClass('icon-l pointer comment-dislike ' + response.new_comment.id))).
                                     append($('<div>').addClass('flex-line-container c-info answer pointer').click(answerClickHandler).append($('<p>').text('Ответить')));
                     let subdiv = $('<div>').append($('<div>').addClass('flex-line-container c-author-date').
                                     append($('<a>').attr('href', response.new_comment.user_url).text(response.new_comment.username)).
@@ -348,10 +344,10 @@ $(document).ready(function() {
                 let subbigdiv = $('<div>').addClass('flex-line-container c-likes').
                                 append($('<div>').addClass('flex-line-container c-info').
                                 append($('<p>').text('0')).
-                                append($('<img>').attr('src', '/static/gnome_main/css/images/likes_mini_white.png').click(like_fun).addClass('icon-l pointer comment-like ' + response.new_comment.id))).
+                                append($('<img>').attr('src', '/static/gnome_main/css/images/likes_mini_white.png').click(comment_like).addClass('icon-l pointer comment-like ' + response.new_comment.id))).
                                 append($('<div>').addClass('flex-line-container c-info').
                                 append($('<p>').text('0')).
-                                append($('<img>').attr('src', '/static/gnome_main/css/images/dislikes_mini_white.png').click(dislike_fun).addClass('icon-l pointer comment-dislike ' + response.new_comment.id))).
+                                append($('<img>').attr('src', '/static/gnome_main/css/images/dislikes_mini_white.png').click(comment_dislike).addClass('icon-l pointer comment-dislike ' + response.new_comment.id))).
                                 append($('<div>').addClass('flex-line-container c-info more-comments pointer').click(more_comments).
                                 append($('<p>').text('0 Ответов')).
                                 append($('<img>').attr('src', '/static/gnome_main/css/images/up_arrow.png').css('display', 'none').addClass('icon-l up')).
@@ -398,170 +394,25 @@ $(document).ready(function() {
         $(this).parent().parent().find('textarea.c-line').val('');
     });
 
-    function dis_like_counter(value, i) {
-        // Функция обработчик обновления счётчика лайка или дизлайка
-        if (i === '+') {
-            value.text(parseInt(value.text()) + 1);
-        } else if (i === '-') {
-            value.text(parseInt(value.text()) - 1);
-        };
+    // функции лайков/дизлайков на комментарии
+     function comment_like() {
+        //Функция лайка на комментарии
+        // такая конструкция нужна, чтобы передать $(this)
+        ld_handler(th=$(this), ld='like', ld_opposite='dislike', is_post_or_comment='comment')
     };
-
-    // Оборачиваем декоратором
-    like_fun = userAuthDecorator(like_fun_orig);
-    function like_fun_orig() {
-        // функция обработчик нового лайка на комментарии
-        let number = $(this).attr('class').split(' ').slice(-1);
-        let form_data = {'comment-id-new-info': number[0], 'data': 'like', 'csrfmiddlewaretoken': csrf_token};
-        let name = '/static/gnome_main/css/images/likes_mini_white.png'
-        let name_full = '/static/gnome_main/css/images/likes_mini_white_full.png'
-        let oposite_name = '/static/gnome_main/css/images/dislikes_mini_white.png'
-        let oposite_name_full = '/static/gnome_main/css/images/dislikes_mini_white_full.png'
-
-        if ($(this).attr('src') == name_full) {
-            $(this).attr('src', name)
-            dis_like_counter($(this).parent().find('p'), '-');
-            form_data['c_status'] = 'delete'
-        } else if ($(this).attr('src') == name) {
-            $(this).attr('src', name_full)
-            dis_like_counter($(this).parent().find('p'), '+');
-            form_data['c_status'] = 'append'
-            if ($(this).parent().parent().find('div').find('img.comment-dislike').attr('src') === oposite_name_full) {
-                $(this).parent().parent().find('div').find('img.comment-dislike').attr('src', oposite_name)
-                dis_like_counter($(this).parent().parent().find('div').find('img.comment-dislike').parent().find('p'), '-')
-            };
-        };
-
-        $.ajax({
-            url: '',
-            type: 'post',
-            data: form_data,
-            data_type: 'json',
-            success: function(response) {
-            },
-            error: function(response) {
-                console.log(response)
-            }
-        });
-    };
-
-    // Оборачиваем в декоратор
-    dislike_fun = userAuthDecorator(dislike_fun_orig);
-    function dislike_fun_orig() {
-        // функция обработчик нового дизлайка на комментарии
-        let number = $(this).attr('class').split(' ').slice(-1);
-        let form_data = {'comment-id-new-info': number[0], 'data': 'dislike', 'csrfmiddlewaretoken': csrf_token};
-        let name = '/static/gnome_main/css/images/dislikes_mini_white.png'
-        let name_full = '/static/gnome_main/css/images/dislikes_mini_white_full.png'
-        let oposite_name = '/static/gnome_main/css/images/likes_mini_white.png'
-        let oposite_name_full = '/static/gnome_main/css/images/likes_mini_white_full.png'
-
-        if ($(this).attr('src') == name_full) {
-            $(this).attr('src', name)
-            dis_like_counter($(this).parent().find('p'), '-');
-            form_data['c_status'] = 'delete'
-        } else if ($(this).attr('src') == name) {
-            $(this).attr('src', name_full)
-            dis_like_counter($(this).parent().find('p'), '+');
-            form_data['c_status'] = 'append'
-            if ($(this).parent().parent().find('div').find('img.comment-like').attr('src') === oposite_name_full) {
-                $(this).parent().parent().find('div').find('img.comment-like').attr('src', oposite_name)
-                dis_like_counter($(this).parent().parent().find('div').find('img.comment-like').parent().find('p'), '-')
-            };
-        };
-
-        $.ajax({
-            url: '',
-            type: 'post',
-            data: form_data,
-            data_type: 'json',
-            success: function(response) {
-            },
-            error: function(response) {
-                console.log(response)
-            }
-        });
+     function comment_dislike() {
+        //Функция лайка на комментарии
+        // такая конструкция нужна, чтобы передать $(this)
+        ld_handler(th=$(this), ld='dislike', ld_opposite='like', is_post_or_comment='comment')
     };
 
     // Подвзка обработчиков новых лайков и дизлайков на комментариях
-    $('.comment-like').click(like_fun);
-    $('.comment-dislike').click(dislike_fun);
+    $('.comment-like').click(comment_like);
+    $('.comment-dislike').click(comment_dislike);
 
-    $('.like-main').click(function() {
-        // оборачиваем эту функцию
-        userAuthDecorator(function() {
-        // Функция обработчик нового лайка на посте
-        let form_data = {'post-new-info': true, 'data': 'post_like', 'csrfmiddlewaretoken': csrf_token};
-        let name = '/static/gnome_main/css/images/likes_white.png'
-        let name_full = '/static/gnome_main/css/images/likes_white_full.png'
-        let oposite_name = '/static/gnome_main/css/images/dislikes_white.png'
-        let oposite_name_full = '/static/gnome_main/css/images/dislikes_white_full.png'
-        // !!! th = $(this)
-        if (th.attr('src') == name_full) {
-            th.attr('src', name)
-            dis_like_counter(th.parent().find('p'), '-');
-            form_data['status'] = 'delete'
-        } else if (th.attr('src') == name) {
-            th.attr('src', name_full)
-            dis_like_counter(th.parent().find('p'), '+');
-            form_data['status'] = 'append'
-            if (th.parent().parent().find('div').find('img.dislike-main').attr('src') === oposite_name_full) {
-                th.parent().parent().find('div').find('img.dislike-main').attr('src', oposite_name)
-                dis_like_counter(th.parent().parent().find('div').find('img.dislike-main').parent().find('p'), '-')
-            };
-        };
-
-        $.ajax({
-            url: '',
-            type: 'post',
-            data: form_data,
-            data_type: 'json',
-            success: function(response) {
-            },
-            error: function(response) {
-                console.log(response)
-            }
-        });
-        }, th=$(this))();
-    });
-
-    $('.dislike-main').click(function() {
-        // оборачиваем
-        userAuthDecorator(function() {
-        // Функция обработчик нового дизлайка на посте
-        let form_data = {'post-new-info': true, 'data': 'post_dislike', 'csrfmiddlewaretoken': csrf_token};
-        let name = '/static/gnome_main/css/images/dislikes_white.png'
-        let name_full = '/static/gnome_main/css/images/dislikes_white_full.png'
-        let oposite_name = '/static/gnome_main/css/images/likes_white.png'
-        let oposite_name_full = '/static/gnome_main/css/images/likes_white_full.png'
-        // !!! th = $(this)
-        if (th.attr('src') == name_full) {
-            th.attr('src', name)
-            dis_like_counter(th.parent().find('p'), '-');
-            form_data['status'] = 'delete'
-        } else if (th.attr('src') == name) {
-            th.attr('src', name_full)
-            dis_like_counter(th.parent().find('p'), '+');
-            form_data['status'] = 'append'
-            if (th.parent().parent().find('div').find('img.like-main').attr('src') === oposite_name_full) {
-                th.parent().parent().find('div').find('img.like-main').attr('src', oposite_name)
-                dis_like_counter(th.parent().parent().find('div').find('img.like-main').parent().find('p'), '-')
-            };
-        };
-
-        $.ajax({
-            url: '',
-            type: 'post',
-            data: form_data,
-            data_type: 'json',
-            success: function(response) {
-            },
-            error: function(response) {
-                console.log(response)
-            }
-        });
-        }, th=$(this))();
-    });
+    // Подвязка обработчиков новых лайков и дизлайков на постах/посте
+    $('.like-main').click(post_like);
+    $('.dislike-main').click(post_dislike);
 
     $('.favourite').click(function() {
         // Жёстко оборачиваем
@@ -612,9 +463,8 @@ $(document).ready(function() {
         // отработает функция подвязанная к событию достижения экрана
         // пользователя нижней части страницы
         filter_data = new_value;
-        start_comment = 0;
-        end_comment = end_comment - 10;
         $('div.comment-all').empty();
+        loadContent();
     };
 
     // подвязка обработчиков к кнопкам фильтров
@@ -649,18 +499,18 @@ $(document).ready(function() {
 
     function loadContent() {
         // Функция, подгружающая новые комментарии
+        let ids = $('.comment-all').find('.comment-container').map(function() {
+            return $(this).attr('class').split(' ').slice(-1)[0];
+        }).get();
         $.ajax({
             url: '',
             type: 'post',
             data: {'csrfmiddlewaretoken': csrf_token, 'load_supercomments': true,
-                'start_comment': start_comment,
-                'end_comment': end_comment,
+                   'ids': JSON.stringify(ids),
                 'filter': filter_data},
             data_type: 'json',
             success: function(response) {
                 if (response.sups.length !== 0) {
-                    start_comment = end_comment;
-                    end_comment += 10;
                     for (let i = 0; i < response.sups.length; i++) {
                         // формирование нового комментария
                         let comments_container = $('div.comment-all');
@@ -671,10 +521,10 @@ $(document).ready(function() {
                         let subbigdiv = $('<div>').addClass('flex-line-container c-likes').
                                         append($('<div>').addClass('flex-line-container c-info').
                                         append($('<p>').text(response.sups[i].likes)).
-                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response.sups[i].like).click(like_fun).addClass('icon-l pointer comment-like ' + response.sups[i].id))).
+                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response.sups[i].like).click(comment_like).addClass('icon-l pointer comment-like ' + response.sups[i].id))).
                                         append($('<div>').addClass('flex-line-container c-info').
                                         append($('<p>').text(response.sups[i].dislikes)).
-                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response.sups[i].dislike).click(dislike_fun).addClass('icon-l pointer comment-dislike ' + response.sups[i].id))).
+                                        append($('<img>').attr('src', '/static/gnome_main/css/images/' + response.sups[i].dislike).click(comment_dislike).addClass('icon-l pointer comment-dislike ' + response.sups[i].id))).
                                         append($('<div>').addClass('flex-line-container c-info more-comments pointer').click(more_comments).
                                         append($('<p>').text(response.sups[i].ans_count)).
                                         append($('<img>').attr('src', '/static/gnome_main/css/images/up_arrow.png').css('display', 'none').addClass('icon-l up')).
@@ -720,10 +570,9 @@ $(document).ready(function() {
 
     function loadRecContent() {
         // Функция, подгружающая новые рекомендации
-        let ids = []
-        $('.rec-container').each(function() {
-            ids.push($(this).attr('class').split(' ').slice(-1)[0].slice(3));
-        });
+        let ids = $('.rec-container').map(function() {
+            return $(this).attr('class').split(' ').slice(-1)[0].slice(3);
+        }).get();
         $.ajax({
             url: '',
             type: 'post',
@@ -840,7 +689,7 @@ $(document).ready(function() {
 
     function rec_mouseleave() {
         // Функция, скрывающая кнопку выпадающий спискок, при
-        // выводе курсора из-под нужного рекомендации
+        // выводе курсора из-под нужной рекомендации
         let obj = $(this).find('div.rec-line').find('div.add-dropdown.rec-dropdown');
         if (obj.css('visibility') != 'hidden') {
             obj.css('visibility', 'hidden');

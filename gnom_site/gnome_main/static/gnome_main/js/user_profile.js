@@ -1,23 +1,6 @@
 $(document).ready(function() {
     var cur_filter = 'new';
-    var dropdown_status = false;
     var posts_is_full = false;
-
-    function userAuthDecorator(func) {
-        // Декоратор, проверяющий авторизован ли пользователь
-        // Если он не авторизован, то происходит перевод на страницу авторизации
-        // этот декоратор нужен для перевода не авторизованного пользователя
-        // на страницу авторизации, при попытке выполнения действия, доступного
-        // только авторизованным пользователям, например при нажатии лайка
-        // или попытке написания комментария
-        return function() {
-            if (userIsAuthenticated) {
-                return func.apply(this, arguments)
-            } else {
-                window.location.href = login_html;
-            };
-        };
-    };
 
     $('.sub-true').click(function() {
         $.ajax({
@@ -49,20 +32,6 @@ $(document).ready(function() {
             }
         })
     });
-
-    function adddrop_rec() {
-        elem = $(this).parent().find('.rec-dropdown-m');
-        dropdown_status = true;
-        if (elem.css('display') == 'none') {
-            elem.css('display', 'block');
-            elem.mouseleave(function() {
-                dropdown_status = false;
-                elem.css('display', 'none');
-            });
-        } else {
-            elem.css('display', 'none');
-        };
-    };
 
     function post_add(parent, response) {
         for (let i=0; i<response.posts.length; i++) {
@@ -100,14 +69,14 @@ $(document).ready(function() {
                             append($('<img>').attr('src', post.view_img))).
                         append($('<div>').addClass('post-l').
                             append($('<p>').text(post.likes)).
-                            append($('<img>').attr('src', post.like_img))).
+                            append($('<img>').attr('src', post.like_img).attr('class', 'like-main').mouseenter(elem_mouseenter).mouseleave(elem_mouseleave))).
                         append($('<div>').addClass('post-l').
                             append($('<p>').text(post.dislikes)).
-                            append($('<img>').attr('src', post.dislike_img))).
+                            append($('<img>').attr('src', post.dislike_img).attr('class', 'dislike-main').mouseenter(elem_mouseenter).mouseleave(elem_mouseleave))).
                         append($('<div>').addClass('post-l').
                             append($('<p>').text(post.comments)).
                             append($('<img>').attr('src', post.comment_img)))).
-                    append($('<div>').addClass('post-r').mouseenter(fav_mouseenter).mouseleave(fav_mouseleave).
+                    append($('<div>').addClass('post-r').mouseenter(elem_mouseenter).mouseleave(elem_mouseleave).
                         append($('<img>').attr('src', post.favourite_img).click(favourite_post))))
             post_in.append(post_pr_cont).append(post_data);
             main_a.append(post_in);
@@ -174,73 +143,11 @@ $(document).ready(function() {
         };
     };
 
-    function fav_mouseenter() {
-        dropdown_status = true
-    };
-
-    function fav_mouseleave() {
-        dropdown_status = false
-    };
-
-    function post_a_handler(event) {
-        if (dropdown_status === false) {
-            return true;
-        } else {
-            event.preventDefault();
-        };
-    };
-
-    favourite_post = userAuthDecorator(favourite_post_orig);
-    function favourite_post_orig() {
-        let p_id = $(this).parent().parent().parent().parent().parent().parent().
-            attr('class').split(' ').slice(-1)[0];
-        let form_data = {'favourite': true,
-            'csrfmiddlewaretoken': csrf_token,
-            'p_id': p_id};
-        let name = '/static/gnome_main/css/images/favourite.png'
-        let name_full = '/static/gnome_main/css/images/favourite_full.png'
-
-        if ($(this).attr('src') == name_full) {
-            $(this).attr('src', name)
-            form_data['status'] = 'delete'
-        } else if ($(this).attr('src') == name) {
-            $(this).attr('src', name_full)
-            form_data['status'] = 'append'
-        };
-
-        $.ajax({
-            url: '',
-            type: 'post',
-            data: form_data,
-            data_type: 'json',
-            success: function(response) {
-            },
-            error: function(response) {
-                console.log(response)
-            }
-        });
-    };
-
-    function post_mouseenter() {
-        let obj = $(this).find('div.rec-dropdown');
-        if (obj.css('visibility') != 'visible') {
-            obj.css('visibility', 'visible');
-        };
-    };
-
-    function post_mouseleave() {
-        let obj = $(this).find('div.rec-dropdown');
-        if (obj.css('visibility') != 'hidden') {
-            obj.css('visibility', 'hidden');
-            obj.find('.rec-dropdown-m').css('display', 'none');
-        };
-    };
-
     $('.post').mouseenter(post_mouseenter).mouseleave(post_mouseleave);
 
     $('.post-a').click(post_a_handler);
 
-    $('.post-r').mouseenter(fav_mouseenter).mouseleave(fav_mouseleave);
+    $('.post-r').mouseenter(elem_mouseenter).mouseleave(elem_mouseleave);
 
     $('.post-r').find('img').click(favourite_post);
 
@@ -251,5 +158,8 @@ $(document).ready(function() {
             loadMorePosts();
         };
     });
+
+    $('.like-main').mouseenter(elem_mouseenter).mouseleave(elem_mouseleave).click(post_like_card);
+    $('.dislike-main').mouseenter(elem_mouseenter).mouseleave(elem_mouseleave).click(post_dislike_card);
 
 });

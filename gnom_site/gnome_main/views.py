@@ -29,7 +29,7 @@ from .serializers import PostCommentSerializer
 from .forms import RegisterUserForm, ChangeUserInfoForm, DeleteUserForm, PostReportForm, CommentReportForm, \
     PostCreationForm, AIFormSet
 from .mixins import BlogMixin, NotificationCheckMixin, BlogFilterMixin, BlogSearchMixin, ViewIncrementMixin, \
-    CommentDispatcherMixin, RecLoaderMixin, PostInfoAddMixin, CsrfMixin, SubscribeMixin
+    CommentDispatcherMixin, RecLoaderMixin, PostInfoAddMixin, CsrfMixin, SubscribeMixin, IsSubscribeMixin
 from .models import *
 from .apps import user_delete_signal
 from .templatetags.profile_extras import date_ago, post_views, is_full, comment_pluralize
@@ -143,7 +143,7 @@ class BlogSearchView(BlogBase, NotificationCheckMixin, CsrfMixin, BlogSearchMixi
     '''Представление блога с фильтром'''
 
 class PostView(NotificationCheckMixin, ViewIncrementMixin, CommentDispatcherMixin,
-               RecLoaderMixin, PostInfoAddMixin, CsrfMixin,
+               RecLoaderMixin, PostInfoAddMixin, CsrfMixin, IsSubscribeMixin,
                SubscribeMixin, DetailView):
     '''Представление детального просмотра поста'''
     model = Post
@@ -153,7 +153,7 @@ class PostView(NotificationCheckMixin, ViewIncrementMixin, CommentDispatcherMixi
     def post(self, request, *args, **kwargs):
         post = self.get_object()
         d = dict(request.POST)
-        # print(d)
+        print(d)
         # формирования контекста
         context = {}
         # если пользователь оставил SuperComment
@@ -164,15 +164,14 @@ class PostView(NotificationCheckMixin, ViewIncrementMixin, CommentDispatcherMixi
             self.new_subcomment(context, post, d['new_subcomment'][0],
                                 d['s-username'][0], d['super-id'][0])
         # если пользователь поставил лайк/дизлайк на комментарий
-        elif 'comment-id-new-info' in d:
-            self.comment_like_dislike(d['data'][0], d['c_status'][0], d['comment-id-new-info'][0])
+        elif 'comment-new-info' in d:
+            self.comment_like_dislike(d['data'][0], d['status'][0], d['comment-new-info'][0])
         # если пользователь поставил лайк/дизлайк на пост или добавил пост в избранное
         elif 'post-new-info' in d:
             self.add_info(d['data'][0], d['status'][0], post)
         # подгрузить дополнительные НАДкомментарии
         elif 'load_supercomments' in d:
-            self.load_supercomments(context, d['filter'][0], int(d['start_comment'][0]),
-                                    int(d['end_comment'][0]), post)
+            self.load_supercomments(context, d['filter'][0], d['ids'][0], post)
         # подгрузить рекомендации
         elif 'load_rec' in d:
             self.load_rec(context, post, d['ids'][0])
@@ -188,24 +187,21 @@ class PostView(NotificationCheckMixin, ViewIncrementMixin, CommentDispatcherMixi
             self.delete_comment(d['c_id'][0])
         # подписаться на автора поста
         elif 'subscribe' in d:
-            self.subscribe(post, d['subscribe'][0])
+            self.subscribe(post.author, d['subscribe'][0])
 
         return JsonResponse(data=context, status=200)
 
-class UserProfile(NotificationCheckMixin, CsrfMixin, TemplateView):
+class UserProfile(NotificationCheckMixin, PostInfoAddMixin, SubscribeMixin, CsrfMixin, TemplateView):
     '''Представление профиля пользователя'''
     template_name = 'gnome_main/user_profile.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         cur_user = get_object_or_404(AdvUser, slug=self.kwargs.get('slug'))
-        user = self.request.user
         count = cur_user.subscriptions.count()
-        is_subscribe = cur_user.subscriptions.filter(id=user.id).exists()
         posts = Post.objects.filter(author=cur_user).order_by('-created_at')[:10]
         context['cur_user'] = cur_user
         context['sub_count'] = count
-        context['is_subscribe'] = is_subscribe
         context['posts_count'] = posts.count()
         context['posts'] = posts
         return context
@@ -214,112 +210,98 @@ class UserProfile(NotificationCheckMixin, CsrfMixin, TemplateView):
         d = dict(request.POST)
         print(d)
         cur_user = get_object_or_404(AdvUser, slug=slug)
-        user = request.user
         # формирования контекста
         context = {}
         if 'subscribe' in d:
-            try:
-                if d['subscribe'][0] == 'true':
-                    cur_user.subscriptions.remove(user)
-                elif d['subscribe'][0] == 'false':
-                    cur_user.subscriptions.add(user)
-                    user_subsript.send(AdvUser, instance=user, user=cur_user)
-            except:
-                return JsonResponse(data={'ex': 'Неверные данные post'}, status=400)
+            self.subscribe(cur_user, d['subscribe'][0])
         elif 'filter' in d:
-            # try:
-            context['posts'] = []
-            if d['filter'][0] == 'popular':
-                posts = Post.objects.filter(is_active=True, author=cur_user) \
-                            .distinct() \
-                            .annotate(num_likes=Count('postlike'),
-                                      num_dislikes=Count('postdislike'),
-                                      num_comments=Count('postcomment'),
-                                      num_favourite=Count('postfavourite'),
-                                      views_count=Count('postviewcount')) \
-                            .order_by('-views_count', '-num_likes',
-                                      '-num_comments', '-num_favourite',
-                                      'num_dislikes')
-            elif d['filter'][0] == 'new':
-                posts = Post.objects.filter(is_active=True, author=cur_user) \
-                            .distinct() \
-                            .order_by('-created_at')
-            elif d['filter'][0] == 'old':
-                posts = Post.objects.filter(is_active=True, author=cur_user) \
-                            .distinct() \
-                            .order_by('created_at')
-            elif d['filter'][0] == 'more_views':
-                posts = Post.objects.filter(is_active=True, author=cur_user) \
-                            .distinct() \
-                            .annotate(views_count=Count('postviewcount')) \
-                            .order_by('-views_count')
-            elif d['filter'][0] == 'with_media':
-                posts = Post.objects.all() \
-                            .distinct() \
-                            .annotate(num_media=Count('postadditionalimage')) \
-                            .filter(is_active=True, num_media__gt=0, author=cur_user)
-
-            if 'ids' in d:
-                ids = d['ids'][0][1:-1].replace('"', '').split(',')
-                if ids[0] == '':
-                    ids = []
-                posts = posts.exclude(id__in=ids)[:1]
-            else:
-                posts = posts[:10]
-
-            if posts:
-                for i in posts:
-                    date = date_ago(i.created_at)
-                    report = i.author.id == request.user.id
-                    like_img = '/static/gnome_main/css/images/likes.png'
-                    dislike_img = '/static/gnome_main/css/images/dislikes.png'
-                    favourite_img = '/static/gnome_main/css/images/favourite.png'
-                    if is_full(i.postlike_set, request.user.id):
-                        like_img = '/static/gnome_main/css/images/likes_full.png'
-                    if is_full(i.postdislike_set, request.user.id):
-                        dislike_img = '/static/gnome_main/css/images/dislikes_full.png'
-                    if is_full(i.postfavourite_set, request.user.id):
-                        favourite_img = '/static/gnome_main/css/images/favourite_full.png'
-                    context['posts'].append({
-                        'id': i.id,
-                        'post_url': i.get_absolute_url(),
-                        'preview': i.preview.url,
-                        'title': i.title,
-                        'content': truncatewords(i.content, 100),
-                        'authorname': i.author.username,
-                        'created_at': date,
-                        'views': post_views(i.get_view_count()),
-                        'view_img': '/static/gnome_main/css/images/views.png',
-                        'likes': i.get_like_count(),
-                        'like_img': like_img,
-                        'dislikes': i.get_dislike_count(),
-                        'dislike_img': dislike_img,
-                        'user_url': i.author.get_absolute_url(),
-                        'comments': comment_pluralize(i.get_comment_count()),
-                        'comment_img': '/static/gnome_main/css/images/comments.png',
-                        'favourite_img': favourite_img,
-                        'report': report,
-                    })
-
-
-                    if report == False:
-                        context['posts'][-1]['report_url'] = f'/report/{i.slug}/post/'
-                    else:
-                        context['posts'][-1]['update_url'] = f'/post/update/{i.slug}/'
-            else:
-                context['posts_is_full'] = True
-            # except Exception as ex:
-            #     return JsonResponse(data={'ex': f'Неверные данные post {ex}'}, status=400)
-        elif 'favourite' in d:
             try:
-                post = Post.objects.get(id=d['p_id'][0])
-                if d['status'][0] == 'append':
-                    PostFavourite.objects.create(post=post, user=request.user)
-                elif d['status'][0] == 'delete':
-                    fav = PostFavourite.objects.get(post=post, user=request.user)
-                    fav.delete()
+                context['posts'] = []
+                if d['filter'][0] == 'popular':
+                    posts = Post.objects.filter(is_active=True, author=cur_user) \
+                                .distinct() \
+                                .annotate(num_likes=Count('postlike'),
+                                          num_dislikes=Count('postdislike'),
+                                          num_comments=Count('postcomment'),
+                                          num_favourite=Count('postfavourite'),
+                                          views_count=Count('postviewcount')) \
+                                .order_by('-views_count', '-num_likes',
+                                          '-num_comments', '-num_favourite',
+                                          'num_dislikes')
+                elif d['filter'][0] == 'new':
+                    posts = Post.objects.filter(is_active=True, author=cur_user) \
+                                .distinct() \
+                                .order_by('-created_at')
+                elif d['filter'][0] == 'old':
+                    posts = Post.objects.filter(is_active=True, author=cur_user) \
+                                .distinct() \
+                                .order_by('created_at')
+                elif d['filter'][0] == 'more_views':
+                    posts = Post.objects.filter(is_active=True, author=cur_user) \
+                                .distinct() \
+                                .annotate(views_count=Count('postviewcount')) \
+                                .order_by('-views_count')
+                elif d['filter'][0] == 'with_media':
+                    posts = Post.objects.all() \
+                                .distinct() \
+                                .annotate(num_media=Count('postadditionalimage')) \
+                                .filter(is_active=True, num_media__gt=0, author=cur_user)
+
+                if 'ids' in d:
+                    ids = d['ids'][0][1:-1].replace('"', '').split(',')
+                    if ids[0] == '':
+                        ids = []
+                    posts = posts.exclude(id__in=ids)[:1]
+                else:
+                    posts = posts[:10]
+
+                if posts:
+                    for i in posts:
+                        date = date_ago(i.created_at)
+                        report = i.author.id == request.user.id
+                        like_img = '/static/gnome_main/css/images/likes.png'
+                        dislike_img = '/static/gnome_main/css/images/dislikes.png'
+                        favourite_img = '/static/gnome_main/css/images/favourite.png'
+                        if is_full(i.postlike_set, request.user.id):
+                            like_img = '/static/gnome_main/css/images/likes_full.png'
+                        if is_full(i.postdislike_set, request.user.id):
+                            dislike_img = '/static/gnome_main/css/images/dislikes_full.png'
+                        if is_full(i.postfavourite_set, request.user.id):
+                            favourite_img = '/static/gnome_main/css/images/favourite_full.png'
+                        context['posts'].append({
+                            'id': i.id,
+                            'post_url': i.get_absolute_url(),
+                            'preview': i.preview.url,
+                            'title': i.title,
+                            'content': truncatewords(i.content, 100),
+                            'authorname': i.author.username,
+                            'created_at': date,
+                            'views': post_views(i.get_view_count()),
+                            'view_img': '/static/gnome_main/css/images/views.png',
+                            'likes': i.get_like_count(),
+                            'like_img': like_img,
+                            'dislikes': i.get_dislike_count(),
+                            'dislike_img': dislike_img,
+                            'user_url': i.author.get_absolute_url(),
+                            'comments': comment_pluralize(i.get_comment_count()),
+                            'comment_img': '/static/gnome_main/css/images/comments.png',
+                            'favourite_img': favourite_img,
+                            'report': report,
+                        })
+
+
+                        if report == False:
+                            context['posts'][-1]['report_url'] = f'/report/{i.slug}/post/'
+                        else:
+                            context['posts'][-1]['update_url'] = f'/post/update/{i.slug}/'
+                else:
+                    context['posts_is_full'] = True
             except Exception as ex:
-                return JsonResponse(data={'ex': f'Неверные данные post: {ex}'}, status=400)
+                return JsonResponse(data={'ex': f'Неверные данные post {ex}'}, status=400)
+        elif 'post-new-info' in d:
+            post = Post.objects.get(id=d['p_id'][0])
+            self.add_info(data=d['data'][0], status=d['status'][0], post=post)
+
         return JsonResponse(data=context, status=200)
 
 class Login_view(LoginView):

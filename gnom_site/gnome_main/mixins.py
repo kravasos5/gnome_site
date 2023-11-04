@@ -142,25 +142,33 @@ class CommentDispatcherMixin:
         except Exception as ex:
             return JsonResponse(data={'ex': 'Неверные данные comment_like_dislike'}, status=400)
 
-    def load_supercomments(self, context, filter, start_comment, end_comment, post):
+    def load_supercomments(self, context, filter, ids, post,
+                           start_comment=0, end_comment=10):
         '''Подгрузка НАДкомментариев'''
         try:
+            ids = ids[1:-1].replace('"', '').split(',')
+            if ids[0] == '':
+                ids = []
             # нахожу соответствующие фильтру комментарии
             if filter == 'popular':
                 sups = SuperPostComment.objects.filter(post=post) \
                     .annotate(num_likes=Count('commentlike'), answ_count=Count('postcomment__super_comment')) \
                     .order_by('-num_likes', '-answ_count') \
+                    .exclude(id__in=ids) \
                     [start_comment:end_comment]
             elif filter == 'new':
                 sups = SuperPostComment.objects.filter(post=post) \
-                           .order_by('-created_at') \
+                    .order_by('-created_at') \
+                    .exclude(id__in=ids) \
                     [start_comment:end_comment]
             elif filter == 'old':
                 sups = SuperPostComment.objects.filter(post=post) \
-                           .order_by('created_at') \
+                    .order_by('created_at') \
+                    .exclude(id__in=ids) \
                     [start_comment:end_comment]
             elif filter == 'my':
                 sups = SuperPostComment.objects.filter(post=post, user=self.request.user) \
+                    .exclude(id__in=ids) \
                     [start_comment:end_comment]
 
             # формирую ответ
@@ -283,7 +291,7 @@ class RecLoaderMixin:
                        .exclude(id__in=ids)[0:10]
             if len(recs) < 10:
                 recs = recs.union(Post.objects.filter(is_active=True).order_by('-created_at') \
-                                  .distinct().exclude(id__in=ids)[0:9 - len(recs)])
+                                  .exclude(id__in=ids).distinct()[0:9 - len(recs)])
 
             if recs:
                 for i in recs:
@@ -318,7 +326,7 @@ class PostInfoAddMixin:
         '''Добавляет/удаляет лайки, дизлайки, избранное'''
         try:
             # добавить лайк на пост
-            if data == 'post_like' and status == 'append':
+            if data == 'like' and status == 'append':
                 # если есть дизлайк на этом посте от этого же пользователя,
                 # то удалить его
                 m_dislike = PostDisLike.objects.filter(post=post, user=self.request.user)
@@ -326,7 +334,7 @@ class PostInfoAddMixin:
                     m_dislike.delete()
                 PostLike.objects.create(post=post, user=self.request.user)
             # добавить дизлайк на пост
-            elif data == 'post_dislike' and status == 'append':
+            elif data == 'dislike' and status == 'append':
                 # если есть лайк на этом посте от этого же пользователя,
                 # то удалить его
                 m_like = PostLike.objects.filter(post=post, user=self.request.user)
@@ -334,11 +342,11 @@ class PostInfoAddMixin:
                     m_like.delete()
                 PostDisLike.objects.create(post=post, user=self.request.user)
             # удалить лайк с поста
-            elif data == 'post_like' and status == 'delete':
+            elif data == 'like' and status == 'delete':
                 like = PostLike.objects.get(post=post, user=self.request.user)
                 like.delete()
             # удалить дизлайк с поста
-            elif data == 'post_dislike' and status == 'delete':
+            elif data == 'dislike' and status == 'delete':
                 dislike = PostDisLike.objects.get(post=post, user=self.request.user)
                 dislike.delete()
             # добавить пост в избранное
@@ -359,14 +367,12 @@ class CsrfMixin:
         context['csrf_token'] = csrf_token
         return context
 
-class SubscribeMixin:
+class IsSubscribeMixin:
     '''
-    Миксин, добавляющий метод подписки на пользователя,
-    и вычисляющий подписан ли пользователь
+    Миксин вычисляющий подписан ли пользователь
     на автора поста, добавляет is_subscribe в context,
     is_subscribe либо True, либо False
     '''
-
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['slug'] = self.kwargs['slug']
@@ -377,15 +383,16 @@ class SubscribeMixin:
         context['is_subscribe'] = is_subscribe
         return context
 
-    def subscribe(self, post, subscribe):
+class SubscribeMixin:
+    # Миксин, добавляющий метод подписки на пользователя
+    def subscribe(self, subscribe_user, subscribe):
         '''Добавляет подписку на пользователя'''
         try:
-            author = post.author
             if subscribe == 'false':
-                author.subscriptions.remove(self.request.user)
+                subscribe_user.subscriptions.remove(self.request.user)
             elif subscribe == 'true':
-                author.subscriptions.add(self.request.user)
-                user_subsript.send(AdvUser, instance=self.request.user, user=author)
+                subscribe_user.subscriptions.add(self.request.user)
+                user_subsript.send(AdvUser, instance=self.request.user, user=subscribe_user)
         except Exception as ex:
             return JsonResponse(data={'ex': 'Ошибка при '
                                             f'подписке/отписке {ex}'}, status=400)
@@ -427,6 +434,9 @@ class BlogMixin(PostInfoAddMixin, SubscriptionsMixin, RubricsMixin):
         if 'favourite' in d:
             post = Post.objects.get(id=d['p_id'][0])
             self.add_info('favourite', d['status'][0], post)
+        elif 'post-new-info' in d:
+            post = Post.objects.get(id=d['post_id'][0])
+            self.add_info(d['data'][0], d['status'][0], post)
         return JsonResponse({}, status=200)
 
 class BlogFilterMixin(BlogMixin):

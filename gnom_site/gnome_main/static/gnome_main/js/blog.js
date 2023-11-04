@@ -1,6 +1,7 @@
 $(document).ready(function() {
 
     $('button#more').click(function() {
+        // Функция раскрывающая список подписок пользователя
         if ($('button#more').html() == 'ещё') {
             $('div.icons').find('span[class*="icon"], span[class*="hide"]').each(function() {
                 $(this).css('display', 'flex')
@@ -16,11 +17,13 @@ $(document).ready(function() {
     });
 
     function filter_close() {
+        // Функция, закрывающая фильтр
         $('div.filter-container').css('display', 'none')
         $('div.open-filter').css('display', 'flex')
     };
 
     function filter_open() {
+        // Функция, открывающая фильтр
         $('div.filter-container').css('display', 'flex')
         $('div.open-filter').css('display', 'none')
     };
@@ -36,6 +39,9 @@ $(document).ready(function() {
     $('.post').mouseenter(post_mouseenter).mouseleave(post_mouseleave);
 
     $('.post-r').mouseenter(elem_mouseenter).mouseleave(elem_mouseleave);
+
+    $('.like-main').mouseenter(elem_mouseenter).mouseleave(elem_mouseleave).click(post_like_card);
+    $('.dislike-main').mouseenter(elem_mouseenter).mouseleave(elem_mouseleave).click(post_dislike_card);
 
     $('.post-r').find('img').click(favourite_post);
 
