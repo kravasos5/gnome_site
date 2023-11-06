@@ -1,0 +1,2 @@
+var userIsAuthenticated = {{ user.is_authenticated|yesno:"true,false"}};
+var login_html = '{% url "gnome_main:log-in" %}';

@@ -2,18 +2,15 @@
 {% load static %}
 {% load profile_extras %}
 {% block links %}
-<link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/header_nfixed.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/post_cards.css' %}">
 <link rel="stylesheet" href="{% static 'gnome_main/css/style_blog.css' %}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
 <script src="{% static 'gnome_main/js/functions.js' %}"></script>
 <script src="{% static 'gnome_main/js/blog.js' %}"></script>
 <script>
-    var csrf_token = '{{ csrf_token }}';
-    var userIsAuthenticated = {{ user.is_authenticated|yesno:"true,false"}};
-    var login_html = '{% url "gnome_main:log-in" %}';
+    {% include 'scripts/csrf_script.html' %}
+    {% include 'scripts/user_login_auth_script.html' %}
 </script>
 {% endblock %}
 
@@ -166,9 +163,9 @@
         </div>
 
         <div class="post-container">
-            {% include 'layout/posts.html' %}
+            {% include 'includings/posts.html' %}
         </div>
-        {% include 'layout/paginator.html' %}
+        {% include 'includings/paginator.html' %}
     </div>
 </div>
 {% endblock %}

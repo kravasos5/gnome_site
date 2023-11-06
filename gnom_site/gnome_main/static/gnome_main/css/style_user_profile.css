@@ -5,10 +5,9 @@ body {
     background-repeat: no-repeat;
     background-size: cover;
     position: relative;
-    background-color: black;
-
+    background-color: #000;
     color: #fff;
-    font-family: 'Roboto', sans-serif;
+    font-family: Roboto, sans-serif;
     font-size: 14px;
 }
 
@@ -18,12 +17,12 @@ body {
 }
 
 p {
-    margin: 0px 0px 10px 0px;
+    margin: 0 0 10px;
 }
 
 a {
     color: #fff;
-    font-family: 'Roboto', sans-serif;
+    font-family: Roboto, sans-serif;
 }
 
 .content {
@@ -61,12 +60,11 @@ a {
 }
 
 .profile-info-short h1 {
-    margin-top: 0px;
+    margin-top: 0;
 }
 
 .profile-info-short {
-    margin: 0px 5% 40px 5%;
-
+    margin: 0 5% 40px;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -78,7 +76,6 @@ a {
     justify-content: flex-start;
     align-items: flex-start;
     align-content: center;
-
     width: 100%;
 }
 
@@ -96,20 +93,16 @@ a {
 
 a.edit, .sub-true, .sub-false {
     color: #fff;
-    font-family: 'Roboto', sans-serif;
+    font-family: Roboto, sans-serif;
     text-decoration: none;
     font-size: 18px;
-
     text-align: center;
-
     background-color: #373737;
     border-radius: 38px;
     border: none;
-
     width: 250px;
     line-height: 40px;
-
-    transition: all 0.3s ease;
+    transition: all .3s ease;
 }
 
 .sub-false {
@@ -125,15 +118,15 @@ a.edit:hover {
 }
 
 .sub-false:hover {
-    background-color: #660000;
+    background-color: #600;
 }
 
 .profile-info h1 {
-    margin-top: 0px;
+    margin-top: 0;
 }
 
 .profile-info {
-    margin: 0px 5% 40px 5%;
+    margin: 0 5% 40px;
 }
 
 .profile-info p {
@@ -148,27 +141,24 @@ a.edit:hover {
     margin-top: 5px;
     padding: 0;
     line-height: 17px;
-
     color: #fff;
     font-size: 1em;
     text-decoration: none;
     text-align: center;
-    font-weight: bold;
-
+    font-weight: 700;
     background-color: #000;
     border-radius: 25px;
     border: none;
-
     cursor: pointer;
 }
 
 .posts {
     width: 90%;
-    margin: 0px 5% 40px 5%;
+    margin: 0 5% 40px;
 }
 
 .posts h1 {
-    margin-top: 0px;
+    margin-top: 0;
 }
 
 .filters {
@@ -182,168 +172,21 @@ a.edit:hover {
 .filter-btn {
     margin-right: 15px;
     line-height: 40px;
-    padding: 10px 10px;
-
+    padding: 10px;
     color: #fff;
     font-size: 14px;
     text-decoration: none;
     text-align: center;
     line-height: 20px;
-
     background-color: #373737;
     border-radius: 20px;
     border: none;
-
     cursor: pointer;
-
-    transition: all 0.3s;
+    transition: all .3s;
 }
 
 .filter-btn:hover {
     background-color: #262626;
-}
-
-/* Контейнер постов */
-.posts-container {
-    margin: 0px;
-    padding: 0px;
-    width: 100%;
-    height: 100%;
-}
-
-/* посты */
-
-.post-container {
-    margin-top: 20px;
-}
-
-.post {
-    /*height: 260px;*/
-    width: 90%;
-    background-color: #D9D9D9;
-    margin-top: 30px;
-    border-radius: 10px;
-    padding: 20px;
-
-    transition: all 0.4s ease;
-}
-
-.post a {
-    text-decoration: none;
-    color: black;
-}
-
-/*.post:hover {
-    transform: scale(1.03);
-}
-
-.post:active {
-    transform: scale(1);
-}*/
-
-.post-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-/* Настройки превью */
-.preview-container {
-    /*width: 260px;
-    height: 260px;*/
-    width: 30%;
-    border-radius: 10px;
-}
-
-.preview-container img {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    object-fit: cover;
-}
-
-/* Название, описание, лайки, комменты, избранное и тд */
-.post-in {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
-.post-data * {
-    margin: 0px;
-}
-
-.post-data p {
-    margin-right: 7%;
-}
-
-.post-data h1 {
-    margin-bottom: 8px;
-}
-
-.post-data {
-    margin-left: 20px;
-    flex-grow: 1;
-    flex-basis: 0;
-    width: 80%;
-}
-
-.post-data .post-content {
-    margin: 0px;
-    padding: 0px;
-    margin-bottom: 7px;
-    width: 100%;
-    height: 55%;
-    overflow: hidden;
-    line-height: 1.3;
-
-    font-size: 16px;
-}
-
-.author-date {
-    display: flex;
-    justify-content: flex-start;
-
-    font-size: 20px;
-    color: #8B8B8B;
-}
-
-.post-likes {
-    width: 100%;
-    margin-top: 8px;
-    display: flex;
-}
-
-.post-likes .info {
-    display: flex;
-    width: 80%;
-}
-
-.post-l, .post-r {
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
-}
-
-.post-l {
-    width: 100%;
-}
-
-.post-r {
-    width: 20%;
-    justify-content: flex-end;
-    margin-right: 2%;
-}
-
-@media (max-width: 922px) {
-    .post-data .text {
-        height: 45%;
-    }
-
-    .post {
-        width: 80%;
-    }
 }
 
 .more-posts-div {
@@ -355,17 +198,13 @@ a.edit:hover {
 /*кнопка "Ещё", содержащая ссылку на все посты пользователя*/
 .more-posts {
     padding: 10px 20px;
-
     text-align: center;
     margin-top: 2%;
     text-decoration: none;
-
     font-size: 20px;
-
     background: #373737;
     border-radius: 20px;
-
-    transition: all 0.3s ease;
+    transition: all .3s ease;
 }
 
 .more-posts:hover {
@@ -378,111 +217,6 @@ a.edit:hover {
     flex-direction: column;
 }
 
-div.add-dropdown {
-    width: auto;
-}
-
-div.rec-dropdown {
-    visibility: hidden;
-}
-
 .rec-dropdown-m {
-    position: absolute;
     right: 6%;
-}
-
-.adddrop-post {
-    position: relative;
-}
-
-/*выпадающий список*/
-div.post-dropdown {
-    background-color: #E3E3E3;
-    text-align: center;
-    width: 150px;
-    display: none;
-}
-
-div.post-dropdown ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-div.post-dropdown ul hr {
-    border: none;
-    border-top: 1px solid #000;
-    padding: 0;
-    margin: 0;
-}
-
-div.post-dropdown ul li a {
-    color: #000;
-    text-decoration: none;
-    font-size: 16px;
-    font-family: 'Roboto', sans-serif;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-div.post-dropdown ul li a p {
-    margin: 0;
-}
-
-div.post-dropdown {
-    display: none;
-    color: #fff;
-}
-
-div.post-dropdown ul li a img {
-    margin-right: 3px;
-}
-
-div.post-dropdown ul li {
-    padding: 3px 0px 3px 0px;
-    transition: all 0.3s ease;
-}
-
-div.post-dropdown ul li:hover {
-    background-color: #B8B8B8;
-}
-
-.space-between {
-    justify-content: space-between;
-}
-
-@media (max-width: 970px) {
-    .post {
-        height: auto;
-        padding: 20px 5px;
-    }
-
-    .post-in {
-        flex-direction: column;
-        align-items: center;
-        overflow: none;
-        height: auto;
-    }
-
-    .preview-container {
-        width: auto;
-    }
-
-    .info {
-        flex-direction: column;
-    }
-
-    div.info div.post-l:not(last-child) {
-        margin-top: 10px;
-    }
-
-    .post-data .post-content {
-        height: auto;
-    }
-}
-
-.pointer {
-    cursor: pointer;
 }

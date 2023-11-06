@@ -15,22 +15,11 @@ a {
 
 /*Контейнеры*/
 .flex-line-container {
-    display: flex;
     align-items: center;
-    /*justify-content: center;*/
-}
-
-.flex-space-between {
-    display: flex;
-    justify-content: space-between;
 }
 
 .wrap {
     flex-wrap: wrap;
-}
-
-.space-between {
-    justify-content: space-between;
 }
 
 .likes {
@@ -69,7 +58,7 @@ a {
 
 .comment-all {
     margin-bottom: 2%;
-    margin-top: 6%;
+    margin-top: 5%;
 }
 div.comment-container div.flex-space-between {
     display: flex;
@@ -239,10 +228,6 @@ div.comment-container div {
 
 div.comment-container div.c-likes div.c-info {
     margin-bottom: 0px;
-}
-
-.pointer {
-    cursor: pointer;
 }
 
 .more-comments {

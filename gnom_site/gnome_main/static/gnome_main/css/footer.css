@@ -1,0 +1,73 @@
+/*footer*/
+.footer {
+    margin: 0;
+    padding: 0;
+    background: url(images/footer1.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;/*left: 0;
+    bottom: 0;*/
+
+}
+
+.footer-content {
+    padding-top: 15%;
+    padding-bottom: 4%;
+    text-align: center;
+}
+
+.text-header-footer, .footer-text {
+    font-family: DkFears, sans-serif;
+    color: #000;
+    margin: 0;
+}
+
+.text-header-footer {
+    font-size: 60px;
+}
+
+.text-header-footer p {
+    margin: 0;
+}
+
+.footer-text a {
+    color: #000;
+    text-decoration: none;
+    margin-left: 10px;
+    font-size: 30px;
+    transition: filter 1s;
+}
+
+.footer-content .description {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.description-footer {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.img-f1 {
+    width: 18%;
+}
+
+.img-f2 {
+    width: 19.3%;
+}
+
+.img-f1 img, .img-f2 img {
+    width: 100%;
+    transition: filter 1s;
+}
+
+.description-footer .description:hover .img-f1 img, .description-footer .description:hover .img-f2 img {
+    filter: invert(1);
+}
+
+.description-footer .description:hover .footer-text a {
+    filter: invert(1);
+}

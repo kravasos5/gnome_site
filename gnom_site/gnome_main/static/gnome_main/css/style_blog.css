@@ -1,11 +1,10 @@
 /* Контент-фон */
-
 html {
     overflow: hidden;
 }
 
 .filter-container {
-    margin-top: 0px;
+    margin-top: 0;
     background: linear-gradient(rgba(87, 87, 87, 0.25), rgba(178, 178, 178, 0.25));
     /*width: 17%;*/
     width: 280px;
@@ -25,7 +24,7 @@ div.flex-line:first-child {
 }
 
 .filter div h1, span.close {
-    margin-top: 0px;
+    margin-top: 0;
     margin-bottom: 5px;
     font-weight: 400;
     font-size: 20px;
@@ -41,7 +40,6 @@ span.close {
     border-radius: 100%;
     width: 30px;
     height: 30px;
-
     display: flex;
     justify-content: center;
     align-items: center;
@@ -61,8 +59,7 @@ span.close img {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-
-    margin: 20px 0px 0px 20px;
+    margin: 20px 0 0 20px;
 }
 
 .open-filter img {
@@ -75,19 +72,19 @@ span.close img {
     align-items: center;
 }
 
-.filter .filter-params .param-name{
+.filter .filter-params .param-name {
     color: #fff;
     font-weight: 400;
     font-size: 18px;
     margin: 0;
-    padding: 14px 0px;
+    padding: 14px 0;
 }
 
 p.rubric-name {
     color: #fff;
     font-weight: 400;
     font-size: 16px;
-    margin: 10px 0px;
+    margin: 10px 0;
 }
 
 .filter .filter-params .edit, .filter .filter-params .checkbox {
@@ -121,8 +118,8 @@ p.rubric-name {
     margin-right: 5%;
 }
 
-label {
-    /*margin-left: 5px;*/
+label {/*margin-left: 5px;*/
+
     display: flex;
     align-items: center;
 }
@@ -143,9 +140,9 @@ label.chbox span {
     content: 'X';
     position: absolute;
     top: -5px;
-    left: 0px;
+    left: 0;
     font-size: 21px;
-    font-weight: bold;
+    font-weight: 700;
     color: #7C0000;
 }
 
@@ -154,50 +151,51 @@ label.chbox input {
 }
 
 .form-radio {
-	margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .form-radio input[type=radio] {
-	display: none;
+    display: none;
 }
 
 .form-radio label {
-	display: inline-block;
-	cursor: pointer;
-	position: relative;
-	padding-left: 25px;
-	margin-right: 0;
-	line-height: 18px;
-	user-select: none;
+    display: inline-block;
+    cursor: pointer;
+    position: relative;
+    padding-left: 25px;
+    margin-right: 0;
+    line-height: 18px;
+    user-select: none;
 }
+
 .form-radio label:before {
-	content: "";
-	display: inline-block;
-	width: 17px;
-	height: 18px;
-	position: absolute;
-	left: 0;
-	bottom: 1px;
-	background: url(images/radio_btn.png) 0 0 no-repeat;
-	background-repeat: no-repeat;
+    content: "";
+    display: inline-block;
+    width: 17px;
+    height: 18px;
+    position: absolute;
+    left: 0;
+    bottom: 1px;
+    background: url(images/radio_btn.png) 0 0 no-repeat;
+    background-repeat: no-repeat;
     background-size: cover;
 }
 
 /* Checked */
 .form-radio input[type=radio]:checked + label:before {
-	background: url(images/radio_btn_act.png) 0 0;
-	background-repeat: no-repeat;
+    background: url(images/radio_btn_act.png) 0 0;
+    background-repeat: no-repeat;
     background-size: cover;
 }
 
 /* Hover */
 .form-radio label:hover:before {
-	filter: brightness(120%);
+    filter: brightness(120%);
 }
 
 /* Disabled */
 .form-radio input[type=radio]:disabled + label:before {
-	filter: grayscale(100%);
+    filter: grayscale(100%);
 }
 
 .form-label {
@@ -205,7 +203,7 @@ label.chbox input {
     align-items: center;
     justify-content: flex-start;
     width: 90%;
-    margin: 0px 5% 5px 5%;
+    margin: 0 5% 5px;
 }
 
 span.icon:first-child img {
@@ -226,11 +224,11 @@ div.icons .icon {
     justify-content: flex-start;
     align-items: center;
     width: 90%;
-    margin: 0px 5% 6px 5%;
+    margin: 0 5% 6px;
 }
 
 div.icons .icon p {
-    margin: 0px 0px 0px 8px;
+    margin: 0 0 0 8px;
 }
 
 div.more button {
@@ -248,7 +246,7 @@ div.more button {
     justify-content: flex-start;
     align-items: center;
     width: 90%;
-    margin: 0px 5% 6px 5%;
+    margin: 0 5% 6px;
     color: #fff;
     text-decoration: none;
     text-size: 12px;
@@ -259,25 +257,22 @@ div.more button {
 }
 
 .url a p {
-    margin: 0px;
+    margin: 0;
     margin-left: 8px;
 }
 
 .filter-button {
     display: inline-block;
-
     color: #000;
     text-decoration: none;
     background-color: #fff;
     font-size: 20px;
-
     line-height: 40px;
     width: 90%;
-    margin: 20px 5% 20px 5%;
+    margin: 20px 5%;
     border-radius: 25px;
     border: none;
-
-    transition: all 0.3s;
+    transition: all .3s;
 }
 
 .filter-button:hover {
@@ -289,25 +284,16 @@ div.more button {
 }
 
 /* Записи */
-
 .posts {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
     height: 90vh;
-/*    width: 100%;*/
+    /*    width: 100%;*/
     overflow: auto;
     flex-grow: 1;
     display: grid;
     flex: 1;
     flex-basis: 0;
-}
-
-/* Контейнер постов */
-.posts-container {
-    margin: 0px;
-    padding: 0px;
-    width: 100%;
-    height: 100%;
 }
 
 /* поиск */
@@ -322,7 +308,7 @@ div.more button {
 
 .find-edit form#find_ input#find-button {
     margin-left: 15px;
-    transition: all 0.3s;
+    transition: all .3s;
 }
 
 #find-button:hover {
@@ -353,169 +339,57 @@ div.more button {
     max-height: 100px;
 }
 
-/* Контейнер постов */
-.post-container {
-    margin-top: 20px;
-    padding: 0px;
-    width: 100%;
-    height: 100%;
+/*pagonator*/
+.pag-container {
+    margin: 20px 0;
 }
 
-/* посты */
-
-.post {
-    /*height: 260px;*/
-    width: 90%;
-    background-color: #D9D9D9;
-    margin-top: 30px;
-    border-radius: 10px;
-    padding: 20px;
-
-    transition: all 0.4s ease;
-}
-
-.post a {
-    text-decoration: none;
-    color: black;
-}
-
-/*.post:hover {
-    transform: scale(1.03);
-}
-
-.post:active {
-    transform: scale(1);
-}*/
-
-.post-container {
+ul.paginator {
+    color: #fff;
+    padding: 0;
+    margin: 0;
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
-    /*убрать если что-то идёт не так*/
-    align-items: flex-start;
 }
 
-/* Настройки превью */
-.preview-container {
-    /*width: 260px;
-    height: 260px;*/
-    width: 30%;
-    border-radius: 10px;
-}
-
-.preview-container img {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    object-fit: cover;
-}
-
-/* Название, описание, лайки, комменты, избранное и тд */
-.post-in {
+ul.paginator a {
+    text-decoration: none;
+    background: #D9D9D9;
+    border-radius: 100%;
+    width: 50px;
+    height: 50px;
+    margin-right: 3%;
     display: flex;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+    cursor: auto;
 }
 
-.post-data * {
-    margin: 0px;
+ul.paginator a.non-chose {
+    cursor: pointer;
+    transition: all .2s ease;
 }
 
-.post-data p {
-    margin-right: 7%;
+ul.paginator a.non-chose:hover {
+    background: #A1A1A1;
 }
 
-.post-data h1 {
-    margin-bottom: 8px;
+ul.paginator a li {
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.post-data {
-    margin-left: 20px;
-    flex-grow: 1;
-    flex-basis: 0;
-    width: 80%;
+ul.paginator a li p {
+    color: #000;
+    font-size: 30px;
+    margin: 0;
+    padding: 0;
 }
 
-.post-data .post-content {
-    margin: 0px;
-    padding: 0px;
-    margin-bottom: 7px;
-    width: 100%;
-    height: 55%;
-    overflow: hidden;
-    line-height: 1.3;
-
-    font-size: 16px;
-}
-
-@media (max-width: 1370px) {
-    .post {
-        height: auto; /*380*/
-    }
-
-    .post-likes .info {
-        flex-wrap: wrap;
-    }
-
-    .post-l {
-        margin-top: 10px;
-    }
-
-    .post-data .post-content {
-        height: 38%;
-    }
-}
-
-@media (max-width: 970px) {
-    .post {
-        /*height: 615px;*/
-        padding: 20px 5px;
-    }
-
-    .post-in {
-        flex-direction: column;
-        align-items: center;
-        overflow: none;
-        height: auto;
-    }
-
-    .preview-container {
-        width: auto;
-    }
-
-    .info {
-        flex-direction: column;
-    }
-
-    div.info div.post-l:not(last-child) {
-        margin-top: 10px;
-    }
-
-    .post-data .post-content {
-        height: auto;
-    }
-
-    .post-content {
-        display: none;
-    }
-}
-
-@media (max-width: 922px) {
-    .post-data .post-content {
-        height: 45%;
-    }
-
-    .post {
-        width: 80%;
-        /*height: 550px;*/
-    }
-}
-
-@media (max-width: 780px) {
-    .post {
-        /*height: 450px;*/
-    }
+.rec-dropdown-m {
+    right: 15%;
 }
 
 @media (max-width: 530px) {
@@ -540,185 +414,4 @@ div.more button {
     html {
         overflow: auto;
     }
-
-    .post {
-        /*height: 470px;*/
-    }
 }
-
-.author-date {
-    display: flex;
-    justify-content: flex-start;
-
-    font-size: 20px;
-    color: #8B8B8B;
-}
-
-.post-likes {
-    width: 100%;
-    margin-top: 8px;
-    display: flex;
-}
-
-.post-likes .info {
-    display: flex;
-    width: 80%;
-}
-
-.post-l, .post-r {
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
-}
-
-.post-l {
-    width: 100%;
-}
-
-.post-r {
-    width: 20%;
-    justify-content: flex-end;
-    margin-right: 2%;
-}
-
-
-
-ul.paginator {
-    color: #fff;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-}
-
-ul.paginator a {
-    text-decoration: none;
-    background: #D9D9D9;
-    border-radius: 100%;
-    width: 50px;
-    height: 50px;
-    margin-right: 3%;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: auto;
-
-    color; #000;
-}
-
-ul.paginator a.non-chose {
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-ul.paginator a.non-chose:hover {
-    background: #A1A1A1;
-}
-
-ul.paginator a li {
-    list-style-type: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-ul.paginator a li p {
-    color: #000;
-    font-size: 30px;
-    margin: 0;
-    padding: 0;
-}
-
-.flex-line-container {
-    display: flex;
-}
-
-.space-between {
-    justify-content: space-between;
-}
-
-.pointer {
-    cursor: pointer;
-}
-
-div.add-dropdown {
-    width: auto;
-    position: relative;
-}
-
-div.rec-dropdown {
-    visibility: hidden;
-}
-
-.rec-dropdown-m {
-    position: absolute;
-    right: 15%;
-}
-
-.adddrop-post {
-    position: relative;
-}
-
-div.last {
-    margin-bottom: 20px;
-}
-
-/*выпадающий список*/
-div.post-dropdown {
-    background-color: #E3E3E3;
-    text-align: center;
-    width: 150px;
-    display: none;
-}
-
-div.post-dropdown ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-div.post-dropdown ul hr {
-    border: none;
-    border-top: 1px solid #000;
-    padding: 0;
-    margin: 0;
-}
-
-div.post-dropdown ul li a {
-    color: #000;
-    text-decoration: none;
-    font-size: 16px;
-    font-family: 'Roboto', sans-serif;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-div.post-dropdown ul li a p {
-    margin: 0;
-}
-
-div.post-dropdown {
-    display: none;
-    color: #fff;
-}
-
-div.post-dropdown ul li a img {
-    margin-right: 3px;
-}
-
-div.post-dropdown ul li {
-    padding: 3px 0px 3px 0px;
-    transition: all 0.3s ease;
-}
-
-div.post-dropdown ul li:hover {
-    background-color: #B8B8B8;
-}
-
-.pag-container {
-    margin: 20px 0px;
-}
-

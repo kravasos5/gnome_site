@@ -4,20 +4,16 @@
 {% load thumbnail %}
 
 {% block links %}
-<link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/header_nfixed.css' %}">
 <link rel="stylesheet" href="{% static 'gnome_main/css/style_show_post.css' %}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script src="{% static 'gnome_main/js/functions.js' %}"></script>
 <script src="{% static 'gnome_main/js/show_post.js' %}"></script>
 <script>
-    var csrf_token = '{{ csrf_token }}';
-    var userIsAuthenticated = {{ user.is_authenticated|yesno:"true,false"}};
-    var login_html = '{% url "gnome_main:log-in" %}';
+    {% include 'scripts/csrf_script.html' %}
+    {% include 'scripts/user_login_auth_script.html' %}
 </script>
 {% endblock %}
 
