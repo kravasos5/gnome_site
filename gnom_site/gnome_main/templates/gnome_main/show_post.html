@@ -4,17 +4,16 @@
 {% load thumbnail %}
 
 {% block links %}
-<link rel="stylesheet" href="{% static 'gnome_main/css/style_basic_nfixed.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/header_nfixed.css' %}">
 <link rel="stylesheet" href="{% static 'gnome_main/css/style_show_post.css' %}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script src="{% static 'gnome_main/js/functions.js' %}"></script>
 <script src="{% static 'gnome_main/js/show_post.js' %}"></script>
 <script>
-    var comment_csrf = '{{ csrf_token }}';
+    {% include 'scripts/csrf_script.html' %}
+    {% include 'scripts/user_login_auth_script.html' %}
 </script>
 {% endblock %}
 
@@ -44,7 +43,7 @@
                 <div class="post-dropdown dropdown">
                     <ul>
                         {% if post.author.id == user.id %}
-                        <li><a href="#">Изменить</a></li>
+                        <li><a href="{% url 'gnome_main:update-post' slug=slug %}">Изменить</a></li>
                         {% else %}
                         <li>
                             <a href="{% url 'gnome_main:post-report' slug=slug %}">
@@ -69,14 +68,20 @@
                     <p class="author-name">{{ post.author.username }}</p>
                 </a>
                 <div>
-                {% if is_subscribe %}
-                    <button type="button" class="sub-true">Отписаться</button>
-                    <button type="button" class="sub-false" style="display: none;">Подписаться</button>
-                    {% elif is_subscribe == False and user != post.author %}
-                    <button type="button" class="sub-false">Подписаться</button>
-                    <button type="button" class="sub-true" style="display: none;">Отписаться</button>
-                    {% elif user == post.author %}
-                    <a href="{% url 'gnome_main:update-post' slug=post.slug %}" class="change-post">Изменить</a>
+                {% if user.is_authenticated %}
+                    {% if is_subscribe %}
+                        <button type="button" class="sub-true">Отписаться</button>
+                        <button type="button" class="sub-false" style="display: none;">Подписаться</button>
+                        {% elif is_subscribe == False and user != post.author %}
+                        <button type="button" class="sub-false">Подписаться</button>
+                        <button type="button" class="sub-true" style="display: none;">Отписаться</button>
+                        {% elif user == post.author %}
+                        <a href="{% url 'gnome_main:update-post' slug=post.slug %}" class="change-post">Изменить</a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'gnome_main:log-in' %}">
+                        <p type="button" class="sub-false" style="margin:0;">Подписаться</p>
+                    </a>
                 {% endif %}
                 </div>
             </div>
@@ -142,7 +147,9 @@
                     <button type="button" class="filter-btn pointer" id="new">Новые</button>
                     <button type="button" class="filter-btn pointer" id="old">Старые</button>
                     <button type="button" class="filter-btn pointer" id="popular">Популярные</button>
+                    {% if user.is_authenticated %}
                     <button type="button" class="filter-btn pointer" id="my">Мои</button>
+                    {% endif %}
                     <span class="close-filters">
                         <img src="{% static 'gnome_main/css/images/icon_xletter.png' %}">
                     </span>
@@ -150,15 +157,21 @@
             </div>
         </div>
 
-        <div class="flex-line-container error-div" style="display: none;">
+        <div class="flex-line-container error-div" style="display: block;">
             <p class="error-p"></p>
         </div>
 
         <div class="flex-line-container comment-line">
             <span class="comment-icon">
+                {% if user.is_authenticated %}
                 <a href="{{ user.get_absolute_url }}">
                     <img src="{{ user.avatar.url }}">
                 </a>
+                {% else %}
+                <a href="{% url 'gnome_main:log-in' %}">
+                    <img src="{% static 'gnome_main/css/images/not_auth_user_avatar.png' %}">
+                </a>
+                {% endif %}
             </span>
             <form id="main-comment" method="post">
                 {% csrf_token %}

@@ -29,7 +29,11 @@ urlpatterns = [
     path('', include('gnome_main.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     # path('api/', include(router.urls)),
-    path('api/commentlist/', PostCommentAPI.as_view()),
+    path('api/v1/commentlist/', PostCommentAPI.as_view()),
+]
+
+urlpatterns += [
+    path('captcha/', include('captcha.urls')),
 ]
 
 if settings.DEBUG:
