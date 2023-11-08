@@ -29,7 +29,7 @@ from .serializers import PostCommentSerializer
 from .forms import RegisterUserForm, ChangeUserInfoForm, DeleteUserForm, PostReportForm, CommentReportForm, \
     PostCreationForm, AIFormSet
 from .mixins import BlogMixin, NotificationCheckMixin, BlogFilterMixin, BlogSearchMixin, ViewIncrementMixin, \
-    CommentDispatcherMixin, RecLoaderMixin, PostInfoAddMixin, CsrfMixin, SubscribeMixin, IsSubscribeMixin
+    CommentDispatcherMixin, RecLoaderMixin, PostInfoAddMixin, CsrfMixin, SubscribeMixin, IsPostSubscribeMixin
 from .models import *
 from .apps import user_delete_signal
 from .templatetags.profile_extras import date_ago, post_views, is_full, comment_pluralize
@@ -143,7 +143,7 @@ class BlogSearchView(BlogBase, NotificationCheckMixin, CsrfMixin, BlogSearchMixi
     '''Представление блога с фильтром'''
 
 class PostView(NotificationCheckMixin, ViewIncrementMixin, CommentDispatcherMixin,
-               RecLoaderMixin, PostInfoAddMixin, CsrfMixin, IsSubscribeMixin,
+               RecLoaderMixin, PostInfoAddMixin, CsrfMixin, IsPostSubscribeMixin,
                SubscribeMixin, DetailView):
     '''Представление детального просмотра поста'''
     model = Post
@@ -204,6 +204,7 @@ class UserProfile(NotificationCheckMixin, PostInfoAddMixin, SubscribeMixin, Csrf
         context['sub_count'] = count
         context['posts_count'] = posts.count()
         context['posts'] = posts
+        context['is_subscribe'] = cur_user.subscriptions.filter(id=self.request.user.id).exists()
         return context
 
     def post(self, request, slug):
@@ -294,8 +295,6 @@ class UserProfile(NotificationCheckMixin, PostInfoAddMixin, SubscribeMixin, Csrf
                             context['posts'][-1]['report_url'] = f'/report/{i.slug}/post/'
                         else:
                             context['posts'][-1]['update_url'] = f'/post/update/{i.slug}/'
-                else:
-                    context['posts_is_full'] = True
             except Exception as ex:
                 return JsonResponse(data={'ex': f'Неверные данные post {ex}'}, status=400)
         elif 'post-new-info' in d:
@@ -601,7 +600,7 @@ class NotificationView(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, Li
         notif = Notification.objects.filter(user=self.request.user)
         # Обновление текущих нотификаций
         notif.update(is_read=True)
-        return notif[:10]
+        return notif[:20]
 
     def get_context_data(self, *args, object_list=None, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -616,7 +615,8 @@ class NotificationView(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, Li
             ids = d['ids[]']
             if ids == '' or ids[0] == 'false':
                 ids = []
-            new_notif = Notification.objects.filter(user=self.request.user)\
+            print(ids)
+            new_notif = Notification.objects.filter(user=self.request.user) \
                         .exclude(id__in=ids)
             filter = d['filter'][0]
             if filter != '' and filter != 'all':
@@ -626,7 +626,7 @@ class NotificationView(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, Li
                     new_notif = new_notif.filter(title='c')
                 elif filter == 'subs':
                     new_notif = new_notif.filter(title='s')
-            new_notif[:10]
+            new_notif = new_notif[:10]
             context['new_notif'] = []
             for i in new_notif:
                 context['new_notif'].append(
@@ -636,6 +636,7 @@ class NotificationView(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, Li
                      'is_read': i.is_read,
                      'created_at': date_ago(i.created_at)}
                 )
+            print(context)
         return JsonResponse(data=context, status=200)
 
 ############################################################################

@@ -2,36 +2,9 @@ $(document).ready(function() {
     var cur_filter = 'new';
     var posts_is_full = false;
 
-    $('.sub-true').click(function() {
-        $.ajax({
-            url: '',
-            type: 'post',
-            data: {
-                subscribe: true,
-                csrfmiddlewaretoken: csrf_token
-            },
-            success: function(response) {
-                $('.sub-true').hide()
-                $('.sub-false').show()
-            }
-        })
-    });
-
-    $('.sub-false').click(function() {
-        $.ajax({
-            url: '',
-            type: 'post',
-            data: {
-                subscribe: false,
-                csrfmiddlewaretoken: csrf_token
-
-            },
-            success: function(response) {
-                $('.sub-false').hide()
-                $('.sub-true').show()
-            }
-        })
-    });
+    // Подвязка ко кнопке подписки и отписки обработчика btn_sub
+    $('button.sub-false').click(subscribe_func);
+    $('button.sub-true').click(subscribe_func);
 
     function post_add(parent, response) {
         for (let i=0; i<response.posts.length; i++) {
@@ -103,7 +76,9 @@ $(document).ready(function() {
                 data: formData,
                 success: function(response) {
                     let parent = $('.post-container');
-                    parent.empty();
+                    // удаляю все дочерние элементы тэга
+                    empty_child_elements(parent);
+                    // подгружаю новые посты
                     post_add(parent, response);
                 },
                 error: function(response) {
@@ -113,51 +88,15 @@ $(document).ready(function() {
         };
     });
 
-    function loadMorePosts() {
-        if (posts_is_full === false) {
-            let ids = []
-            $('.post').each(function() {
-                ids.push($(this).attr('class').split(' ').slice(-1)[0]);
-            });
-
-            let formData = {'csrfmiddlewaretoken': csrf_token,
-                            'filter': cur_filter,
-                            'ids': JSON.stringify(ids)};
-
-            $.ajax({
-                url: '',
-                type: 'post',
-                data: formData,
-                success: function(response) {
-                    let parent = $('.post-container');
-                    if (response.posts_is_full === true) {
-                        posts_is_full = true;
-                    } else {
-                        post_add(parent, response);
-                    };
-                },
-                error: function(response) {
-                    console.log(response);
-                }
-            });
-        };
-    };
-
     $('.post').mouseenter(post_mouseenter).mouseleave(post_mouseleave);
 
     $('.post-a').click(post_a_handler);
 
     $('.post-r').mouseenter(elem_mouseenter).mouseleave(elem_mouseleave);
 
-    $('.post-r').find('img').click(favourite_post);
+    $('.post-r').find('img').click(favourite_black);
 
     $('.adddrop-post').click(adddrop_rec);
-
-    window.addEventListener('scroll', function() {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-            loadMorePosts();
-        };
-    });
 
     $('.like-main').mouseenter(elem_mouseenter).mouseleave(elem_mouseleave).click(post_like_card);
     $('.dislike-main').mouseenter(elem_mouseenter).mouseleave(elem_mouseleave).click(post_dislike_card);

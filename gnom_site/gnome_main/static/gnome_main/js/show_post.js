@@ -15,7 +15,7 @@ $(document).ready(function() {
     function more_comments() {
         // Показывает скрытый блок подкомментариев
         let s_id = $(this).parent().parent().parent().attr('class').split(' ').slice(-1);
-        let elem = $('div.subcomments-all' + s_id)
+        let elem = $('div.subcomments-all' + s_id);
         if (elem.css('display') == 'none') {
             elem.css('display', 'block');
             $(this).find('img.up').css('display', 'block');
@@ -335,6 +335,7 @@ $(document).ready(function() {
                 };
 
                 // Формирование нового коммента
+//                commentCreator.getFullComment(response.new_comment, true, true);
                 let comments_container = $('div.comment-all');
                 let main = $('<div>').addClass('flex-line-container comment-container ' + response.new_comment.id);
                 let span = $('<span>').addClass('comment-icon').
@@ -414,35 +415,7 @@ $(document).ready(function() {
     $('.like-main').click(post_like);
     $('.dislike-main').click(post_dislike);
 
-    $('.favourite').click(function() {
-        // Жёстко оборачиваем
-        userAuthDecorator(function() {
-        // Функция обработчик добавления поста в избранное
-        let form_data = {'post-new-info': true, 'data': 'favourite', 'csrfmiddlewaretoken': csrf_token};
-        let name = '/static/gnome_main/css/images/favourite_white.png'
-        let name_full = '/static/gnome_main/css/images/favourite_white_full.png'
-        // !!! th = $(this)
-        if (th.attr('src') == name_full) {
-            th.attr('src', name)
-            form_data['status'] = 'delete'
-        } else if (th.attr('src') == name) {
-            th.attr('src', name_full)
-            form_data['status'] = 'append'
-        };
-
-        $.ajax({
-            url: '',
-            type: 'post',
-            data: form_data,
-            data_type: 'json',
-            success: function(response) {
-            },
-            error: function(response) {
-                console.log(response)
-            }
-        });
-        }, th=$(this))();
-    });
+    $('img.favourite').click(favourite_white);
 
     // подвязка обработчика к кнопке фильтров комментариев
     $('.filter').click(function() {
@@ -623,11 +596,9 @@ $(document).ready(function() {
     // Привязка функций к событию достижения экрана пользователя
     // нижней границы страницы
     window.addEventListener('scroll', function() {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-            loadContent();
-            loadRecContent();
-        };
+        scrollListener(loadContent, loadRecContent);
     });
+
 
     function adddrop_post() {
         // функция обработчик, выводящая выпадающий список
@@ -662,19 +633,6 @@ $(document).ready(function() {
         // выводе курсора из-под комментария
         if ($(this).find('div.comment-dropdown').css('visibility') != 'hidden') {
             $(this).find('div.comment-dropdown').css('visibility', 'hidden');
-        };
-    };
-
-    function adddrop_rec() {
-        // Функция выводящая выпадающий список с жалобой или изменением
-        elem = $(this).parent().find('.rec-dropdown-m');
-        if (elem.css('display') == 'none') {
-            elem.css('display', 'block');
-            elem.mouseleave(function() {
-                elem.css('display', 'none');
-            });
-        } else {
-            elem.css('display', 'none');
         };
     };
 
@@ -852,30 +810,10 @@ $(document).ready(function() {
         });
     };
 
-    function btn_sub() {
-        // Функция обработчик подписки на пользователя, выложевшего
-        // текущую запись
-        let formData = {'csrfmiddlewaretoken': csrf_token}
-        if ($(this).attr('class').split('-').splice(-1)[0] === 'true' ) {
-            $(this).css('display', 'none');
-            $(this).parent().find('.sub-false').css('display', 'block');
-            formData['subscribe'] = false;
-        } else {
-            $(this).css('display', 'none');
-            $(this).parent().find('.sub-true').css('display', 'block');
-            formData['subscribe'] = true;
-        };
-        $.ajax({
-            url: '',
-                type: 'post',
-                data: formData,
-                data_type: 'json',
-                success: function(response) {},
-                error: function(response) {},
-        });
-    };
-
     // Подвязка ко кнопке подписки и отписки обработчика btn_sub
-    $('button.sub-false').click(btn_sub);
-    $('button.sub-true').click(btn_sub);
+    $('button.sub-false').click(subscribe_func);
+    $('button.sub-true').click(subscribe_func);
+
+    // класс, формирующий комментарии
+//    commentCreator = new CommentCreator(answerClickHandler, comment_like, comment_dislike, more_comments, change_comment, deletion_assert, adddrop_post, comment_mouseenter, comment_mouseleave, add_btn_look_more, add_btn_close, postCommentCountLabel);
 });

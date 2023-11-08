@@ -43,7 +43,7 @@ $(document).ready(function() {
     $('.like-main').mouseenter(elem_mouseenter).mouseleave(elem_mouseleave).click(post_like_card);
     $('.dislike-main').mouseenter(elem_mouseenter).mouseleave(elem_mouseleave).click(post_dislike_card);
 
-    $('.post-r').find('img').click(favourite_post);
+    $('.post-r').find('img').click(favourite_black);
 
     $('.post-a').click(post_a_handler);
 

@@ -66,7 +66,8 @@ class CommentDispatcherMixin:
             # формирование ответа
             context['new_comment'] = {'username': new_comment.user.username,
                                       'comment': linebreaks(new_comm),
-                                      'created_at': date, 'id': new_comment.id,
+                                      'created_at': date,
+                                      'id': new_comment.id,
                                       'user_url': new_comment.user.get_absolute_url(),
                                       'avatar_url': new_comment.user.avatar.url}
         except (DataError, IntegrityError):
@@ -100,7 +101,8 @@ class CommentDispatcherMixin:
             # формирование ответа
             context['new_comment'] = {'username': new_comment.user.username,
                                       'comment': linebreaks(comment),
-                                      'created_at': date, 'id': new_comment.id,
+                                      'created_at': date,
+                                      'id': new_comment.id,
                                       'user_url': new_comment.user.get_absolute_url(),
                                       'avatar_url': new_comment.user.avatar.url,
                                       'super_id': new_comment.super_comment.id, }
@@ -192,7 +194,8 @@ class CommentDispatcherMixin:
                     context['sups'].append({
                             'username': i.user.username,
                             'comment': linebreaks(i.comment),
-                            'created_at': date, 'id': i.id,
+                            'created_at': date,
+                            'id': i.id,
                             'user_url': i.user.get_absolute_url(),
                             'avatar_url': i.user.avatar.url,
                             'ans_count': ccount,
@@ -232,7 +235,8 @@ class CommentDispatcherMixin:
                     context['subs'].append({
                         'username': sub.user.username,
                         'comment': linebreaks(sub.comment),
-                        'created_at': date_ago(sub.created_at, sub.is_changed), 'id': sub.id,
+                        'created_at': date_ago(sub.created_at, sub.is_changed),
+                        'id': sub.id,
                         'user_url': sub.user.get_absolute_url(),
                         'avatar_url': sub.user.avatar.url,
                         'likes': likes_dislikes(sub.commentlike_set.count()),
@@ -367,7 +371,7 @@ class CsrfMixin:
         context['csrf_token'] = csrf_token
         return context
 
-class IsSubscribeMixin:
+class IsPostSubscribeMixin:
     '''
     Миксин вычисляющий подписан ли пользователь
     на автора поста, добавляет is_subscribe в context,
@@ -435,7 +439,7 @@ class BlogMixin(PostInfoAddMixin, SubscriptionsMixin, RubricsMixin):
             post = Post.objects.get(id=d['p_id'][0])
             self.add_info('favourite', d['status'][0], post)
         elif 'post-new-info' in d:
-            post = Post.objects.get(id=d['post_id'][0])
+            post = Post.objects.get(id=d['p_id'][0])
             self.add_info(d['data'][0], d['status'][0], post)
         return JsonResponse({}, status=200)
 
