@@ -251,6 +251,10 @@ class PostLike(models.Model):
                              verbose_name='Пост')
     user = models.ForeignKey(AdvUser, on_delete=models.CASCADE,
                              verbose_name='Пользователь')
+    created_at = models.DateTimeField(auto_now_add=True,
+                                      null=True,
+                                      blank=True,
+                                      verbose_name='Дата добавления')
 
     class Meta:
         verbose_name = 'Лайк'
@@ -266,6 +270,10 @@ class PostDisLike(models.Model):
                              verbose_name='Пост')
     user = models.ForeignKey(AdvUser, on_delete=models.CASCADE,
                              verbose_name='Пользователь')
+    created_at = models.DateTimeField(auto_now_add=True,
+                                      null=True,
+                                      blank=True,
+                                      verbose_name='Дата добавления')
 
     class Meta:
         verbose_name = 'Дизлайк'
@@ -281,6 +289,10 @@ class PostFavourite(models.Model):
                              verbose_name='Пост')
     user = models.ForeignKey(AdvUser, on_delete=models.CASCADE,
                              verbose_name='Пользователь')
+    created_at = models.DateTimeField(auto_now_add=True,
+                                      null=True,
+                                      blank=True,
+                                      verbose_name='Дата добавления')
 
     class Meta:
         verbose_name = 'Избранное'

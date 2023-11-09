@@ -268,11 +268,11 @@ window.subscribe_func = function() {
         };
         $.ajax({
             url: '',
-                type: 'post',
-                data: formData,
-                data_type: 'json',
-                success: function(response) {},
-                error: function(response) {},
+            type: 'post',
+            data: formData,
+            data_type: 'json',
+            success: function(response) {},
+            error: function(response) {},
         });
 };
 

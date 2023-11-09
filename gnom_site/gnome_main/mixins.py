@@ -436,10 +436,10 @@ class BlogMixin(PostInfoAddMixin, SubscriptionsMixin, RubricsMixin):
         '''
         d = dict(request.POST)
         if 'favourite' in d:
-            post = Post.objects.get(id=d['p_id'][0])
+            post = Post.objects.get(id=d['post_id'][0])
             self.add_info('favourite', d['status'][0], post)
         elif 'post-new-info' in d:
-            post = Post.objects.get(id=d['p_id'][0])
+            post = Post.objects.get(id=d['post_id'][0])
             self.add_info(d['data'][0], d['status'][0], post)
         return JsonResponse({}, status=200)
 

@@ -89,4 +89,50 @@ window.addEventListener("load", (event) => {
     function update_counter(counter, count) {
         counter.text(counter.text().slice(0, 15) + count);
     };
+
+//    function addChangeInputListener() {
+//        $(this)[0].addEventListener('change', function(e) {
+//            console.log('change');
+//            // добавляет полосу прогрузки файла
+//            // нахожу полосу
+//            let progress = $(this).parent().parent().parent().find('div.progress');
+//            let progress_bar = progress.find('div.progress-bar');
+//            let fileInput = $(this);
+//            // делаю progress_bar видимым
+//            progress.css('display', 'flex');
+//            // вызываю функцию, заполняющую полосу прогрузки
+//            bar_filling(progress);
+//        });
+//    };
+//
+//    let fileInputs = $('p.fset').find('input');
+//    fileInputs.each(addChangeInputListener);
+
+//    function bar_filling(progress) {
+//        form_data = {'csrfmiddlewaretoken': csrf_token};
+//        console.log(form_data);
+//        $.ajax({
+//            type: 'POST',
+//            url: '',
+//            data: form_data,
+//            dataType: 'json',
+//            xhr: function() {
+//                const xhr = new window.XMLHttpRequest();
+//                xhr.upload.addEventListener('progress', e=>{
+//                    if(e.lengthComputable){
+//                        const percentProgress = (e.loaded/e.total)*100;
+//                        console.log(percentProgress);
+//                        progress.innerHTML = `<div class="progress-bar bg-danger" role="progressbar" style="width: 0%; height: 100%;" aria-valuenow="${percentProgress}" aria-valuemin="0" aria-valuemax="100"></div>`
+//                    }
+//                });
+//                return xhr
+//            },
+//            success: function(response) {
+//                console.log(1, response);
+//            },
+//            error: function(err) {
+//                console.log(2, err);
+//            },
+//        });
+//    };
 });

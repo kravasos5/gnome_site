@@ -1,0 +1,24 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+{% load profile_extras %}
+{% block links %}
+<link rel="stylesheet" href="{% static 'gnome_main/css/header_nfixed.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/fav_like.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/post_cards.css' %}">
+<link rel="stylesheet" href="{% static 'gnome_main/css/paginator.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<script src="{% static 'gnome_main/js/fav_like.js' %}"></script>
+<script>
+    {% include 'scripts/csrf_script.html' %}
+</script>
+{% endblock links %}
+
+{% block content %}
+<div class="flex-line-container fl-content">
+    <h1 id="pagename">{% block pagename %}{% endblock pagename %}</h1>
+    <div class="post-container">
+        {% include 'includings/posts_mini.html' %}
+    </div>
+</div>
+{% include 'includings/paginator.html' %}
+{% endblock content %}

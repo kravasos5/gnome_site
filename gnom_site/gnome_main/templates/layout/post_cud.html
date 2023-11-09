@@ -67,12 +67,15 @@
 
                                     {% for field in formset.empty_form.visible_fields %}
                                         {% if field.name != 'DELETE' %}
-                                            <div class="flex-start">
-                                                    <p>{{ field.label_tag }}</p>
-                                                    <p class="fset">{{ field }}</p>
-                                                    <p class="delete-p">
-                                                        <button class="delete-image pointer" id="__prefix__" type="button">Удалить</button>
-                                                    </p>
+                                            <div class="flex-line-container ai-container">
+                                                <div class="flex-start">
+                                                        <p>{{ field.label_tag }}</p>
+                                                        <p class="fset">{{ field }}</p>
+                                                        <p class="delete-p">
+                                                            <button class="delete-image pointer" id="__prefix__" type="button">Удалить</button>
+                                                        </p>
+                                                </div>
+                                                {% include 'includings/progress_bar.html' %}
                                             </div>
                                         {% endif %}
                                     {% endfor %}
@@ -113,13 +116,15 @@
                                                 <p style="color:red;">{{ error|escape }}</p>
                                             {% endfor %}
                                         {% endif %}
-
-                                        <div class="flex-start">
-                                            <p>{{ field.label_tag }}</p>
-                                            <p class="fset">{{ field }}</p>
-                                            <p class="delete-p">
-                                                <button class="delete-image pointer" id="{{ forloop.counter0 }}" type="button">Удалить</button>
-                                            </p>
+                                        <div class="flex-line-container ai-container">
+                                            <div class="flex-start">
+                                                <p>{{ field.label_tag }}</p>
+                                                <p class="fset">{{ field }}</p>
+                                                <p class="delete-p">
+                                                    <button class="delete-image pointer" id="{{ forloop.counter0 }}" type="button">Удалить</button>
+                                                </p>
+                                            </div>
+                                            {% include 'includings/progress_bar.html' %}
                                         </div>
                                     </div>
                                 {% endif %}

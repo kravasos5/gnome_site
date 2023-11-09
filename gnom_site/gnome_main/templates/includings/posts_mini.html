@@ -1,0 +1,28 @@
+{% load static %}
+{% load profile_extras %}
+
+{% for post in posts %}
+    <div class="flex-line-container card">
+        <div class="flex-line-container space-between post {{ post.id }}">
+            <a href="{{ post.get_absolute_url }}" class="post-a">
+                <div class="post-in">
+                    <div class="preview-container">
+                        <img src="{{ post.preview.url }}">
+                    </div>
+                    <div class="post-data">
+                        <h1>{{ post.title }}</h1>
+                        <div class="author-date">
+                            <p>{{ post.author.username }}</p>
+                        </div>
+                        <div class="author-date">
+                            <p>{{ post.created_at|date_ago }}</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <span class="close"><img src="{% static 'gnome_main/css/images/icon_xletter.png' %}"></span>
+    </div>
+{% endfor %}
+
