@@ -1,0 +1,48 @@
+/*pagonator*/
+.pag-container {
+    margin: 20px 0;
+}
+
+ul.paginator {
+    color: #fff;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+ul.paginator a {
+    text-decoration: none;
+    background: #D9D9D9;
+    border-radius: 100%;
+    width: 50px;
+    height: 50px;
+    margin-right: 3%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: auto;
+}
+
+ul.paginator a.non-chose {
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+ul.paginator a.non-chose:hover {
+    background: #A1A1A1;
+}
+
+ul.paginator a li {
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+ul.paginator a li p {
+    color: #000;
+    font-size: 30px;
+    margin: 0;
+    padding: 0;
+}

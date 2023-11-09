@@ -42,4 +42,9 @@ urlpatterns = [
     path('notifications/<slug:slug>/', NotificationView.as_view(), name='notifications'),
 
     path('access-denied/', AccessDenied.as_view(), name='access-denied'),
+
+    path('favourites-likes-starting/', FavLikeStarting.as_view(), name='user-favourites-likes-starting'),
+    path('favourites/', UserFavourites.as_view(), name='user-favourites'),
+    path('liked/', UserLiked.as_view(), name='user-liked'),
+    path('history/', UserHistory.as_view(), name='user-history'),
 ]

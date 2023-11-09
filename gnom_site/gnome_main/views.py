@@ -33,8 +33,7 @@ from .mixins import BlogMixin, NotificationCheckMixin, BlogFilterMixin, BlogSear
 from .models import *
 from .apps import user_delete_signal
 from .templatetags.profile_extras import date_ago, post_views, is_full, comment_pluralize
-from .utilities import signer
-
+from .utilities import signer, get_client_ip
 
 
 ##############################################################
@@ -298,7 +297,7 @@ class UserProfile(NotificationCheckMixin, PostInfoAddMixin, SubscribeMixin, Csrf
             except Exception as ex:
                 return JsonResponse(data={'ex': f'Неверные данные post {ex}'}, status=400)
         elif 'post-new-info' in d:
-            post = Post.objects.get(id=d['p_id'][0])
+            post = Post.objects.get(id=d['post_id'][0])
             self.add_info(data=d['data'][0], status=d['status'][0], post=post)
 
         return JsonResponse(data=context, status=200)
@@ -508,7 +507,6 @@ class PostInLine:
 
     def form_valid(self, form):
         named_formsets = self.get_named_formsets()
-        print(named_formsets)
         if not all((x.is_valid() for x in named_formsets.values())):
             return self.render_to_response(self.get_context_data(form=form))
         form.instance.author = self.request.user
@@ -837,16 +835,91 @@ class AuthorPostsBase(BlogBase):
         context['author_slug'] = self.kwargs['slug']
         return context
 
-class AuthorPostsView(NotificationCheckMixin, CsrfMixin, BlogMixin, AuthorPostsBase, ListView):
+class AuthorPostsView(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, BlogMixin, AuthorPostsBase, ListView):
     '''Представление окна записей пользователя'''
 
-class AuthorPostsFilteredView(NotificationCheckMixin, CsrfMixin, BlogFilterMixin, AuthorPostsBase, ListView):
+class AuthorPostsFilteredView(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, BlogFilterMixin, AuthorPostsBase, ListView):
     '''Представление окна записей пользователя фильтр'''
 
-class AuthorPostsSearchView(NotificationCheckMixin, CsrfMixin, BlogSearchMixin, AuthorPostsBase, ListView):
+class AuthorPostsSearchView(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, BlogSearchMixin, AuthorPostsBase, ListView):
     '''Представление окна записей пользователя поиск'''
 
+############################################################################
+# Понравившиеся записи и избранное пользователя
 
+class FavLikeStarting(NotificationCheckMixin, LoginRequiredMixin, TemplateView):
+    '''Страница выбора того, что хочет посмотреть пользователь "Избранное" или "Понравившиеся записи"'''
+    template_name = 'gnome_main/fav_like_start.html'
+
+class UserFavLikeBase:
+    '''Базовый класс для понравившихся записей и избранного'''
+    model = Post
+    context_object_name = 'posts'
+    paginate_by = 30
+
+class UserLiked(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, PostInfoAddMixin, UserFavLikeBase, ListView):
+    '''Понравившиеся записи пользователя'''
+    template_name = 'gnome_main/liked.html'
+
+    def get_queryset(self, *args, **kwargs):
+        # нахожу все посты, на которые пользователь поставил лайк
+        posts_liked = PostLike.objects.select_related('post').filter(user=self.request.user).order_by('-created_at')
+        queryset = [x.post for x in posts_liked]
+        return queryset
+
+    def post(self, request, *args, **kwargs):
+        # Получаю ответ
+        d = dict(request.POST)
+        # нахожу удаляемый пост
+        post = Post.objects.get(id=d['post_id'][0])
+        # удаляю лайк на пост
+        self.add_info('like', 'delete', post)
+        return JsonResponse(data={}, status=204)
+
+
+
+class UserFavourites(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, PostInfoAddMixin, UserFavLikeBase, ListView):
+    '''Избранные записи пользователя'''
+    template_name = 'gnome_main/favourites.html'
+
+    def get_queryset(self, *args, **kwargs):
+        # нахожу все посты, которые пользователь добавил в избранное
+        posts_favourite = PostFavourite.objects.select_related('post').filter(user=self.request.user).order_by('-created_at')
+        queryset = [x.post for x in posts_favourite]
+        return queryset
+
+    def post(self, request, *args, **kwargs):
+        # Получаю ответ
+        d = dict(request.POST)
+        # нахожу удаляемый пост
+        post = Post.objects.get(id=d['post_id'][0])
+        # удаляю пост из избранного
+        self.add_info('favourite', 'delete', post)
+        return JsonResponse(data={}, status=204)
+
+class UserHistory(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, UserFavLikeBase, ListView):
+    '''История пользователя'''
+    template_name = 'gnome_main/history.html'
+
+    def get_queryset(self, *args, **kwargs):
+        # нахожу все посты, которые пользователь добавил в избранное
+        posts_views = PostViewCount.objects.select_related('post').filter(user=self.request.user).order_by('-viewed_on')
+        queryset = [x.post for x in posts_views]
+        return queryset
+
+    def post(self, request, *args, **kwargs):
+        # Получаю ответ
+        d = dict(request.POST)
+        # нахожу удаляемый пост
+        post = Post.objects.get(id=d['post_id'][0])
+        # получаю ip пользователя
+        ip_address = get_client_ip(self.request)
+        # удаляю сведения о просмотре
+        view = PostViewCount.objects.get(post=post, user=request.user, ip_address=ip_address)
+        view.delete()
+        return JsonResponse(data={}, status=204)
+
+############################################################################
 # REST
 class PostCommentAPI(APIView):
     '''ViewSet, который будет возвращать 10 новых комментариев'''
