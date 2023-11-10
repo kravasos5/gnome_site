@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'captcha',
     'bootstrap5',
+    'corsheaders',
+    'rest_framework_simplejwt',
     # django-cleanup должен быть в конце списка
     'django_cleanup.apps.CleanupConfig',
 ]
@@ -57,6 +59,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -160,6 +163,7 @@ email_host_pass = os.getenv('EMAIL_HOST_PASSWORD')
 #Email
 # тестирование
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# продакшн
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = email_host
 EMAIL_USE_TLS = True
@@ -188,6 +192,22 @@ THUMBNAIL_ALIASES = {
     },
 }
 THUMBNAIL_BASEDIR = 'thumbnails'
+
+# REST
+# corsheaders
+# Если False, то будут обрабатываться только запросы, пришедшие с текущего домена или
+# заприсы, пришедшие от доменов из списка CORS_ORIGIN_WHITELIST или
+# CORS_ORIGIN_REGEX_WHITELIST
+CORS_ORIGIN_ALLOW_ALL = False
+# CORS_ORIGIN_WHITELIST = []
+# CORS_ORIGIN_REGEX_WHITELIST = []
+
+# JWT
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 
 # ckeditor
 # путь для загрузки изображений ckeditor

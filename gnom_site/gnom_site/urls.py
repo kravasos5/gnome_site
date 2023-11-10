@@ -18,23 +18,26 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework import routers
-from gnome_main.views import PostCommentAPI
+from api_urls import urlpatterns as api_urlpatterns
+from yasg import urlpatterns as swagger_urlpatterns
 
-# router = routers.SimpleRouter()
-# router.register(r'commentlist', PostCommentAPI)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('gnome_main.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
-    # path('api/', include(router.urls)),
-    path('api/v1/commentlist/', PostCommentAPI.as_view()),
 ]
 
+# captcha
 urlpatterns += [
     path('captcha/', include('captcha.urls')),
 ]
+
+# rest маршруты
+urlpatterns += api_urlpatterns
+
+# swagger маршруты
+urlpatterns += swagger_urlpatterns
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

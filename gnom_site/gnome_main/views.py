@@ -12,19 +12,14 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django.core.signing import BadSignature
 from django.db import IntegrityError
-from django.db.models import Count, Q, F
+from django.db.models import Count
 from django.http import JsonResponse, HttpResponseRedirect
-from django.middleware.csrf import get_token
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, PasswordResetConfirmView, \
     PasswordResetCompleteView, PasswordResetDoneView
 from django.template.defaultfilters import truncatewords, safe
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, DetailView, ListView
-from rest_framework.views import APIView
-from rest_framework.response import Response
-
-from .serializers import PostCommentSerializer
 
 from .forms import RegisterUserForm, ChangeUserInfoForm, DeleteUserForm, PostReportForm, CommentReportForm, \
     PostCreationForm, AIFormSet
@@ -876,8 +871,6 @@ class UserLiked(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, PostInfoA
         self.add_info('like', 'delete', post)
         return JsonResponse(data={}, status=204)
 
-
-
 class UserFavourites(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, PostInfoAddMixin, UserFavLikeBase, ListView):
     '''Избранные записи пользователя'''
     template_name = 'gnome_main/favourites.html'
@@ -918,14 +911,3 @@ class UserHistory(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, UserFav
         view = PostViewCount.objects.get(post=post, user=request.user, ip_address=ip_address)
         view.delete()
         return JsonResponse(data={}, status=204)
-
-############################################################################
-# REST
-class PostCommentAPI(APIView):
-    '''ViewSet, который будет возвращать 10 новых комментариев'''
-    # queryset = PostComment.objects.all()
-    # serializer = PostCommentSerializer()
-
-    def get(self, request):
-        queryset = PostComment.objects.all()
-        return Response({'get': PostCommentSerializer(queryset, many=True).data})
