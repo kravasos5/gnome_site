@@ -324,7 +324,7 @@ class PostComment(models.Model):
 class SuperPostCommentManager(models.Manager):
     '''Менеджер надкомментария'''
     def get_queryset(self):
-        return super().get_queryset()\
+        return super().get_queryset() \
             .filter(super_comment__isnull=True)
             # .select_related('CommentLike', 'CommentDisLike')\
 
@@ -346,7 +346,7 @@ class SuperPostComment(PostComment):
 class SubPostCommentManager(models.Manager):
     '''Менеджер подкомментария'''
     def get_queryset(self):
-        return super().get_queryset()\
+        return super().get_queryset() \
             .filter(super_comment__isnull=False)
             # .select_related('CommentLike', 'CommentDisLike')\
 

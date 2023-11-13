@@ -453,8 +453,10 @@ class BlogFilterMixin(BlogMixin):
         author = self.request.GET.get('author')
         rubrics = self.request.GET.getlist('rubric')
         radio = self.request.GET.get('radio-filters')
-        find_text = self.request.GET.get('text-find')
-        d = dict(self.request.GET)
+        queryset = self.filter(queryset, date_from, date_to, author, rubrics, radio)
+        return queryset
+
+    def filter(self, queryset, date_from, date_to, author, rubrics, radio):
         # применяю фильтры
         # если есть рубрики
         if len(rubrics) > 0:
@@ -529,10 +531,16 @@ class BlogFilterMixin(BlogMixin):
         return context
 
 class BlogSearchMixin(BlogMixin):
+    '''Миксин поиска'''
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset()
+        # получаю текст, по которому нужно искать
         find_text = self.request.GET.get('text-find')
-        d = dict(self.request.GET)
+        queryset = self.search(queryset, find_text)
+        return queryset
+
+    def search(self, queryset, find_text):
+        # нахожу записи, подходящие под поиск
         if find_text != None:
             tags = PostTag.objects.filter(tag__icontains=find_text)
             queryset = queryset.filter(Q(tag__in=tags) |
