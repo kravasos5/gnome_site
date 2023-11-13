@@ -79,7 +79,6 @@ def comment_report_save_dispathcher(sender, **kwargs):
     if kwargs['created']:
         instance = kwargs['instance']
         type = instance.type
-        print(instance.comment.comment)
 
         title = 'r'
         message = f'Пользователь <a href="{instance.user.get_absolute_url()}" ' \
@@ -147,7 +146,6 @@ class PostView(NotificationCheckMixin, ViewIncrementMixin, CommentDispatcherMixi
     def post(self, request, *args, **kwargs):
         post = self.get_object()
         d = dict(request.POST)
-        print(d)
         # формирования контекста
         context = {}
         # если пользователь оставил SuperComment
@@ -203,7 +201,6 @@ class UserProfile(NotificationCheckMixin, PostInfoAddMixin, SubscribeMixin, Csrf
 
     def post(self, request, slug):
         d = dict(request.POST)
-        print(d)
         cur_user = get_object_or_404(AdvUser, slug=slug)
         # формирования контекста
         context = {}
@@ -526,7 +523,6 @@ class PostInLine:
         for obj in formset.deleted_objects:
             obj.delete()
         for image in images:
-            print(image)
             image.post = self.object
             image.save()
 
@@ -603,12 +599,10 @@ class NotificationView(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, Li
     def post(self, request, *args, **kwargs):
         d = dict(request.POST)
         context = {}
-        print(d)
         if 'more-notif' in d:
             ids = d['ids[]']
             if ids == '' or ids[0] == 'false':
                 ids = []
-            print(ids)
             new_notif = Notification.objects.filter(user=self.request.user) \
                         .exclude(id__in=ids)
             filter = d['filter'][0]
@@ -629,7 +623,6 @@ class NotificationView(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, Li
                      'is_read': i.is_read,
                      'created_at': date_ago(i.created_at)}
                 )
-            print(context)
         return JsonResponse(data=context, status=200)
 
 ############################################################################
@@ -765,7 +758,6 @@ class StudioDetailView(LoginRequiredMixin, NotificationCheckMixin, TemplateView)
             # собираю все жалобы в data
             data = []
             combined_reports = list(views) + list(views1)
-            print(combined_reports)
             for view in combined_reports:
                 date = mktime(view['report_date'].timetuple()) * 1000
                 views = view['rep_count']

@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'drf_yasg',
+    'debug_toolbar',
     # django-cleanup должен быть в конце списка
     'django_cleanup.apps.CleanupConfig',
 ]
@@ -66,6 +68,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     # 'gnome_main.middlewares.CommentsMiddleware',
 ]
 
@@ -194,6 +197,17 @@ THUMBNAIL_ALIASES = {
 }
 THUMBNAIL_BASEDIR = 'thumbnails'
 
+# настройка swagger
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'JWT': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}
+
 # REST
 # corsheaders
 # Если False, то будут обрабатываться только запросы, пришедшие с текущего домена или
@@ -312,5 +326,68 @@ CKEDITOR_CONFIGS = {
             # 'embed',
             'youtube',
         ]),
+    }
+}
+
+# django debug-toolbar
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+# logging, журналирование
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'formatters': {
+        'simple': {
+            'format': '[%(asctime)s] %(levelname)s: %(message)s',
+            'datefmt': '%Y.%m.%d %H:%M:%S',
+        }
+    },
+    'handlers': {
+        'file_prod': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            # здесь нужно указать путь к файлу
+            'filename': os.path.join(BASE_DIR, 'logs', 'error.log'),
+            'maxBytes': 1048576,
+            'backupCount': 10,
+            'formatter': 'simple',
+        },
+        # 'console_dev': {
+        #     'class': 'logging.StreamHandler',
+        #     'formatter': 'simple',
+        #     'filters': ['require_debug_true'],
+        # },
+        # 'console_prod': {
+        #     'class': 'logging.StreamHandler',
+        #     'formatter': 'simple',
+        #     'level': 'ERROR',
+        #     'filters': ['require_debug_false'],
+        # },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        # 'django.server': {
+        #     'handlers': ['file_prod'],
+        #     'level': 'INFO',
+        #     'propagate': True,
+        # },
+        # 'django.request': {
+        #     'handlers': ['file_prod'],
+        #     'level': 'INFO',
+        #     'propagate': True,
+        # },
     }
 }

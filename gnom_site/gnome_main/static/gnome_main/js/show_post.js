@@ -114,7 +114,6 @@ $(document).ready(function() {
                     };
                 },
                 error: function(response) {
-                    console.log(response);
                 }
             });
         };
@@ -536,7 +535,6 @@ $(document).ready(function() {
                 };
             },
             error: function(response) {
-                console.log(response);
             },
         });
     }
@@ -588,7 +586,6 @@ $(document).ready(function() {
                 };
             },
             error: function(response) {
-                console.log(response);
             },
         });
     };
@@ -784,6 +781,9 @@ $(document).ready(function() {
                             let p_answ = th.find('div:not([class])').find('.c-likes').
                                     find('.more-comments').find('p').text().split(' ')[0];
                             number = number - p_answ;
+                            let super_comment_id = th.attr('class').split(' ').splice(-1)[0];
+                            let subcomments = $('div.subcomments-all' + super_comment_id)
+                            subcomments.remove();
                         };
                         th.remove();
                         let post_comments = $('div.comments').find('p#comments-count-post')

@@ -264,7 +264,6 @@ class CommentDispatcherMixin:
             context['new_comment'] = {
                 'comment': comment.comment,
             }
-            print(context)
         except (DataError, IntegrityError):
             return JsonResponse(data={'ex': 'Комментарий не должен '
                                             'превышать длину в 500 символов и должен содержать '

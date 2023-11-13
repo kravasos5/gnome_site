@@ -77,7 +77,6 @@ function favourite_post_orig(is_black, th) {
         success: function(response) {
         },
         error: function(response) {
-            console.log(response)
         }
     });
 };
@@ -200,7 +199,6 @@ function ld_handler_orig(th, ld, ld_opposite, is_post_or_comment) {
         data_type: 'json',
         success: function(response) {},
         error: function(response) {
-            console.log(response)
         }
     });
 };
