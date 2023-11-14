@@ -82,7 +82,6 @@ $(document).ready(function() {
                     post_add(parent, response);
                 },
                 error: function(response) {
-                    console.log(response);
                 }
             });
         };

@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 import os
 
@@ -50,6 +50,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'captcha',
     'bootstrap5',
+    'corsheaders',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'drf_yasg',
+    'debug_toolbar',
     # django-cleanup должен быть в конце списка
     'django_cleanup.apps.CleanupConfig',
 ]
@@ -57,11 +62,13 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     # 'gnome_main.middlewares.CommentsMiddleware',
 ]
 
@@ -160,6 +167,7 @@ email_host_pass = os.getenv('EMAIL_HOST_PASSWORD')
 #Email
 # тестирование
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# продакшн
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = email_host
 EMAIL_USE_TLS = True
@@ -188,6 +196,74 @@ THUMBNAIL_ALIASES = {
     },
 }
 THUMBNAIL_BASEDIR = 'thumbnails'
+
+# настройка swagger
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'JWT': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}
+
+# REST
+# corsheaders
+# Если False, то будут обрабатываться только запросы, пришедшие с текущего домена или
+# заприсы, пришедшие от доменов из списка CORS_ORIGIN_WHITELIST или
+# CORS_ORIGIN_REGEX_WHITELIST
+CORS_ORIGIN_ALLOW_ALL = False
+# CORS_ORIGIN_WHITELIST = []
+# CORS_ORIGIN_REGEX_WHITELIST = []
+
+# настройка JWT
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": False,
+
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "VERIFYING_KEY": "",
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JSON_ENCODER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+
+    "AUTH_HEADER_TYPES": ("JWT",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
+
+    "JTI_CLAIM": "jti",
+
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+
+    "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
+    "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
+    "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
+    "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
+    "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
+    "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
+}
 
 # ckeditor
 # путь для загрузки изображений ckeditor
@@ -250,5 +326,68 @@ CKEDITOR_CONFIGS = {
             # 'embed',
             'youtube',
         ]),
+    }
+}
+
+# django debug-toolbar
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+# logging, журналирование
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'formatters': {
+        'simple': {
+            'format': '[%(asctime)s] %(levelname)s: %(message)s',
+            'datefmt': '%Y.%m.%d %H:%M:%S',
+        }
+    },
+    'handlers': {
+        'file_prod': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            # здесь нужно указать путь к файлу
+            'filename': os.path.join(BASE_DIR, 'logs', 'error.log'),
+            'maxBytes': 1048576,
+            'backupCount': 10,
+            'formatter': 'simple',
+        },
+        # 'console_dev': {
+        #     'class': 'logging.StreamHandler',
+        #     'formatter': 'simple',
+        #     'filters': ['require_debug_true'],
+        # },
+        # 'console_prod': {
+        #     'class': 'logging.StreamHandler',
+        #     'formatter': 'simple',
+        #     'level': 'ERROR',
+        #     'filters': ['require_debug_false'],
+        # },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        # 'django.server': {
+        #     'handlers': ['file_prod'],
+        #     'level': 'INFO',
+        #     'propagate': True,
+        # },
+        # 'django.request': {
+        #     'handlers': ['file_prod'],
+        #     'level': 'INFO',
+        #     'propagate': True,
+        # },
     }
 }

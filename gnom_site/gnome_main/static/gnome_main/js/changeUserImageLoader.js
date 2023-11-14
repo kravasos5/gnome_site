@@ -51,7 +51,6 @@ window.addEventListener("load", (event) => {
                                 window.location.href = response.success_url;
                             },
                             error: function(error) {
-                                console.log(error)
                             },
                             cache: false,
                             contentType: false,
@@ -96,7 +95,6 @@ window.addEventListener("load", (event) => {
                                 window.location.href = response.success_url;
                             },
                             error: function(error) {
-                                console.log(error)
                             },
                             cache: false,
                             contentType: false,

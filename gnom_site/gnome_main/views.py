@@ -12,19 +12,14 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django.core.signing import BadSignature
 from django.db import IntegrityError
-from django.db.models import Count, Q, F
+from django.db.models import Count
 from django.http import JsonResponse, HttpResponseRedirect
-from django.middleware.csrf import get_token
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, PasswordResetConfirmView, \
     PasswordResetCompleteView, PasswordResetDoneView
 from django.template.defaultfilters import truncatewords, safe
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, DetailView, ListView
-from rest_framework.views import APIView
-from rest_framework.response import Response
-
-from .serializers import PostCommentSerializer
 
 from .forms import RegisterUserForm, ChangeUserInfoForm, DeleteUserForm, PostReportForm, CommentReportForm, \
     PostCreationForm, AIFormSet
@@ -84,7 +79,6 @@ def comment_report_save_dispathcher(sender, **kwargs):
     if kwargs['created']:
         instance = kwargs['instance']
         type = instance.type
-        print(instance.comment.comment)
 
         title = 'r'
         message = f'Пользователь <a href="{instance.user.get_absolute_url()}" ' \
@@ -152,7 +146,6 @@ class PostView(NotificationCheckMixin, ViewIncrementMixin, CommentDispatcherMixi
     def post(self, request, *args, **kwargs):
         post = self.get_object()
         d = dict(request.POST)
-        print(d)
         # формирования контекста
         context = {}
         # если пользователь оставил SuperComment
@@ -208,7 +201,6 @@ class UserProfile(NotificationCheckMixin, PostInfoAddMixin, SubscribeMixin, Csrf
 
     def post(self, request, slug):
         d = dict(request.POST)
-        print(d)
         cur_user = get_object_or_404(AdvUser, slug=slug)
         # формирования контекста
         context = {}
@@ -531,7 +523,6 @@ class PostInLine:
         for obj in formset.deleted_objects:
             obj.delete()
         for image in images:
-            print(image)
             image.post = self.object
             image.save()
 
@@ -608,12 +599,10 @@ class NotificationView(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, Li
     def post(self, request, *args, **kwargs):
         d = dict(request.POST)
         context = {}
-        print(d)
         if 'more-notif' in d:
             ids = d['ids[]']
             if ids == '' or ids[0] == 'false':
                 ids = []
-            print(ids)
             new_notif = Notification.objects.filter(user=self.request.user) \
                         .exclude(id__in=ids)
             filter = d['filter'][0]
@@ -634,7 +623,6 @@ class NotificationView(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, Li
                      'is_read': i.is_read,
                      'created_at': date_ago(i.created_at)}
                 )
-            print(context)
         return JsonResponse(data=context, status=200)
 
 ############################################################################
@@ -770,7 +758,6 @@ class StudioDetailView(LoginRequiredMixin, NotificationCheckMixin, TemplateView)
             # собираю все жалобы в data
             data = []
             combined_reports = list(views) + list(views1)
-            print(combined_reports)
             for view in combined_reports:
                 date = mktime(view['report_date'].timetuple()) * 1000
                 views = view['rep_count']
@@ -876,8 +863,6 @@ class UserLiked(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, PostInfoA
         self.add_info('like', 'delete', post)
         return JsonResponse(data={}, status=204)
 
-
-
 class UserFavourites(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, PostInfoAddMixin, UserFavLikeBase, ListView):
     '''Избранные записи пользователя'''
     template_name = 'gnome_main/favourites.html'
@@ -918,14 +903,3 @@ class UserHistory(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, UserFav
         view = PostViewCount.objects.get(post=post, user=request.user, ip_address=ip_address)
         view.delete()
         return JsonResponse(data={}, status=204)
-
-############################################################################
-# REST
-class PostCommentAPI(APIView):
-    '''ViewSet, который будет возвращать 10 новых комментариев'''
-    # queryset = PostComment.objects.all()
-    # serializer = PostCommentSerializer()
-
-    def get(self, request):
-        queryset = PostComment.objects.all()
-        return Response({'get': PostCommentSerializer(queryset, many=True).data})
