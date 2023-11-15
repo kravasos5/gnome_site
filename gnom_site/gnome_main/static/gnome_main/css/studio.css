@@ -114,3 +114,8 @@ a.card div.graph div.last p {
     fill: #000 !important;
     color: #000 !important;
 }
+
+.highcharts-data-table {
+    margin-bottom: 20px;
+    color: #fff;
+}

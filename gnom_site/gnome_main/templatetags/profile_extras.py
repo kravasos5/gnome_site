@@ -127,7 +127,9 @@ def date_ago(value, is_changed=False):
     elif 30 < diff <= 360:
         if diff // 30 == 1:
             new_value += f'{diff // 30} месяц назад'
-        elif 2 <= diff // 30 <= 11:
+        elif 2 <= diff // 30 <= 4:
+            new_value += f'{diff // 30} месяца назад'
+        elif 5 <= diff // 30 <= 11:
             new_value += f'{diff // 30} месяцев назад'
     # года
     elif diff // 360 == 1:
