@@ -1,11 +1,6 @@
 ![Static Badge](https://img.shields.io/badge/gnomesite-C80000?style=plastic) ![Static Badge](https://img.shields.io/badge/django-v4.2.3-000?style=plastic&labelColor=C80000) ![Static Badge](https://img.shields.io/badge/djangorestframework-v3.14.0-000?style=plastic&labelColor=C80000) ![Static Badge](https://img.shields.io/badge/swagger-C80000?style=plastic) ![Static Badge](https://img.shields.io/badge/Auth-JWT-000?style=plastic&labelColor=C80000)
  ![Static Badge](https://img.shields.io/badge/postgreSQL-C80000?style=plastic)
 
-
-
-
----
-
 # Содержание
 1. [Установка](#installation)
 2. [Маршруты](#urls)
