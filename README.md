@@ -45,6 +45,7 @@
     ```
     EMAIL_HOST это хост, который будет использоваться для рассылки писем.
 8. Убедитесь, что существует директория logs и файлы error.log, info.log gnome_site/gnom_site/logs/error.log, gnome_site/gnom_site/logs/info.log
+9. Создать папку gnome_site/gnom_site/media
 
 Для запуска сервера нужно написать команду `python gnome_site/gnom_site/manage.py runserver`
 
