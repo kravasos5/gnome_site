@@ -46,6 +46,7 @@
     EMAIL_HOST это хост, который будет использоваться для рассылки писем.
 8. Убедитесь, что существует директория logs и файлы error.log, info.log gnome_site/gnom_site/logs/error.log, gnome_site/gnom_site/logs/info.log
 9. Создать папку gnome_site/gnom_site/media
+10. Добавить в папку media/photo из MEDIA_ROOT, что настроен в settings.py, 2 изображения для стандартного аватара и профиля пользователя со следующими названиями соответственно: default_profile_avatar.jpg, default_profile_image.jpg
 
 Для запуска сервера нужно написать команду `python gnome_site/gnom_site/manage.py runserver`
 
