@@ -4,10 +4,17 @@ from django import forms
 from django.contrib.auth import password_validation
 
 # from .apps import user_registered
+from django.contrib.auth.password_validation import get_default_password_validators
 from django.forms import inlineformset_factory
 
+from gnom_site.settings import STATIC_ROOT
 from .apps import user_registered
 from .models import *
+
+class CustomClearableFileInputCU(forms.ClearableFileInput):
+    initial_text = ''
+    template_name = 'widget/customImageFieldTemplate.html'
+
 
 class RegisterUserForm(forms.ModelForm):
     '''форма для регистрации пользователя'''
@@ -20,25 +27,26 @@ class RegisterUserForm(forms.ModelForm):
                                 widget=forms.PasswordInput)
     captcha = CaptchaField(label='Каптча')
 
-    def clean_password1(self):
-        password1 = self.cleaned_data['password1']
-        if password1:
-            password_validation.validate_password(password1)
-        return password1
+    def clean_first_password(self, password1):
+        password_validation.validate_password(password1)
 
     def clean(self):
         super().clean()
         password1 = self.cleaned_data['password1']
+        self.clean_first_password(password1)
         password2 = self.cleaned_data['password2']
         if password1 and password2 and password1 != password2:
             errors = {'password2': ValidationError('Введённые пароли не совпадают', code='password_mismatch')}
             raise ValidationError(errors)
+        return self.cleaned_data
 
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data['password1'])
         user.is_active = False
         user.is_activated = False
+        user.avatar = 'photos/default_profile_avatar.jpg'
+        user.profile_image = 'photos/default_profile_image.jpg'
         if commit:
             user.save()
         user_registered.send(RegisterUserForm, instance=user)
@@ -48,10 +56,6 @@ class RegisterUserForm(forms.ModelForm):
         model = AdvUser
         fields = ('username', 'email', 'password1', 'password2',
                   'first_name', 'last_name', 'send_messages')
-
-class CustomClearableFileInputCU(forms.ClearableFileInput):
-    initial_text = ''
-    template_name = 'widget/customImageFieldTemplate.html'
 
 class ChangeUserInfoForm(forms.ModelForm):
     '''форма для обновления пользовательских данных'''
@@ -141,6 +145,7 @@ class CommentReportForm(forms.ModelForm):
         exclude = ['created_at', 'comment', 'user']
 
 class PostAIForm(forms.ModelForm):
+
     class Meta:
         model = PostAdditionalImage
         fields = '__all__'

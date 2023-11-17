@@ -123,3 +123,281 @@
 [2023.11.15 12:20:06] INFO: "POST /blog/kravasos-YbjhL29EQYCP4G0AVx1u/ HTTP/1.1" 200 12
 [2023.11.15 12:20:06] INFO: "POST /blog/kravasos-YbjhL29EQYCP4G0AVx1u/ HTTP/1.1" 200 12
 [2023.11.15 12:20:07] INFO: "GET /__debug__/history_sidebar/?store_id=d7b2ab894a9d4015b831a31723bb3c9b HTTP/1.1" 200 12956
+[2023.11.17 13:59:37] INFO: "GET / HTTP/1.1" 200 17696
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/css/header.css HTTP/1.1" 304 0
+[2023.11.17 13:59:37] INFO: "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 13404
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/css/images/profile_img.png HTTP/1.1" 200 1785
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/js/basic.js HTTP/1.1" 200 1930
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/css/images/logo_main.png HTTP/1.1" 200 5444
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/css/footer.css HTTP/1.1" 304 0
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/css/style_main.css HTTP/1.1" 304 0
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/css/images/gnome1_main.png HTTP/1.1" 304 0
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/css/images/gnome2_main.png HTTP/1.1" 304 0
+[2023.11.17 13:59:37] INFO: "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 12621
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/css/style_basic.css HTTP/1.1" 200 3249
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/css/images/bg-site_fin.jpg HTTP/1.1" 304 0
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/css/images/footer1.png HTTP/1.1" 304 0
+[2023.11.17 13:59:37] INFO: "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/css/images/yt_black.png HTTP/1.1" 304 0
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/css/images/gnome3_main.png HTTP/1.1" 304 0
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/css/images/gnome4_main.png HTTP/1.1" 304 0
+[2023.11.17 13:59:37] INFO: "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4527
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/css/images/mail_black.png HTTP/1.1" 304 0
+[2023.11.17 13:59:37] INFO: "GET /static/gnome_main/css/fonts/dkfears.ttf HTTP/1.1" 304 0
+[2023.11.17 13:59:38] INFO: "GET /login/ HTTP/1.1" 200 13938
+[2023.11.17 13:59:38] INFO: "GET /static/gnome_main/css/header_nfixed.css HTTP/1.1" 200 109
+[2023.11.17 13:59:38] INFO: "GET /static/gnome_main/css/style_log_in.css HTTP/1.1" 200 4465
+[2023.11.17 13:59:38] INFO: "GET /static/gnome_main/css/images/bg-site-blog.jpg HTTP/1.1" 200 444993
+[2023.11.17 13:59:40] INFO: "GET /login/ HTTP/1.1" 200 13937
+[2023.11.17 13:59:55] INFO: "POST /login/ HTTP/1.1" 302 0
+[2023.11.17 13:59:57] INFO: "GET / HTTP/1.1" 200 18422
+[2023.11.17 13:59:57] INFO: "GET /static/gnome_main/css/images/addpost.png HTTP/1.1" 200 854
+[2023.11.17 13:59:57] INFO: "GET /static/gnome_main/css/images/notifications.png HTTP/1.1" 200 1158
+[2023.11.17 14:00:07] INFO: "GET /user/kravasos/ HTTP/1.1" 200 39712
+[2023.11.17 14:00:07] INFO: "GET /static/gnome_main/js/functions.js HTTP/1.1" 304 0
+[2023.11.17 14:00:07] INFO: "GET /static/gnome_main/js/user_profile.js HTTP/1.1" 304 0
+[2023.11.17 14:00:07] INFO: "GET /static/gnome_main/css/post_cards.css HTTP/1.1" 304 0
+[2023.11.17 14:00:07] INFO: "GET /static/gnome_main/css/style_user_profile.css HTTP/1.1" 304 0
+[2023.11.17 14:00:08] INFO: "GET /static/ckeditor/ckeditor/plugins/smiley/images/shades_smile.png HTTP/1.1" 200 1204
+[2023.11.17 14:00:08] INFO: "GET /media/photos/kravasos/avatar_fz0Uht5.png HTTP/1.1" 304 0
+[2023.11.17 14:00:08] INFO: "GET /media/photos/kravasos/avatar_SHAL44C.png HTTP/1.1" 200 236122
+[2023.11.17 14:00:08] INFO: "GET /static/gnome_main/css/images/likes_full.png HTTP/1.1" 304 0
+[2023.11.17 14:00:08] INFO: "GET /media/2023-08-14-gnome_41_92sAvTw.png HTTP/1.1" 304 0
+[2023.11.17 14:00:08] INFO: "GET /media/posts/kravasos/24-neew%20tag%20t/2023-10-07-gnome_9..png HTTP/1.1" 304 0
+[2023.11.17 14:00:08] INFO: "GET /media/posts/kravasos/None-n45/2023-09-30-gnome_26.png.png HTTP/1.1" 200 670378
+[2023.11.17 14:00:08] INFO: "GET /media/2023-08-14-gnome_17.png HTTP/1.1" 304 0
+[2023.11.17 14:00:08] INFO: "GET /media/posts/kravasos/None-New%20post/2023-09-30-gnome_16_sn1wR7x.png HTTP/1.1" 304 0
+[2023.11.17 14:00:08] INFO: "GET /media/2023-08-13-gnome_11.png HTTP/1.1" 304 0
+[2023.11.17 14:00:08] INFO: "GET /media/posts/kravasos/None-New%20post2/2023-09-30-gnome_10.png HTTP/1.1" 200 651783
+[2023.11.17 14:00:10] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 17265
+[2023.11.17 14:00:10] INFO: "GET /static/gnome_main/js/changeUserImageLoader.js HTTP/1.1" 200 4269
+[2023.11.17 14:00:10] INFO: "GET /static/cropper/css/cropper.min.css HTTP/1.1" 200 3811
+[2023.11.17 14:00:18] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 17266
+[2023.11.17 14:12:16] INFO: "GET / HTTP/1.1" 200 18418
+[2023.11.17 14:12:16] INFO: "GET /static/gnome_main/css/images/favicon.png HTTP/1.1" 200 2106
+[2023.11.17 14:12:18] INFO: "GET /user/kravasos/ HTTP/1.1" 200 39717
+[2023.11.17 14:12:18] INFO: "GET /static/gnome_main/css/images/default_profile_image.jpg HTTP/1.1" 200 262317
+[2023.11.17 14:12:18] INFO: "GET /static/gnome_main/css/images/default_profile_avatar.jpg HTTP/1.1" 200 78683
+[2023.11.17 14:12:20] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 15967
+[2023.11.17 14:16:31] INFO: "GET / HTTP/1.1" 200 18419
+[2023.11.17 14:16:33] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 15967
+[2023.11.17 14:17:18] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 15967
+[2023.11.17 14:17:18] INFO: "GET /static/gnome_main/js/basic.js HTTP/1.1" 200 1930
+[2023.11.17 14:17:18] INFO: "GET /static/gnome_main/css/style_basic.css HTTP/1.1" 200 3249
+[2023.11.17 14:17:18] INFO: "GET /static/gnome_main/css/style_log_in.css HTTP/1.1" 200 4465
+[2023.11.17 14:17:18] INFO: "GET /static/gnome_main/css/header_nfixed.css HTTP/1.1" 200 109
+[2023.11.17 14:17:18] INFO: "GET /static/cropper/css/cropper.min.css HTTP/1.1" 200 3811
+[2023.11.17 14:17:18] INFO: "GET /static/gnome_main/js/changeUserImageLoader.js HTTP/1.1" 200 4363
+[2023.11.17 14:17:18] INFO: "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 13404
+[2023.11.17 14:17:18] INFO: "GET /static/gnome_main/css/images/logo_main.png HTTP/1.1" 200 5444
+[2023.11.17 14:17:18] INFO: "GET /static/gnome_main/css/images/notifications.png HTTP/1.1" 200 1158
+[2023.11.17 14:17:18] INFO: "GET /static/gnome_main/css/images/addpost.png HTTP/1.1" 200 854
+[2023.11.17 14:17:18] INFO: "GET /static/gnome_main/css/images/profile_img.png HTTP/1.1" 200 1785
+[2023.11.17 14:17:18] INFO: "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 12621
+[2023.11.17 14:17:18] INFO: "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+[2023.11.17 14:17:18] INFO: "GET /static/gnome_main/css/images/bg-site-blog.jpg HTTP/1.1" 200 444993
+[2023.11.17 14:17:18] INFO: "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4527
+[2023.11.17 14:17:19] INFO: "GET /static/gnome_main/css/images/favicon.png HTTP/1.1" 200 2106
+[2023.11.17 14:19:27] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 15967
+[2023.11.17 14:19:27] INFO: "GET /static/gnome_main/js/changeUserImageLoader.js HTTP/1.1" 304 0
+[2023.11.17 14:19:45] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 15967
+[2023.11.17 14:19:45] INFO: "GET /static/gnome_main/css/header_nfixed.css HTTP/1.1" 200 109
+[2023.11.17 14:19:45] INFO: "GET /static/cropper/css/cropper.min.css HTTP/1.1" 200 3811
+[2023.11.17 14:19:45] INFO: "GET /static/gnome_main/css/style_log_in.css HTTP/1.1" 200 4465
+[2023.11.17 14:19:45] INFO: "GET /static/gnome_main/js/basic.js HTTP/1.1" 200 1930
+[2023.11.17 14:19:45] INFO: "GET /static/gnome_main/js/changeUserImageLoader.js HTTP/1.1" 200 4363
+[2023.11.17 14:19:45] INFO: "GET /static/gnome_main/css/style_basic.css HTTP/1.1" 200 3249
+[2023.11.17 14:19:45] INFO: "GET /static/gnome_main/css/images/logo_main.png HTTP/1.1" 200 5444
+[2023.11.17 14:19:45] INFO: "GET /static/gnome_main/css/images/notifications.png HTTP/1.1" 200 1158
+[2023.11.17 14:19:45] INFO: "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 13404
+[2023.11.17 14:19:45] INFO: "GET /static/gnome_main/css/images/addpost.png HTTP/1.1" 200 854
+[2023.11.17 14:19:45] INFO: "GET /static/gnome_main/css/images/profile_img.png HTTP/1.1" 200 1785
+[2023.11.17 14:19:45] INFO: "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 12621
+[2023.11.17 14:19:46] INFO: "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+[2023.11.17 14:19:46] INFO: "GET /static/gnome_main/css/images/bg-site-blog.jpg HTTP/1.1" 200 444993
+[2023.11.17 14:19:46] INFO: "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4527
+[2023.11.17 14:19:46] INFO: "GET /static/gnome_main/css/images/favicon.png HTTP/1.1" 200 2106
+[2023.11.17 14:20:37] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 15967
+[2023.11.17 14:20:37] INFO: "GET /static/gnome_main/css/style_basic.css HTTP/1.1" 200 3249
+[2023.11.17 14:20:37] INFO: "GET /static/gnome_main/js/basic.js HTTP/1.1" 200 1930
+[2023.11.17 14:20:37] INFO: "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 13404
+[2023.11.17 14:20:37] INFO: "GET /static/gnome_main/css/header_nfixed.css HTTP/1.1" 200 109
+[2023.11.17 14:20:37] INFO: "GET /static/cropper/css/cropper.min.css HTTP/1.1" 200 3811
+[2023.11.17 14:20:37] INFO: "GET /static/gnome_main/css/style_log_in.css HTTP/1.1" 200 4465
+[2023.11.17 14:20:37] INFO: "GET /static/gnome_main/js/changeUserImageLoader.js HTTP/1.1" 200 4363
+[2023.11.17 14:20:37] INFO: "GET /static/gnome_main/css/images/logo_main.png HTTP/1.1" 200 5444
+[2023.11.17 14:20:37] INFO: "GET /static/gnome_main/css/images/notifications.png HTTP/1.1" 200 1158
+[2023.11.17 14:20:37] INFO: "GET /static/gnome_main/css/images/addpost.png HTTP/1.1" 200 854
+[2023.11.17 14:20:37] INFO: "GET /static/gnome_main/css/images/profile_img.png HTTP/1.1" 200 1785
+[2023.11.17 14:20:37] INFO: "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 12621
+[2023.11.17 14:20:37] INFO: "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+[2023.11.17 14:20:37] INFO: "GET /static/gnome_main/css/images/bg-site-blog.jpg HTTP/1.1" 200 444993
+[2023.11.17 14:20:37] INFO: "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4527
+[2023.11.17 14:20:38] INFO: "GET /static/gnome_main/css/images/favicon.png HTTP/1.1" 200 2106
+[2023.11.17 14:20:50] INFO: "POST /user/kravasos/change/ HTTP/1.1" 302 0
+[2023.11.17 14:20:50] INFO: "GET /user/kravasos/ HTTP/1.1" 200 39695
+[2023.11.17 14:20:51] INFO: "GET /media/photos/kravasos/gnome_9.png HTTP/1.1" 200 784866
+[2023.11.17 14:20:51] INFO: "GET /media/photos/kravasos/gnome_1.png HTTP/1.1" 200 728572
+[2023.11.17 14:20:52] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 17401
+[2023.11.17 14:20:53] INFO: "GET /media/photos/kravasos/gnome_9.png HTTP/1.1" 304 0
+[2023.11.17 14:20:53] INFO: "GET /media/photos/kravasos/gnome_1.png HTTP/1.1" 304 0
+[2023.11.17 14:20:53] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 17401
+[2023.11.17 14:20:53] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 17401
+[2023.11.17 14:20:53] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 17401
+[2023.11.17 14:20:53] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 17401
+[2023.11.17 14:21:31] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 17237
+[2023.11.17 14:21:31] INFO: "GET /static/gnome_main/js/changeUserImageLoader.js HTTP/1.1" 304 0
+[2023.11.17 14:21:31] INFO: "GET /media/photos/kravasos/gnome_1.png HTTP/1.1" 304 0
+[2023.11.17 14:21:31] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 17237
+[2023.11.17 14:21:31] INFO: "GET /media/photos/kravasos/gnome_9.png HTTP/1.1" 304 0
+[2023.11.17 14:21:31] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 17237
+[2023.11.17 14:21:31] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 17237
+[2023.11.17 14:21:32] INFO: "GET /user/kravasos/change/ HTTP/1.1" 200 17237
+[2023.11.17 14:21:39] INFO: "GET /user/kravasos/ HTTP/1.1" 200 39695
+[2023.11.17 14:21:39] INFO: "GET /media/photos/kravasos/gnome_9.png HTTP/1.1" 304 0
+[2023.11.17 14:21:39] INFO: "GET /media/photos/kravasos/gnome_1.png HTTP/1.1" 304 0
+[2023.11.17 16:02:40] INFO: "GET / HTTP/1.1" 200 18418
+[2023.11.17 16:02:40] INFO: "GET /static/gnome_main/css/style_basic.css HTTP/1.1" 200 3249
+[2023.11.17 16:02:40] INFO: "GET /static/gnome_main/js/basic.js HTTP/1.1" 200 1930
+[2023.11.17 16:02:40] INFO: "GET /static/gnome_main/css/images/logo_main.png HTTP/1.1" 200 5444
+[2023.11.17 16:02:40] INFO: "GET /static/gnome_main/css/images/notifications.png HTTP/1.1" 200 1158
+[2023.11.17 16:02:40] INFO: "GET /static/gnome_main/css/images/addpost.png HTTP/1.1" 200 854
+[2023.11.17 16:02:40] INFO: "GET /static/gnome_main/css/images/profile_img.png HTTP/1.1" 200 1785
+[2023.11.17 16:02:40] INFO: "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 12621
+[2023.11.17 16:02:40] INFO: "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+[2023.11.17 16:02:43] INFO: "GET /logout/ HTTP/1.1" 200 17701
+[2023.11.17 16:02:44] INFO: "GET /login/ HTTP/1.1" 200 13937
+[2023.11.17 16:02:44] INFO: "GET /static/gnome_main/css/header_nfixed.css HTTP/1.1" 200 109
+[2023.11.17 16:02:44] INFO: "GET /static/gnome_main/css/style_log_in.css HTTP/1.1" 200 4465
+[2023.11.17 16:02:44] INFO: "GET /static/gnome_main/css/images/bg-site-blog.jpg HTTP/1.1" 200 444993
+[2023.11.17 16:02:45] INFO: "GET /register/ HTTP/1.1" 200 15827
+[2023.11.17 16:02:46] INFO: "GET /captcha/image/29c58deb2812e9407336494bc3b8a152f898ce56/ HTTP/1.1" 200 4077
+[2023.11.17 16:04:11] INFO: "GET /register/ HTTP/1.1" 200 15825
+[2023.11.17 16:04:11] INFO: "GET /static/gnome_main/css/style_basic.css HTTP/1.1" 200 3249
+[2023.11.17 16:04:11] INFO: "GET /static/gnome_main/js/basic.js HTTP/1.1" 200 1930
+[2023.11.17 16:04:11] INFO: "GET /static/gnome_main/css/header_nfixed.css HTTP/1.1" 200 109
+[2023.11.17 16:04:11] INFO: "GET /static/gnome_main/css/images/logo_main.png HTTP/1.1" 200 5444
+[2023.11.17 16:04:11] INFO: "GET /static/gnome_main/css/images/profile_img.png HTTP/1.1" 200 1785
+[2023.11.17 16:04:11] INFO: "GET /static/gnome_main/css/style_log_in.css HTTP/1.1" 200 4535
+[2023.11.17 16:04:11] INFO: "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 13404
+[2023.11.17 16:04:11] INFO: "GET /static/gnome_main/css/footer.css HTTP/1.1" 200 1280
+[2023.11.17 16:04:11] INFO: "GET /static/gnome_main/css/images/yt_black.png HTTP/1.1" 200 9222
+[2023.11.17 16:04:11] INFO: "GET /static/gnome_main/css/images/mail_black.png HTTP/1.1" 200 9486
+[2023.11.17 16:04:11] INFO: "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 12621
+[2023.11.17 16:04:11] INFO: "GET /captcha/image/2522c4702f9762deb86ac6f042bfef982afaf74c/ HTTP/1.1" 200 4080
+[2023.11.17 16:04:11] INFO: "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+[2023.11.17 16:04:11] INFO: "GET /static/gnome_main/css/images/bg-site-blog.jpg HTTP/1.1" 200 444993
+[2023.11.17 16:04:11] INFO: "GET /static/gnome_main/css/images/footer1.png HTTP/1.1" 200 403783
+[2023.11.17 16:04:11] INFO: "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4527
+[2023.11.17 16:04:11] INFO: "GET /static/gnome_main/css/fonts/dkfears.ttf HTTP/1.1" 200 777304
+[2023.11.17 16:04:12] INFO: "GET /static/gnome_main/css/images/favicon.png HTTP/1.1" 200 2106
+[2023.11.17 16:04:19] INFO: "GET /static/gnome_main/css/style_log_in.css HTTP/1.1" 304 0
+[2023.11.17 16:04:58] INFO: "GET /register/ HTTP/1.1" 200 15825
+[2023.11.17 16:04:58] INFO: "GET /static/gnome_main/css/style_basic.css HTTP/1.1" 200 3249
+[2023.11.17 16:04:58] INFO: "GET /static/gnome_main/css/footer.css HTTP/1.1" 200 1280
+[2023.11.17 16:04:58] INFO: "GET /static/gnome_main/js/basic.js HTTP/1.1" 200 1930
+[2023.11.17 16:04:58] INFO: "GET /static/gnome_main/css/header_nfixed.css HTTP/1.1" 200 109
+[2023.11.17 16:04:58] INFO: "GET /static/gnome_main/css/images/logo_main.png HTTP/1.1" 200 5444
+[2023.11.17 16:04:58] INFO: "GET /static/gnome_main/css/style_log_in.css HTTP/1.1" 200 4581
+[2023.11.17 16:04:58] INFO: "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 13404
+[2023.11.17 16:04:58] INFO: "GET /static/gnome_main/css/images/profile_img.png HTTP/1.1" 200 1785
+[2023.11.17 16:04:58] INFO: "GET /static/gnome_main/css/images/yt_black.png HTTP/1.1" 200 9222
+[2023.11.17 16:04:58] INFO: "GET /static/gnome_main/css/images/mail_black.png HTTP/1.1" 200 9486
+[2023.11.17 16:04:58] INFO: "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 12621
+[2023.11.17 16:04:58] INFO: "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+[2023.11.17 16:04:58] INFO: "GET /static/gnome_main/css/images/bg-site-blog.jpg HTTP/1.1" 200 444993
+[2023.11.17 16:04:58] INFO: "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4527
+[2023.11.17 16:04:58] INFO: "GET /static/gnome_main/css/images/footer1.png HTTP/1.1" 200 403783
+[2023.11.17 16:04:58] INFO: "GET /static/gnome_main/css/fonts/dkfears.ttf HTTP/1.1" 200 777304
+[2023.11.17 16:04:58] INFO: "GET /captcha/image/0abbbdaa75c37ed54a75c89209ec1b87122a831f/ HTTP/1.1" 200 4210
+[2023.11.17 16:04:58] INFO: "GET /static/gnome_main/css/images/favicon.png HTTP/1.1" 200 2106
+[2023.11.17 16:06:48] INFO: "GET /register/ HTTP/1.1" 200 15825
+[2023.11.17 16:06:48] INFO: "GET /static/gnome_main/css/style_basic.css HTTP/1.1" 200 3249
+[2023.11.17 16:06:48] INFO: "GET /static/gnome_main/js/basic.js HTTP/1.1" 200 1930
+[2023.11.17 16:06:48] INFO: "GET /static/gnome_main/css/header_nfixed.css HTTP/1.1" 200 109
+[2023.11.17 16:06:48] INFO: "GET /static/gnome_main/css/images/logo_main.png HTTP/1.1" 200 5444
+[2023.11.17 16:06:48] INFO: "GET /static/gnome_main/css/footer.css HTTP/1.1" 200 1280
+[2023.11.17 16:06:48] INFO: "GET /static/debug_toolbar/js/toolbar.js HTTP/1.1" 200 13404
+[2023.11.17 16:06:48] INFO: "GET /static/gnome_main/css/style_log_in.css HTTP/1.1" 200 4515
+[2023.11.17 16:06:48] INFO: "GET /static/gnome_main/css/images/profile_img.png HTTP/1.1" 200 1785
+[2023.11.17 16:06:48] INFO: "GET /static/gnome_main/css/images/yt_black.png HTTP/1.1" 200 9222
+[2023.11.17 16:06:48] INFO: "GET /static/gnome_main/css/images/mail_black.png HTTP/1.1" 200 9486
+[2023.11.17 16:06:48] INFO: "GET /static/debug_toolbar/css/toolbar.css HTTP/1.1" 200 12621
+[2023.11.17 16:06:48] INFO: "GET /captcha/image/9a07f07eb2943f88aef822183c29fa01a0590406/ HTTP/1.1" 200 3982
+[2023.11.17 16:06:48] INFO: "GET /static/debug_toolbar/css/print.css HTTP/1.1" 200 43
+[2023.11.17 16:06:48] INFO: "GET /static/gnome_main/css/images/bg-site-blog.jpg HTTP/1.1" 200 444993
+[2023.11.17 16:06:48] INFO: "GET /static/debug_toolbar/js/utils.js HTTP/1.1" 200 4527
+[2023.11.17 16:06:48] INFO: "GET /static/gnome_main/css/images/footer1.png HTTP/1.1" 200 403783
+[2023.11.17 16:06:48] INFO: "GET /static/gnome_main/css/fonts/dkfears.ttf HTTP/1.1" 200 777304
+[2023.11.17 16:06:49] INFO: "GET /static/gnome_main/css/images/favicon.png HTTP/1.1" 200 2106
+[2023.11.17 16:07:17] ERROR: Internal Server Error: /register/
+Traceback (most recent call last):
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\views\generic\base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\views\generic\edit.py", line 184, in post
+    return super().post(request, *args, **kwargs)
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\views\generic\edit.py", line 152, in post
+    if form.is_valid():
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\forms\forms.py", line 201, in is_valid
+    return self.is_bound and not self.errors
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\forms\forms.py", line 196, in errors
+    self.full_clean()
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\forms\forms.py", line 434, in full_clean
+    self._clean_form()
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\forms\forms.py", line 455, in _clean_form
+    cleaned_data = self.clean()
+  File "K:\python\python\gnome_site\gnom_site\gnome_main\forms.py", line 31, in clean
+    password1 = self.cleaned_data['password1']
+KeyError: 'password1'
+[2023.11.17 16:07:17] ERROR: "POST /register/ HTTP/1.1" 500 125158
+[2023.11.17 16:07:17] WARNING: Not Found: /favicon.ico
+[2023.11.17 16:07:17] WARNING: "GET /favicon.ico HTTP/1.1" 404 28193
+[2023.11.17 16:08:07] INFO: "POST /register/ HTTP/1.1" 200 15976
+[2023.11.17 16:08:07] INFO: "GET /static/gnome_main/css/style_log_in.css HTTP/1.1" 304 0
+[2023.11.17 16:08:07] INFO: "GET /captcha/image/e23685523202e248dc120c1cfaccf66e4abae112/ HTTP/1.1" 200 3933
+[2023.11.17 16:08:19] ERROR: Internal Server Error: /register/
+Traceback (most recent call last):
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\views\generic\base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\views\generic\edit.py", line 184, in post
+    return super().post(request, *args, **kwargs)
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\views\generic\edit.py", line 153, in post
+    return self.form_valid(form)
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\views\generic\edit.py", line 135, in form_valid
+    self.object = form.save()
+  File "K:\python\python\gnome_site\gnom_site\gnome_main\forms.py", line 44, in save
+    user_registered.send(RegisterUserForm, instance=user)
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\dispatch\dispatcher.py", line 176, in send
+    return [
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\dispatch\dispatcher.py", line 177, in <listcomp>
+    (receiver, receiver(signal=self, sender=sender, **named))
+  File "K:\python\python\gnome_site\gnom_site\gnome_main\apps.py", line 15, in user_registered_dispatcher
+    send_activation_notification(kwargs['instance'])
+  File "K:\python\python\gnome_site\gnom_site\gnome_main\utilities.py", line 30, in send_activation_notification
+    em.send()
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\core\mail\message.py", line 298, in send
+    return self.get_connection(fail_silently).send_messages([self])
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\core\mail\backends\smtp.py", line 127, in send_messages
+    new_conn_created = self.open()
+  File "K:\python\python\gnome_site\venv\lib\site-packages\django\core\mail\backends\smtp.py", line 94, in open
+    self.connection.login(self.username, self.password)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.8_3.8.2800.0_x64__qbz5n2kfra8p0\lib\smtplib.py", line 743, in login
+    raise last_exception
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.8_3.8.2800.0_x64__qbz5n2kfra8p0\lib\smtplib.py", line 732, in login
+    (code, resp) = self.auth(
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.8_3.8.2800.0_x64__qbz5n2kfra8p0\lib\smtplib.py", line 655, in auth
+    raise SMTPAuthenticationError(code, resp)
+smtplib.SMTPAuthenticationError: (535, b'5.7.8 Username and Password not accepted. Learn more at\n5.7.8  https://support.google.com/mail/?p=BadCredentials p15-20020a05651212cf00b0050810b0da0fsm191214lfg.33 - gsmtp')
+[2023.11.17 16:08:20] ERROR: "POST /register/ HTTP/1.1" 500 162010

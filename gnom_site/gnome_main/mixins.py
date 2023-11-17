@@ -37,16 +37,18 @@ class ViewIncrementMixin:
         ip_address = get_client_ip(self.request)
         if hasattr(self.request, 'user') and self.request.user.id != None:
             user = self.request.user
-            PostViewCount.objects.get_or_create(post=obj,
-                                                ip_address=ip_address,
-                                                user=user)
+            if not PostViewCount.objects.filter(post=obj, ip_address=ip_address, user=user).exists():
+                PostViewCount.objects.get_or_create(post=obj,
+                                                    ip_address=ip_address,
+                                                    user=user)
         else:
             # на разработке
-            PostViewCount.objects.filter(post=obj,
-                                         ip_address=ip_address)[0]
+            # PostViewCount.objects.filter(post=obj,
+            #                              ip_address=ip_address)[0]
             # на продакшене
-            # PostViewCount.objects.get_or_create(post=obj,
-            #                             ip_address=ip_address)
+            if not PostViewCount.objects.filter(post=obj, ip_address=ip_address).exists():
+                PostViewCount.objects.get_or_create(post=obj,
+                                            ip_address=ip_address)
         return obj
 
 class CommentDispatcherMixin:
@@ -434,6 +436,7 @@ class BlogMixin(PostInfoAddMixin, SubscriptionsMixin, RubricsMixin):
         просмотра
         '''
         d = dict(request.POST)
+        print(d)
         if 'favourite' in d:
             post = Post.objects.get(id=d['post_id'][0])
             self.add_info('favourite', d['status'][0], post)

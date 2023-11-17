@@ -1,0 +1,4 @@
+Письмо удаления аккаунта пользователя {{ user.username }}
+Здравствуйте, {{ user.username }}!
+Для подтверждения удаления аккаунта перейдите по ссылке и заполните данные:
+{{ host }}{% url 'gnome_main:user-delete-confirm' slug=slug sign=sign %}

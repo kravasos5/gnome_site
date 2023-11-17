@@ -20,9 +20,9 @@ def send_activation_notification(user):
         host = 'http://127.0.0.1:8000'
     context = {'user': user, 'host': host,
                'sign': signer.sign(user.username)}
-    subject = render_to_string('email/activation_letter_subject.html',
+    subject = render_to_string('email/activation_letter_subject.txt',
                                context)
-    body_text = render_to_string('email/activation_letter_body.html',
+    body_text = render_to_string('email/activation_letter_body.txt',
                                  context)
     # user.email_user(subject, body_text)
     em = EmailMessage(subject=subject, body=body_text,
@@ -39,7 +39,7 @@ def user_delete(user, protocol, domain):
                'sign': signer.sign(user.username), 'slug': user.slug}
     subject = render_to_string('email/delete_user_subject.txt',
                                context)
-    body_text = render_to_string('email/delete_user_body.html',
+    body_text = render_to_string('email/delete_user_body.txt',
                                  context)
     em = EmailMessage(subject=subject, body=body_text,
                       to=[f'{user.email}', ])

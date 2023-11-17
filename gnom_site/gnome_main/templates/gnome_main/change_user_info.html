@@ -16,7 +16,7 @@
 {% block content %}
 <div class="widget-container">
     <h1>Изменение данных пользователя {{ user.username }}</h1>
-    <form method="post" enctype="multipart/form-data" id="change-form">
+    <form method="post" enctype="multipart/form-data" id="user-form">
         {% csrf_token %}
         <div class="info">
             {% for field in form %}

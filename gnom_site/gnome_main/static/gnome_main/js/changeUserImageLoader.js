@@ -8,7 +8,7 @@ window.addEventListener("load", (event) => {
     const newAvatarDiv = document.querySelector('.avatar-image-new');
     const newProfileDiv = document.querySelector('.profile-image-new');
 
-    const form = document.getElementById('change-form');
+    const form = document.getElementById('user-form');
 
     const cropper_avatar = new Cropper(newAvatar, {
         aspectRatio: 1 / 1,
@@ -35,7 +35,7 @@ window.addEventListener("load", (event) => {
                 cropper_avatar.destroy();
                 cropper_avatar.replace(imageURL);
 
-                $('form#change-form').submit(function(event) {
+                $('form#user-form').submit(function(event) {
                     event.preventDefault();
                     cropper_avatar.getCroppedCanvas().toBlob((blob) => {
                         const fd = new FormData(form);
@@ -48,7 +48,7 @@ window.addEventListener("load", (event) => {
                             enctype: 'multipart/form-data',
                             data: fd,
                             success: function(response) {
-                                window.location.href = response.success_url;
+                                window.location.href = response.redirect_url;
                             },
                             error: function(error) {
                             },
@@ -79,7 +79,7 @@ window.addEventListener("load", (event) => {
                 cropper_profile.destroy();
                 cropper_profile.replace(imageURL);
 
-                $('form#change-form').submit(function(event) {
+                $('form#user-form').submit(function(event) {
                     event.preventDefault();
                     cropper_profile.getCroppedCanvas().toBlob((blob) => {
                         const fd = new FormData(form);
@@ -92,7 +92,7 @@ window.addEventListener("load", (event) => {
                             enctype: 'multipart/form-data',
                             data: fd,
                             success: function(response) {
-                                window.location.href = response.success_url;
+                                window.location.href = response.redirect_url;
                             },
                             error: function(error) {
                             },
