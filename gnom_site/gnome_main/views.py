@@ -125,6 +125,11 @@ class BlogBase:
     context_object_name = 'posts'
     paginate_by = 10
 
+    def get_queryset(self, *args, **kwargs):
+        queryset = super().get_queryset(*args, **kwargs)
+        queryset = queryset.filter(is_active=True)
+        return queryset
+
 # Блог
 class BlogView(BlogBase, NotificationCheckMixin, CsrfMixin, BlogMixin, ListView):
     '''Представление блога'''
@@ -191,7 +196,7 @@ class UserProfile(NotificationCheckMixin, PostInfoAddMixin, SubscribeMixin, Csrf
         context = super().get_context_data(*args, **kwargs)
         cur_user = get_object_or_404(AdvUser, slug=self.kwargs.get('slug'))
         count = cur_user.subscriptions.count()
-        posts = Post.objects.filter(author=cur_user).order_by('-created_at')[:10]
+        posts = Post.objects.filter(author=cur_user, is_active=True).order_by('-created_at')[:10]
         context['cur_user'] = cur_user
         context['sub_count'] = count
         context['posts_count'] = posts.count()
@@ -311,7 +316,7 @@ class RegisterUserView(CreateView):
     model = AdvUser
     template_name = 'gnome_main/register.html'
     form_class = RegisterUserForm
-    success_url = reverse_lazy('gnome_main:register-confrim')
+    success_url = reverse_lazy('gnome_main:register-confirm')
 
 
 class RegisterConfrimView(TemplateView):
@@ -349,14 +354,14 @@ class ChangeUserInfoView(NotificationCheckMixin, SuccessMessageMixin, LoginRequi
     def get_object(self, queryset=None):
         if not queryset:
             queryset = self.get_queryset()
-        return  get_object_or_404(queryset, id=self.id)
+        return get_object_or_404(queryset, id=self.id)
 
     def get_success_url(self):
         return reverse_lazy('gnome_main:user-profile', kwargs={'slug': self.slug})
 
     def form_valid(self, form):
         super().form_valid(form)
-        return HttpResponseRedirect(self.get_success_url())
+        return JsonResponse(data={'redirect_url': self.get_success_url()}, status=200)
 
 # Сброс пароля
 class PasswordReset(PasswordResetView):
@@ -808,13 +813,20 @@ class AccessDenied(NotificationCheckMixin, TemplateView):
 
 ############################################################################
 # Записи пользователя
-class AuthorPostsBase(BlogBase):
+class AuthorPostsBase:
     '''Базовый класс для записей пользователя'''
+    model = Post
     template_name = 'gnome_main/author_posts.html'
+    context_object_name = 'posts'
+    paginate_by = 10
 
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset(*args, **kwargs)
-        queryset = queryset.filter(author__slug=self.kwargs['slug'])
+        author = AdvUser.objects.get(slug=self.kwargs.get('slug'))
+        if self.request.user == author:
+            queryset = queryset.filter(author__slug=self.kwargs['slug'])
+        else:
+            queryset = queryset.filter(author__slug=self.kwargs['slug'], is_active=True)
         return queryset
 
     def get_context_data(self, *args, object_list=None, **kwargs):
@@ -822,13 +834,13 @@ class AuthorPostsBase(BlogBase):
         context['author_slug'] = self.kwargs['slug']
         return context
 
-class AuthorPostsView(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, BlogMixin, AuthorPostsBase, ListView):
+class AuthorPostsView(NotificationCheckMixin, CsrfMixin, BlogMixin, AuthorPostsBase, ListView):
     '''Представление окна записей пользователя'''
 
-class AuthorPostsFilteredView(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, BlogFilterMixin, AuthorPostsBase, ListView):
+class AuthorPostsFilteredView(NotificationCheckMixin, CsrfMixin, BlogFilterMixin, AuthorPostsBase, ListView):
     '''Представление окна записей пользователя фильтр'''
 
-class AuthorPostsSearchView(NotificationCheckMixin, CsrfMixin, LoginRequiredMixin, BlogSearchMixin, AuthorPostsBase, ListView):
+class AuthorPostsSearchView(NotificationCheckMixin, CsrfMixin, BlogSearchMixin, AuthorPostsBase, ListView):
     '''Представление окна записей пользователя поиск'''
 
 ############################################################################

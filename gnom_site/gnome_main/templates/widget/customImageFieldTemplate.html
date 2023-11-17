@@ -1,11 +1,17 @@
-{% if widget.is_initial %}
-    {% if widget.name == 'avatar' %}
+{% if widget.name == 'avatar' %}
     <p>Текущий аватар</p>
     </div>
 
-    <div class="avatar-image">
-        <img src="{{ widget.value.url }}" style="width: 200px; height: 200px; object-fit: cover;" class="avatar-img">
-    </div>
+    {% if widget.value %}
+        <div class="avatar-image">
+            <img src="{{ widget.value.url }}" style="width: 200px; height: 200px; object-fit: cover;" class="avatar-img">
+        </div>
+    {% else %}
+        <div style="max-height: 100%; max-width: 100%;">
+            <p>Сейчас у вас нет аватара (выставлен стандартный)</p>
+        </div>
+    {% endif %}
+
     <div class="info">
         <p>Новый аватар</p>
     </div>
@@ -14,14 +20,19 @@
     </div>
 
     <div class="info">
-
-    {% else %}
+{% else %}
     <p>Текущая шапка профиля</p>
     </div>
 
-    <div class="profile-image">
-        <img src="{{ widget.value.url }}" style="width: 1920px; height: 300px; object-fit: cover;" class="profile-img">
-    </div>
+    {% if widget.value %}
+        <div class="profile-image">
+            <img src="{{ widget.value.url }}" style="width: 1920px; height: 300px; object-fit: cover;" class="profile-img">
+        </div>
+    {% else %}
+        <div style="max-height: 100%; max-width: 100%;">
+            <p>Сейчас у вас нет шапки профиля (выставлена стандартная)</p>
+        </div>
+    {% endif %}
 
     <div class="info">
         <p>Новая шапка профиля</p>
@@ -32,7 +43,6 @@
     </div>
 
     <div class="info">
-    {% endif %}
 {% endif %}
 
 <p><input type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value %} value="{{ widget.value.url }}"{% endif %} id="{{ widget.attrs.id }}"></p>

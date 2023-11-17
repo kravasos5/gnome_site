@@ -51,9 +51,11 @@ h1 {
     border-radius: 10px;
     width: 60%;
     height: 10%;
-    cursor: pointer;
 
     font-size: 14px;
+}
+.widget-container form input[type="submit"] {
+    cursor: pointer;
 }
 
 .widget-container form input.form-btn {

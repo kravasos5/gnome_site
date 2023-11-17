@@ -78,11 +78,24 @@ window.addEventListener("load", (event) => {
 
     $('.delete-image').click(deleteAImage);
 
+//    function deleteAImage() {
+//        let count = $('.formset').children().length;
+////        let ai_id = $(this).attr('id');
+//        $(this).parent().parent().parent().remove();
+//        $('#id_images-TOTAL_FORMS').attr('value', count-1);
+//    };
+
     function deleteAImage() {
         let count = $('.formset').children().length;
-//        let ai_id = $(this).attr('id');
-        $(this).parent().parent().parent().remove();
-        $('#id_images-TOTAL_FORMS').attr('value', count-1);
+        let prefix = 'images';  // Замените на ваш актуальный префикс
+        let form = $(this).closest('.form');
+        let image_id = $(this).attr('id');
+        if (!form.hasClass('new-form')) {
+            let delete_input = $(`input[name="images-${image_id}-DELETE"]`);
+            delete_input.prop('checked', true);
+        };
+        // Скрыть форму вместо удаления, чтобы не нарушить порядок индексов
+        $(this).parent().parent().parent().hide();
     };
 
     function update_counter(counter, count) {

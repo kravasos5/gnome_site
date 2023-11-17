@@ -110,7 +110,7 @@
 
                                 {% for field in fs.visible_fields %}
                                 {% if field.name != 'DELETE' %}
-                                    <div id="images-{{ forloop.counter0 }}">
+                                    <div id="images-{{ forloop.parentloop.counter0 }}">
                                         {% if field.errors %}
                                             {% for error in field.errors %}
                                                 <p style="color:red;">{{ error|escape }}</p>
@@ -121,12 +121,14 @@
                                                 <p>{{ field.label_tag }}</p>
                                                 <p class="fset">{{ field }}</p>
                                                 <p class="delete-p">
-                                                    <button class="delete-image pointer" id="{{ forloop.counter0 }}" type="button">Удалить</button>
+                                                    <button class="delete-image pointer" id="{{ forloop.parentloop.counter0 }}" type="button">Удалить</button>
                                                 </p>
                                             </div>
                                             {% include 'includings/progress_bar.html' %}
                                         </div>
                                     </div>
+                                {% else %}
+                                <div style="display: none;">{{field}}</div>
                                 {% endif %}
                                 {% endfor %}
                             </div>

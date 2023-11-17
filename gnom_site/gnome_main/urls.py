@@ -29,7 +29,7 @@ urlpatterns = [
     path('user/password/reset/', PasswordReset.as_view(), name='password-reset'),
 
     path('register/activate/<str:sign>/', user_activate, name='register-done'),
-    path('register/confrim/', RegisterConfrimView.as_view(), name='register-confrim'),
+    path('register/confirm/', RegisterConfrimView.as_view(), name='register-confirm'),
     path('register/', RegisterUserView.as_view(), name='register'),
 
     path('report/<slug:slug>/post/', PostReportView.as_view(), name='post-report'),

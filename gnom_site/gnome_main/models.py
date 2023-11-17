@@ -122,8 +122,7 @@ class PostManager(models.Manager):
                               'postviewcount_set',
                               'postlike_set',
                               'postdislike_set',
-                              'postcomment_set')\
-            .filter(is_active=True)
+                              'postcomment_set')
 
 class Post(models.Model):
     '''Модель постов'''
@@ -241,6 +240,7 @@ class PostViewCount(models.Model):
         ordering = ('-viewed_on',)
         verbose_name = 'Просмотр'
         verbose_name_plural = 'Просмотры'
+        unique_together = [('post', 'user', 'ip_address'), ('post', 'ip_address')]
 
     def __str__(self):
         return f'Просмотр. Пост: {self.post.id} - дата: {self.viewed_on}'
