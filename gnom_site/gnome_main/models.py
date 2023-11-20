@@ -132,7 +132,7 @@ class Post(models.Model):
                                verbose_name='Рубрика')
     title = models.CharField(max_length=80, db_index=True,
                              verbose_name='Название')
-    slug = models.CharField(max_length=50, null=True, blank=True,
+    slug = models.SlugField(max_length=50, unique=True, db_index=True,
                             verbose_name='Слаг')
     content = models.TextField(verbose_name='Содержание',
                                validators=[MinLengthValidator(100, 'Содержание должно быть длинной минимум в 100 символов'),
@@ -163,7 +163,7 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             key = random_key(20)
-            self.slug = f'{self.author.username}-{key}'[:50]
+            self.slug = f'{self.author.slug}-{key}'[:50]
         super().save(*args, **kwargs)
 
     def __str__(self):

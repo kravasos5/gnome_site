@@ -37,6 +37,7 @@ window.addEventListener("load", (event) => {
 
                 $('form#user-form').submit(function(event) {
                     event.preventDefault();
+                    const form = this;
                     cropper_avatar.getCroppedCanvas().toBlob((blob) => {
                         const fd = new FormData(form);
                         const newAvatarFile = new File([blob], `avatar.${blob.type.split('/')[1]}`, { type: blob.type });
@@ -48,7 +49,7 @@ window.addEventListener("load", (event) => {
                             enctype: 'multipart/form-data',
                             data: fd,
                             success: function(response) {
-                                window.location.href = response.redirect_url;
+                                form.submit();
                             },
                             error: function(error) {
                             },
@@ -81,6 +82,7 @@ window.addEventListener("load", (event) => {
 
                 $('form#user-form').submit(function(event) {
                     event.preventDefault();
+                    const form = this;
                     cropper_profile.getCroppedCanvas().toBlob((blob) => {
                         const fd = new FormData(form);
                         const newProfileFile = new File([blob], `avatar.${blob.type.split('/')[1]}`, { type: blob.type });
@@ -92,7 +94,7 @@ window.addEventListener("load", (event) => {
                             enctype: 'multipart/form-data',
                             data: fd,
                             success: function(response) {
-                                window.location.href = response.redirect_url;
+                                form.submit();
                             },
                             error: function(error) {
                             },

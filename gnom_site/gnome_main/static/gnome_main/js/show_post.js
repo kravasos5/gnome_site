@@ -436,7 +436,7 @@ $(document).ready(function() {
         // пользователя нижней части страницы
         filter_data = new_value;
         $('div.comment-all').empty();
-        loadContent();
+        isScrollBar();
     };
 
     // подвязка обработчиков к кнопкам фильтров
@@ -813,6 +813,15 @@ $(document).ready(function() {
     // Подвязка ко кнопке подписки и отписки обработчика btn_sub
     $('button.sub-false').click(subscribe_func);
     $('button.sub-true').click(subscribe_func);
+
+    function isScrollBar() {
+        // Функция проверки наличия ползунка прокрутки
+        if (document.documentElement.scrollHeight != document.documentElement.offsetHeight) {
+            loadContent();
+        };
+    };
+
+    isScrollBar();
 
     // класс, формирующий комментарии
 //    commentCreator = new CommentCreator(answerClickHandler, comment_like, comment_dislike, more_comments, change_comment, deletion_assert, adddrop_post, comment_mouseenter, comment_mouseleave, add_btn_look_more, add_btn_close, postCommentCountLabel);
