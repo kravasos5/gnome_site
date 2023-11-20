@@ -361,7 +361,7 @@ class ChangeUserInfoView(NotificationCheckMixin, SuccessMessageMixin, LoginRequi
 
     def form_valid(self, form):
         super().form_valid(form)
-        return JsonResponse(data={'redirect_url': self.get_success_url()}, status=200)
+        return HttpResponseRedirect(self.get_success_url())
 
 # Сброс пароля
 class PasswordReset(PasswordResetView):
