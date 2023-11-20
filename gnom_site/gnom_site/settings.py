@@ -208,6 +208,15 @@ SWAGGER_SETTINGS = {
 }
 
 # REST
+# формат ответа по умолчанию - json
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 # corsheaders
 # Если False, то будут обрабатываться только запросы, пришедшие с текущего домена или
 # заприсы, пришедшие от доменов из списка CORS_ORIGIN_WHITELIST или
@@ -217,13 +226,6 @@ CORS_ORIGIN_ALLOW_ALL = False
 # CORS_ORIGIN_REGEX_WHITELIST = []
 
 # настройка JWT
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
-}
-
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
